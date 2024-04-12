@@ -1,2 +1,2 @@
 # changjiang-iot-db-go-sdk
-长江物联网平台时序存储go语言sdk
+长江物联网存储时序库go语言sdk
