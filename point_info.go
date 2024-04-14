@@ -1,10 +1,10 @@
-package hhdb_sdk
+package cj_hhdb_gosdk
 
 import (
+	"cj_hhdb_gosdk/hhdb/rpc"
+	hhdbRpc "cj_hhdb_gosdk/hhdb/rpc_interface"
 	"context"
 	"errors"
-	"hhdb_sdk/hhdb/rpc"
-	hhdbRpc "hhdb_sdk/hhdb/rpc_interface"
 )
 
 // 测点类型

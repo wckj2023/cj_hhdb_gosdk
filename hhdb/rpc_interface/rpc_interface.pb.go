@@ -9,7 +9,7 @@ package rpc_interface
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	rpc "hhdb_sdk/hhdb/rpc"
+	rpc "cj_hhdb_gosdk/hhdb/rpc"
 	reflect "reflect"
 )
 

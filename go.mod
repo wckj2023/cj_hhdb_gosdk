@@ -1,4 +1,4 @@
-module hhdb_sdk
+module cj_hhdb_gosdk
 
 go 1.21
 

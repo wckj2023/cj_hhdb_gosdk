@@ -1,4 +1,4 @@
-package hhdb_sdk
+package cj_hhdb_gosdk
 
 import (
 	"testing"
