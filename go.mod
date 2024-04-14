@@ -1,4 +1,4 @@
-module cj_hhdb_gosdk
+module  github.com/wckj2023/cj_hhdb_gosdk
 
 go 1.21
 
