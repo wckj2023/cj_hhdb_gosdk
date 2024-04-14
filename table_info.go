@@ -16,23 +16,23 @@ type OperatorInfo struct {
 }
 
 type TableInfo struct {
-	tableId           int32             `json:"tableId"`           //表ID
-	tableName         string            `json:"tableName"`         //表名
-	extraFiledAndDesc map[string]string `json:"extraFiledAndDesc"` //额外的字段与字段名
+	TableId           int32             `json:"TableId"`           //表ID
+	TableName         string            `json:"TableName"`         //表名
+	ExtraFiledAndDesc map[string]string `json:"ExtraFiledAndDesc"` //额外的字段与字段名
 	operatorInfo      OperatorInfo      `json:"operatorInfo"`      //用户信息
 }
 
 func (table *TableInfo) go2grpcTableInfo() *rpc.TableInfo {
-	grpcTable := rpc.TableInfo{TableId: table.tableId, TableName: table.tableName, ExtraFiledAndDesc: table.extraFiledAndDesc,
+	grpcTable := rpc.TableInfo{TableId: table.TableId, TableName: table.TableName, ExtraFiledAndDesc: table.ExtraFiledAndDesc,
 		OperatorInfo: &rpc.OperatorInfo{CreateTime: table.operatorInfo.createTime, UpdateTime: table.operatorInfo.updateTime,
 			CreateUserId: uint32(table.operatorInfo.createUserId), UpdateUserId: uint32(table.operatorInfo.updateUserId)}}
 	return &grpcTable
 }
 
 func (table *TableInfo) grpc2goTableInfo(grpcTableInfo *rpc.TableInfo) {
-	table.tableId = grpcTableInfo.TableId
-	table.tableName = grpcTableInfo.TableName
-	table.extraFiledAndDesc = grpcTableInfo.ExtraFiledAndDesc
+	table.TableId = grpcTableInfo.TableId
+	table.TableName = grpcTableInfo.TableName
+	table.ExtraFiledAndDesc = grpcTableInfo.ExtraFiledAndDesc
 	table.operatorInfo.createTime = grpcTableInfo.OperatorInfo.CreateTime
 	table.operatorInfo.updateTime = grpcTableInfo.OperatorInfo.UpdateTime
 	table.operatorInfo.createUserId = int32(grpcTableInfo.OperatorInfo.CreateUserId)
@@ -59,7 +59,7 @@ func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo TableInfo) (int32,
 	return res.GetErrMsg().GetCode(), nil
 }
 
-func (hhdb *HhdbConPool) DeleteTable(dbName string, tableId int32, tableName string) (int32, error) {
+func (hhdb *HhdbConPool) DeleteTable(dbName string, TableId int32, TableName string) (int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return HHDB_GET_CON_ERROR, err
@@ -67,7 +67,7 @@ func (hhdb *HhdbConPool) DeleteTable(dbName string, tableId int32, tableName str
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.DelTable(ctx, &rpc.TableInfo{TableId: tableId, TableName: tableName})
+	res, err := dbConInfo.DbClinet.DelTable(ctx, &rpc.TableInfo{TableId: TableId, TableName: TableName})
 
 	if res.GetErrMsg().GetCode() < 0 {
 		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
@@ -75,7 +75,7 @@ func (hhdb *HhdbConPool) DeleteTable(dbName string, tableId int32, tableName str
 	return res.GetErrMsg().GetCode(), nil
 }
 
-func (hhdb *HhdbConPool) ClearTable(dbName string, tableId int32, tableName string) (int32, error) {
+func (hhdb *HhdbConPool) ClearTable(dbName string, TableId int32, TableName string) (int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return HHDB_GET_CON_ERROR, err
@@ -83,7 +83,7 @@ func (hhdb *HhdbConPool) ClearTable(dbName string, tableId int32, tableName stri
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.ClearTable(ctx, &rpc.TableInfo{TableId: tableId, TableName: tableName})
+	res, err := dbConInfo.DbClinet.ClearTable(ctx, &rpc.TableInfo{TableId: TableId, TableName: TableName})
 
 	if res.GetErrMsg().GetCode() < 0 {
 		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
@@ -110,7 +110,7 @@ func (hhdb *HhdbConPool) UpdateTable(dbName string, tableInfo *TableInfo) (int32
 	return res.GetErrMsg().GetCode(), nil
 }
 
-func (hhdb *HhdbConPool) QueryTableList(dbName string, tableId int32, tableName string,
+func (hhdb *HhdbConPool) QueryTableList(dbName string, TableId int32, TableName string,
 	enablePage bool, page uint32, limit uint32) (*[]TableInfo, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
@@ -119,7 +119,7 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableId int32, tableName 
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.QueryTableList(ctx, &hhdbRpc.QueryTableReq{TableId: tableId, TableName: tableName, EnablePage: enablePage, Page: page, Limit: limit})
+	res, err := dbConInfo.DbClinet.QueryTableList(ctx, &hhdbRpc.QueryTableReq{TableId: TableId, TableName: TableName, EnablePage: enablePage, Page: page, Limit: limit})
 	if res.GetErrMsg().GetCode() < 0 {
 		return nil, errors.New(res.GetErrMsg().GetMsg())
 	}
