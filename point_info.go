@@ -243,10 +243,10 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.ExtraField = grpc.ExtraField
 }
 
-func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (int32, error) {
+func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, err
+		return HHDB_GET_CON_ERROR, []int32{}, err
 	}
 	req := hhdbRpc.PointInfoListReq{}
 	for i := 0; i < len(*pointList); i++ {
@@ -256,9 +256,9 @@ func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (in
 	defer cancel()
 	res, err := dbConInfo.DbClinet.InsertPoints(ctx, &req)
 	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+		return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
 	}
-	return res.GetErrMsg().GetCode(), nil
+	return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, nil
 }
 
 func (hhdb *HhdbConPool) DelPoints(dbName string, pointList *[]PointInfo) (int32, error) {
@@ -279,10 +279,10 @@ func (hhdb *HhdbConPool) DelPoints(dbName string, pointList *[]PointInfo) (int32
 	return res.GetErrMsg().GetCode(), nil
 }
 
-func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (int32, error) {
+func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, err
+		return HHDB_GET_CON_ERROR, []int32{}, err
 	}
 	req := hhdbRpc.PointInfoListReq{}
 	for i := 0; i < len(*pointList); i++ {
@@ -292,9 +292,9 @@ func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (in
 	defer cancel()
 	res, err := dbConInfo.DbClinet.UpdatePoints(ctx, &req)
 	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+		return res.GetErrMsg().GetCode(), res.GetIdOrErrCodeList(), errors.New(res.GetErrMsg().GetMsg())
 	}
-	return res.GetErrMsg().GetCode(), nil
+	return res.GetErrMsg().GetCode(), res.GetIdOrErrCodeList(), nil
 }
 
 func (hhdb *HhdbConPool) QueryPoints(dbName string, tableId int32, pointId int32, nameRegex string, descRegex string,
