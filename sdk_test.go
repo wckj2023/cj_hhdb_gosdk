@@ -24,5 +24,4 @@ func TestAdd(t *testing.T) {
 	} else {
 		t.Log("query table table1 success,table info:", list)
 	}
-
 }

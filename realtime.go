@@ -79,55 +79,133 @@ func (x PointStatus) String() string {
 }
 
 type PointValue struct {
-	value  interface{} `json:"v"` //测点值
-	mstime uint64      `json:"t"` //测点值时间
-	status PointStatus `json:"s"` //测点值状态
+	Value  interface{} `json:"v"` //测点值
+	Mstime uint64      `json:"t"` //测点值时间
+	Status PointStatus `json:"s"` //测点值状态
 }
 
 func (pointValue *PointValue) go2grpcPointValue() (grpcValue *rpc.PointValue) {
-	switch pointValue.value.(type) {
+	grpcValue.Mstime = pointValue.Mstime
+	grpcValue.Status = int32(pointValue.Status)
+	switch pointValue.Value.(type) {
 	case bool:
-		grpcValue.Value = &rpc.PointValue_BoolValue{BoolValue: pointValue.value.(bool)}
+		grpcValue.Value = &rpc.PointValue_BoolValue{BoolValue: pointValue.Value.(bool)}
 	case float32:
-		grpcValue.Value = &rpc.PointValue_FloatValue{FloatValue: pointValue.value.(float32)}
+		grpcValue.Value = &rpc.PointValue_FloatValue{FloatValue: pointValue.Value.(float32)}
 	case float64:
-		grpcValue.Value = &rpc.PointValue_DoubleValue{DoubleValue: pointValue.value.(float64)}
+		grpcValue.Value = &rpc.PointValue_DoubleValue{DoubleValue: pointValue.Value.(float64)}
+	case int8:
+		grpcValue.Value = &rpc.PointValue_IntValue{IntValue: int32(pointValue.Value.(int8))}
+	case int16:
+		grpcValue.Value = &rpc.PointValue_IntValue{IntValue: int32(pointValue.Value.(int16))}
 	case int32:
-		grpcValue.Value = &rpc.PointValue_Int32Value{Int32Value: pointValue.value.(int32)}
-	case uint32:
-		grpcValue.Value = &rpc.PointValue_Uint32Value{Uint32Value: pointValue.value.(uint32)}
+		grpcValue.Value = &rpc.PointValue_IntValue{IntValue: pointValue.Value.(int32)}
 	case int64:
-		grpcValue.Value = &rpc.PointValue_Int64Value{Int64Value: pointValue.value.(int64)}
+		grpcValue.Value = &rpc.PointValue_LongValue{LongValue: pointValue.Value.(int64)}
+	case uint8:
+		grpcValue.Value = &rpc.PointValue_DwordValue{DwordValue: uint32(pointValue.Value.(uint8))}
+	case uint16:
+		grpcValue.Value = &rpc.PointValue_DwordValue{DwordValue: uint32(pointValue.Value.(uint16))}
+	case uint32:
+		grpcValue.Value = &rpc.PointValue_DwordValue{DwordValue: pointValue.Value.(uint32)}
 	case uint64:
-		grpcValue.Value = &rpc.PointValue_Uint64Value{Uint64Value: pointValue.value.(uint64)}
+		grpcValue.Value = &rpc.PointValue_QwordValue{QwordValue: pointValue.Value.(uint64)}
 	case string:
-		grpcValue.Value = &rpc.PointValue_StringValue{StringValue: pointValue.value.(string)}
-	case []byte:
-		grpcValue.Value = &rpc.PointValue_BinaryValue{BinaryValue: pointValue.value.([]byte)}
+		grpcValue.Value = &rpc.PointValue_StringValue{StringValue: []byte(pointValue.Value.(string))}
+	case []bool:
+		grpcValue.Value = &rpc.PointValue_BoolArr{BoolArr: &rpc.BoolArr{ArrValue: pointValue.Value.([]bool)}}
+	case []float32:
+		grpcValue.Value = &rpc.PointValue_FloatArr{FloatArr: &rpc.FloatArr{ArrValue: pointValue.Value.([]float32)}}
+	case []float64:
+		grpcValue.Value = &rpc.PointValue_DoubleArr{DoubleArr: &rpc.DoubleArr{ArrValue: pointValue.Value.([]float64)}}
+	case []int8:
+		{
+			tempValue := rpc.IntArr{}
+			for _, v := range pointValue.Value.([]int8) {
+				tempValue.ArrValue = append(tempValue.ArrValue, int32(v))
+			}
+			grpcValue.Value = &rpc.PointValue_IntArr{IntArr: &tempValue}
+		}
+	case []int16:
+		{
+			tempValue := rpc.IntArr{}
+			for _, v := range pointValue.Value.([]int16) {
+				tempValue.ArrValue = append(tempValue.ArrValue, int32(v))
+			}
+			grpcValue.Value = &rpc.PointValue_IntArr{IntArr: &tempValue}
+		}
+	case []int32:
+		grpcValue.Value = &rpc.PointValue_IntArr{IntArr: &rpc.IntArr{ArrValue: pointValue.Value.([]int32)}}
+	case []int64:
+		grpcValue.Value = &rpc.PointValue_LongArr{LongArr: &rpc.LongArr{ArrValue: pointValue.Value.([]int64)}}
+	case []uint8:
+		{
+			tempValue := rpc.DwordArr{}
+			for _, v := range pointValue.Value.([]uint8) {
+				tempValue.ArrValue = append(tempValue.ArrValue, uint32(v))
+			}
+			grpcValue.Value = &rpc.PointValue_DwordArr{DwordArr: &tempValue}
+		}
+	case []uint16:
+		{
+			tempValue := rpc.DwordArr{}
+			for _, v := range pointValue.Value.([]uint16) {
+				tempValue.ArrValue = append(tempValue.ArrValue, uint32(v))
+			}
+			grpcValue.Value = &rpc.PointValue_DwordArr{DwordArr: &tempValue}
+		}
+	case []uint32:
+		grpcValue.Value = &rpc.PointValue_DwordArr{DwordArr: &rpc.DwordArr{ArrValue: pointValue.Value.([]uint32)}}
+	case []uint64:
+		grpcValue.Value = &rpc.PointValue_QwordArr{QwordArr: &rpc.QwordArr{ArrValue: pointValue.Value.([]uint64)}}
+	case []string:
+		{
+			tempValue := rpc.StringArr{}
+			for _, v := range pointValue.Value.([]string) {
+				tempValue.ArrValue = append(tempValue.ArrValue, []byte(v))
+			}
+			grpcValue.Value = &rpc.PointValue_StringArr{StringArr: &tempValue}
+		}
 	}
 	return grpcValue
 }
 
 func (pointValue *PointValue) grpc2goPointValue(grpcValue *rpc.PointValue) {
+	pointValue.Mstime = grpcValue.Mstime
+	pointValue.Status = PointStatus(grpcValue.Status)
 	switch grpcValue.GetValue().(type) {
 	case *rpc.PointValue_BoolValue:
-		pointValue.value = grpcValue.GetBoolValue()
+		pointValue.Value = grpcValue.GetBoolValue()
 	case *rpc.PointValue_FloatValue:
-		pointValue.value = grpcValue.GetFloatValue()
+		pointValue.Value = grpcValue.GetFloatValue()
 	case *rpc.PointValue_DoubleValue:
-		pointValue.value = grpcValue.GetDoubleValue()
-	case *rpc.PointValue_Int32Value:
-		pointValue.value = grpcValue.GetInt32Value()
-	case *rpc.PointValue_Uint32Value:
-		pointValue.value = grpcValue.GetUint32Value()
-	case *rpc.PointValue_Int64Value:
-		pointValue.value = grpcValue.GetInt64Value()
-	case *rpc.PointValue_Uint64Value:
-		pointValue.value = grpcValue.GetUint64Value()
+		pointValue.Value = grpcValue.GetDoubleValue()
+	case *rpc.PointValue_IntValue:
+		pointValue.Value = grpcValue.GetIntValue()
+	case *rpc.PointValue_DwordValue:
+		pointValue.Value = grpcValue.GetDwordValue()
+	case *rpc.PointValue_LongValue:
+		pointValue.Value = grpcValue.GetLongValue()
+	case *rpc.PointValue_QwordValue:
+		pointValue.Value = grpcValue.GetQwordValue()
 	case *rpc.PointValue_StringValue:
-		pointValue.value = grpcValue.GetStringValue()
-	case *rpc.PointValue_BinaryValue:
-		pointValue.value = grpcValue.GetBinaryValue()
+		pointValue.Value = grpcValue.GetStringValue()
+	case *rpc.PointValue_BoolArr:
+		pointValue.Value = grpcValue.GetBoolArr().GetArrValue()
+	case *rpc.PointValue_FloatArr:
+		pointValue.Value = grpcValue.GetFloatArr().GetArrValue()
+	case *rpc.PointValue_DoubleArr:
+		pointValue.Value = grpcValue.GetDoubleArr().GetArrValue()
+	case *rpc.PointValue_IntArr:
+		pointValue.Value = grpcValue.GetIntArr().GetArrValue()
+	case *rpc.PointValue_DwordArr:
+		pointValue.Value = grpcValue.GetDoubleArr().GetArrValue()
+	case *rpc.PointValue_LongArr:
+		pointValue.Value = grpcValue.GetLongArr().GetArrValue()
+	case *rpc.PointValue_QwordArr:
+		pointValue.Value = grpcValue.GetQwordArr().GetArrValue()
+	case *rpc.PointValue_StringArr:
+		pointValue.Value = grpcValue.GetStringArr().GetArrValue()
 	}
 }
 
@@ -143,10 +221,6 @@ func (hhdb *HhdbConPool) UpdateRealtimeValueListByIdList(dbName string, pointIdL
 	req.IdList = *pointIdList
 	for _, v := range *valueList {
 		req.ValueList = append(req.ValueList, v.go2grpcPointValue())
-		req.StatusList = append(req.StatusList, rpc.PointStatus(v.status))
-		if !useSysTime {
-			req.MstimeList = append(req.MstimeList, v.mstime)
-		}
 	}
 
 	res, err := dbConInfo.dbClinet.UpdateRealtimeValueList(ctx, &req)
@@ -171,10 +245,6 @@ func (hhdb *HhdbConPool) UpdateRealtimeValueListByNameList(dbName string, pointN
 	req.NameList = *pointNameList
 	for _, v := range *valueList {
 		req.ValueList = append(req.ValueList, v.go2grpcPointValue())
-		req.StatusList = append(req.StatusList, rpc.PointStatus(v.status))
-		if !useSysTime {
-			req.MstimeList = append(req.MstimeList, v.mstime)
-		}
 	}
 
 	res, err := dbConInfo.dbClinet.UpdateRealtimeValueList(ctx, &req)
@@ -208,8 +278,6 @@ func (hhdb *HhdbConPool) QueryRealtimeValueListByIdList(dbName string, pointIdLi
 
 	valueList := make([]PointValue, len(res.ValueList))
 	for i, v := range res.ValueList {
-		valueList[i].status = PointStatus(res.StatusList[i])
-		valueList[i].mstime = res.MstimeList[i]
 		valueList[i].grpc2goPointValue(v)
 	}
 	return &valueList, nil

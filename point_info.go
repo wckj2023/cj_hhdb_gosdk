@@ -83,16 +83,30 @@ func (x CompressMode) String() string {
 type ValueType int32
 
 const (
-	ValueType_kVtErr    ValueType = 0 //错误类型
-	ValueType_kVtBool   ValueType = 1 //bool
-	ValueType_kVtFloat  ValueType = 2 //float
-	ValueType_kVtDouble ValueType = 3 //double
-	ValueType_kVtInt32  ValueType = 4 //int
-	ValueType_kVtUint32 ValueType = 5 //unsigned int
-	ValueType_kVtInt64  ValueType = 6 //long long
-	ValueType_kVtUint64 ValueType = 7 //unsigned long long
-	ValueType_kVtString ValueType = 8 //string
-	ValueType_kVtBinary ValueType = 9 //binary
+	ValueType_kVtBool      ValueType = 0  // true 或 false 的二进制值
+	ValueType_kVtFloat     ValueType = 1  //32 位实数值浮点型 IEEE-754 标准定义
+	ValueType_kVtDouble    ValueType = 2  //64 位实数值双精度 IEEE-754 标准定义
+	ValueType_kVtChar      ValueType = 3  // 有符号的 8 位整数数据
+	ValueType_kVtByte      ValueType = 4  //无符号的 8 位整数数据
+	ValueType_kVtShort     ValueType = 5  //有符号的 16 位整数数据
+	ValueType_kVtWord      ValueType = 6  //无符号的 16 位整数数据
+	ValueType_kVtInt       ValueType = 7  //有符号的 32 位整数数据
+	ValueType_kVtDword     ValueType = 8  // 无符号的 32 位整数数据
+	ValueType_kVtLong      ValueType = 9  //有符号的 64 位整数数据
+	ValueType_kVtQword     ValueType = 10 //无符号的 64 位整数数据
+	ValueType_kVtString    ValueType = 11 //字符串
+	ValueType_kVtBoolArr   ValueType = 12 //bool数组
+	ValueType_kVtFloatArr  ValueType = 13 //32 位实数值浮点型数组
+	ValueType_kVtDoubleArr ValueType = 14 //64 位实数值浮点型数组
+	ValueType_kVtCharArr   ValueType = 15 //char数组
+	ValueType_kVtByteArr   ValueType = 16 //byte数组
+	ValueType_kVtShortArr  ValueType = 17 //short数组
+	ValueType_kVtWordArr   ValueType = 18 //word数组
+	ValueType_kVtIntArr    ValueType = 19 //有符号的 32 位整数数据数组
+	ValueType_kVtDwordArr  ValueType = 20 //无符号的 32 位整数数据数组
+	ValueType_kVtLongArr   ValueType = 21 //有符号的 64 位整数数据数组
+	ValueType_kVtQwordArr  ValueType = 22 //无符号的 64 位整数数据数组
+	ValueType_kVtStringArr ValueType = 23 //字符串数组
 )
 
 // Enum value maps for ValueType.
@@ -163,58 +177,70 @@ func (x ValueType) String() string {
 
 // 测点全量信息
 type PointInfo struct {
-	pointId        int32             `json:"pointId"`        //测点ID，为>=0的整数
-	pointName      string            `json:"pointName"`      //测点名
-	pointUnit      string            `json:"pointUnit"`      //测点单位
-	pointDesc      string            `json:"pointDesc"`      //测点描述
-	pointType      PointType         `json:"pointType"`      //测点类型
-	writeEnable    bool              `json:"writeEnable"`    //是否可写
-	checkEnable    bool              `json:"checkEnable"`    //是否进行值校验
-	lowerThreshold float64           `json:"lowerThreshold"` //低限阈值
-	upperThreshold float64           `json:"upperThreshold"` //高限阈值
-	valueOffset    float64           `json:"valueOffset"`    //数据偏移量
-	valueRate      float64           `json:"valueRate"`      //数据倍率
-	compressMode   CompressMode      `json:"compressMode"`   //压缩模式
-	compressParam1 float64           `json:"compressParam1"` //压缩备用参数1
-	compressParam2 float64           `json:"compressParam2"` //压缩备用参数2
-	outtimeDay     int32             `json:"outtimeDay"`     //超时时间（单位：天）=0则不启用，>0为对应的超时时间，<0代表仅缓存实时数据不存储历史数据
-	valueType      ValueType         `json:"valueType"`      //测点值类型
-	tableId        int32             `json:"tableId"`        //点组ID
-	createTime     uint64            `json:"createTime"`     //测点创建时间
-	extraField     map[string]string `json:"extraField"`     //自定义的拓展字段
+	PointId        int32             `json:"pointId"`        //测点ID，为>=0的整数
+	PointName      string            `json:"pointName"`      //测点名
+	PointUnit      string            `json:"pointUnit"`      //测点单位
+	PointDesc      string            `json:"pointDesc"`      //测点描述
+	PointType      PointType         `json:"pointType"`      //测点类型
+	WriteEnable    bool              `json:"writeEnable"`    //是否可写
+	CheckEnable    bool              `json:"checkEnable"`    //是否进行值校验
+	LowerThreshold float64           `json:"lowerThreshold"` //低限阈值
+	UpperThreshold float64           `json:"upperThreshold"` //高限阈值
+	ValueOffset    float64           `json:"valueOffset"`    //数据偏移量
+	ValueRate      float64           `json:"valueRate"`      //数据倍率
+	CompressMode   CompressMode      `json:"compressMode"`   //压缩模式
+	CompressParam1 float64           `json:"compressParam1"` //压缩备用参数1
+	CompressParam2 float64           `json:"compressParam2"` //压缩备用参数2
+	OuttimeDay     int32             `json:"outtimeDay"`     //超时时间（单位：天）=0则不启用，>0为对应的超时时间，<0代表仅缓存实时数据不存储历史数据
+	ValueType      ValueType         `json:"valueType"`      //测点值类型
+	TableId        int32             `json:"tableId"`        //点组ID
+	CreateTime     uint64            `json:"createTime"`     //测点创建时间
+	ExtraField     map[string]string `json:"extraField"`     //自定义的拓展字段
 }
 
 func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {
-	grpc.PointId = point.pointId
-	grpc.ShowInfo.PointName = point.pointName
-	grpc.ShowInfo.PointUnit = point.pointUnit
-	grpc.ShowInfo.PointDesc = point.pointDesc
-	grpc.ShowInfo.PointType = rpc.PointType(point.pointType)
-	grpc.CompressMode = rpc.CompressMode(point.compressMode)
-	grpc.CompressParam1 = point.compressParam1
-	grpc.CompressParam2 = point.compressParam2
-	grpc.OuttimeDay = point.outtimeDay
-	grpc.ValueType = rpc.ValueType(point.valueType)
-	grpc.TableId = point.tableId
-	grpc.CreateTime = point.createTime
-	grpc.ExtraField = point.extraField
+	grpc.PointId = point.PointId
+	grpc.PointName = point.PointName
+	grpc.PointUnit = point.PointUnit
+	grpc.PointDesc = point.PointDesc
+	grpc.PointType = rpc.PointType(point.PointType)
+	grpc.CompressMode = rpc.CompressMode(point.CompressMode)
+	grpc.CompressParam1 = point.CompressParam1
+	grpc.CompressParam2 = point.CompressParam2
+	grpc.WriteEnable = point.WriteEnable
+	grpc.CheckEnable = point.CheckEnable
+	grpc.LowerThreshold = point.LowerThreshold
+	grpc.UpperThreshold = point.UpperThreshold
+	grpc.ValueOffset = point.ValueOffset
+	grpc.ValueRate = point.ValueRate
+	grpc.OuttimeDay = point.OuttimeDay
+	grpc.ValueType = rpc.ValueType(point.ValueType)
+	grpc.TableId = point.TableId
+	grpc.CreateTime = point.CreateTime
+	grpc.ExtraField = point.ExtraField
 	return grpc
 }
 
 func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
-	point.pointId = grpc.PointId
-	point.pointName = grpc.ShowInfo.GetPointName()
-	point.pointDesc = grpc.ShowInfo.GetPointDesc()
-	point.pointUnit = grpc.ShowInfo.GetPointUnit()
-	point.pointType = PointType(grpc.ShowInfo.PointType)
-	point.compressMode = CompressMode(grpc.CompressMode)
-	point.compressParam1 = grpc.CompressParam1
-	point.compressParam2 = grpc.CompressParam2
-	point.outtimeDay = grpc.OuttimeDay
-	point.valueType = ValueType(grpc.ValueType)
-	point.tableId = grpc.TableId
-	point.createTime = grpc.CreateTime
-	point.extraField = grpc.ExtraField
+	point.PointId = grpc.PointId
+	point.PointName = grpc.PointName
+	point.PointDesc = grpc.PointDesc
+	point.PointUnit = grpc.PointUnit
+	point.PointType = PointType(grpc.PointType)
+	point.CompressMode = CompressMode(grpc.CompressMode)
+	point.CompressParam1 = grpc.CompressParam1
+	point.CompressParam2 = grpc.CompressParam2
+	point.OuttimeDay = grpc.OuttimeDay
+	point.WriteEnable = grpc.WriteEnable
+	point.CheckEnable = grpc.CheckEnable
+	point.LowerThreshold = grpc.LowerThreshold
+	point.UpperThreshold = grpc.UpperThreshold
+	point.ValueOffset = grpc.ValueOffset
+	point.ValueRate = grpc.ValueRate
+	point.ValueType = ValueType(grpc.ValueType)
+	point.TableId = grpc.TableId
+	point.CreateTime = grpc.CreateTime
+	point.ExtraField = grpc.ExtraField
 }
 
 func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (int32, error) {

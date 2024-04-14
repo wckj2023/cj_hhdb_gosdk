@@ -73,7 +73,7 @@ func (hhdb *HhdbConPool) getDbCon(dbName string) (*dbConObject, error) {
 	if !dbConInfo.isAuth {
 		ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 		defer cancel()
-		res, err := dbConInfo.dbClinet.Auth(ctx, &hhdbRpc.AuthReq{Username: dbConInfo.dbInfo.username, Password: []byte(generateMD5(dbConInfo.dbInfo.password))})
+		res, err := dbConInfo.dbClinet.Auth(ctx, &hhdbRpc.AuthReq{Username: dbConInfo.dbInfo.username, Password: generateMD5(dbConInfo.dbInfo.password)})
 		if err != nil {
 			return nil, err
 		}

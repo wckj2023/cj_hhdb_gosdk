@@ -3,7 +3,6 @@ package hhdb_sdk
 import (
 	"context"
 	"errors"
-	"hhdb_sdk/hhdb/rpc"
 	hhdbRpc "hhdb_sdk/hhdb/rpc_interface"
 )
 
@@ -137,13 +136,11 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByIdList(dbName string, pointI
 		return nil, nil, errors.New(res.GetErrMsg().GetMsg())
 	}
 	// 创建二维数组
-	valuesList := make([][]PointValue, len(res.ValuesList))
-	for i, vs := range res.ValuesList {
+	valuesList := make([][]PointValue, len(res.ValueLists))
+	for i, vs := range res.ValueLists {
 		valuesList[i] = make([]PointValue, len(vs.ValueList))
 		for j, v := range vs.ValueList {
 			valuesList[i][j].grpc2goPointValue(v)
-			valuesList[i][j].status = PointStatus(vs.StatusList[j])
-			valuesList[i][j].mstime = vs.MstimeList[j]
 		}
 	}
 
@@ -173,13 +170,11 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByNameList(dbName string, poin
 		return nil, nil, errors.New(res.GetErrMsg().GetMsg())
 	}
 	// 创建二维数组
-	valuesList := make([][]PointValue, len(res.ValuesList))
-	for i, vs := range res.ValuesList {
+	valuesList := make([][]PointValue, len(res.ValueLists))
+	for i, vs := range res.ValueLists {
 		valuesList[i] = make([]PointValue, len(vs.ValueList))
 		for j, v := range vs.ValueList {
 			valuesList[i][j].grpc2goPointValue(v)
-			valuesList[i][j].status = PointStatus(vs.StatusList[j])
-			valuesList[i][j].mstime = vs.MstimeList[j]
 		}
 	}
 
@@ -210,13 +205,11 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByIdList(dbName string, pointI
 		return nil, nil, errors.New(res.GetErrMsg().GetMsg())
 	}
 	// 创建二维数组
-	valuesList := make([][]PointValue, len(res.ValuesList))
-	for i, vs := range res.ValuesList {
+	valuesList := make([][]PointValue, len(res.ValueLists))
+	for i, vs := range res.ValueLists {
 		valuesList[i] = make([]PointValue, len(vs.ValueList))
 		for j, v := range vs.ValueList {
 			valuesList[i][j].grpc2goPointValue(v)
-			valuesList[i][j].status = PointStatus(vs.StatusList[j])
-			valuesList[i][j].mstime = vs.MstimeList[j]
 		}
 	}
 
@@ -247,13 +240,11 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByNameList(dbName string, poin
 		return nil, nil, errors.New(res.GetErrMsg().GetMsg())
 	}
 	// 创建二维数组
-	valuesList := make([][]PointValue, len(res.ValuesList))
-	for i, vs := range res.ValuesList {
+	valuesList := make([][]PointValue, len(res.ValueLists))
+	for i, vs := range res.ValueLists {
 		valuesList[i] = make([]PointValue, len(vs.ValueList))
 		for j, v := range vs.ValueList {
 			valuesList[i][j].grpc2goPointValue(v)
-			valuesList[i][j].status = PointStatus(vs.StatusList[j])
-			valuesList[i][j].mstime = vs.MstimeList[j]
 		}
 	}
 
@@ -261,7 +252,7 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByNameList(dbName string, poin
 	return &valuesList, &result, nil
 }
 
-func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, pointIdList *[]int32, msTimePoint *[]uint64, mode ResampleMode) (*[]PointValue, *[]int32, error) {
+func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, pointIdList *[]int32, msTimePoint uint64, mode ResampleMode) (*[]PointValue, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, nil, err
@@ -272,7 +263,7 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, point
 	req := hhdbRpc.QueryHisTimePointValueListReq{}
 	req.IdList = *pointIdList
 	req.ResampleMode = hhdbRpc.ResampleMode(mode)
-	req.MsTimePoint = *msTimePoint
+	req.MsTimePoint = msTimePoint
 	res, err := dbConInfo.dbClinet.QueryHisTimePointValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, err
@@ -285,15 +276,13 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, point
 	valueList := make([]PointValue, len(res.ValueList))
 	for i, v := range res.ValueList {
 		valueList[i].grpc2goPointValue(v)
-		valueList[i].status = PointStatus(res.StatusList[i])
-		valueList[i].mstime = res.MstimeList[i]
 	}
 
 	result := res.ResultList
 	return &valueList, &result, nil
 }
 
-func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, pointNameList *[]string, msTimePoint *[]uint64, mode ResampleMode) (*[]PointValue, *[]int32, error) {
+func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, pointNameList *[]string, msTimePoint uint64, mode ResampleMode) (*[]PointValue, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, nil, err
@@ -304,7 +293,7 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, poi
 	req := hhdbRpc.QueryHisTimePointValueListReq{}
 	req.NameList = *pointNameList
 	req.ResampleMode = hhdbRpc.ResampleMode(mode)
-	req.MsTimePoint = *msTimePoint
+	req.MsTimePoint = msTimePoint
 	res, err := dbConInfo.dbClinet.QueryHisTimePointValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, err
@@ -317,8 +306,6 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, poi
 	valueList := make([]PointValue, len(res.ValueList))
 	for i, v := range res.ValueList {
 		valueList[i].grpc2goPointValue(v)
-		valueList[i].status = PointStatus(res.StatusList[i])
-		valueList[i].mstime = res.MstimeList[i]
 	}
 
 	result := res.ResultList
@@ -339,10 +326,8 @@ func (hhdb *HhdbConPool) InsertHisValueListByIdList(dbName string, pointIdList *
 		grpcValueList := hhdbRpc.ValueList{}
 		for _, v := range vs {
 			grpcValueList.ValueList = append(grpcValueList.ValueList, v.go2grpcPointValue())
-			grpcValueList.StatusList = append(grpcValueList.StatusList, rpc.PointStatus(v.status))
-			grpcValueList.MstimeList = append(grpcValueList.MstimeList, v.mstime)
 		}
-		req.ValuesList = append(req.ValuesList, &grpcValueList)
+		req.ValueLists = append(req.ValueLists, &grpcValueList)
 	}
 
 	res, err := dbConInfo.dbClinet.InsertHisValueList(ctx, &req)
@@ -370,10 +355,8 @@ func (hhdb *HhdbConPool) InsertHisValueListByNameList(dbName string, pointNameLi
 		grpcValueList := hhdbRpc.ValueList{}
 		for _, v := range vs {
 			grpcValueList.ValueList = append(grpcValueList.ValueList, v.go2grpcPointValue())
-			grpcValueList.StatusList = append(grpcValueList.StatusList, rpc.PointStatus(v.status))
-			grpcValueList.MstimeList = append(grpcValueList.MstimeList, v.mstime)
 		}
-		req.ValuesList = append(req.ValuesList, &grpcValueList)
+		req.ValueLists = append(req.ValueLists, &grpcValueList)
 	}
 
 	res, err := dbConInfo.dbClinet.InsertHisValueList(ctx, &req)
