@@ -297,7 +297,7 @@ func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (in
 	return res.GetErrMsg().GetCode(), res.GetIdOrErrCodeList(), nil
 }
 
-func (hhdb *HhdbConPool) QueryPoints(dbName string, tableId int32, pointId int32, nameRegex string, descRegex string,
+func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, tableId int32, pointId int32, nameRegex string, descRegex string,
 	unitRegex string, pointType int32, extraFields *map[string]string, enablePage bool,
 	page uint32, limit uint32) (*[]PointInfo, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
@@ -306,7 +306,7 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableId int32, pointId int32
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableId: tableId, PointId: pointId, NameRegex: nameRegex,
+	res, err := dbConInfo.DbClinet.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: tableId, PointId: pointId, NameRegex: nameRegex,
 		DescRegex: descRegex, UnitRegex: unitRegex, PointType: pointType, ExtraFields: *extraFields, EnablePage: enablePage,
 		Page: page, Limit: limit})
 	if res.GetErrMsg().GetCode() < 0 {
