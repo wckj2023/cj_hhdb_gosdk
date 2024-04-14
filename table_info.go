@@ -52,7 +52,7 @@ func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo TableInfo) (int32,
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClinet.InsertTable(ctx, tableInfo.go2grpcTableInfo())
+	res, err := dbConInfo.DbClinet.InsertTable(ctx, tableInfo.go2grpcTableInfo())
 	if res.GetErrMsg().GetCode() < 0 {
 		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
 	}
@@ -67,7 +67,7 @@ func (hhdb *HhdbConPool) DeleteTable(dbName string, tableId int32, tableName str
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClinet.DelTable(ctx, &rpc.TableInfo{TableId: tableId, TableName: tableName})
+	res, err := dbConInfo.DbClinet.DelTable(ctx, &rpc.TableInfo{TableId: tableId, TableName: tableName})
 
 	if res.GetErrMsg().GetCode() < 0 {
 		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
@@ -83,7 +83,7 @@ func (hhdb *HhdbConPool) ClearTable(dbName string, tableId int32, tableName stri
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClinet.ClearTable(ctx, &rpc.TableInfo{TableId: tableId, TableName: tableName})
+	res, err := dbConInfo.DbClinet.ClearTable(ctx, &rpc.TableInfo{TableId: tableId, TableName: tableName})
 
 	if res.GetErrMsg().GetCode() < 0 {
 		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
@@ -102,7 +102,7 @@ func (hhdb *HhdbConPool) UpdateTable(dbName string, tableInfo *TableInfo) (int32
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClinet.UpdateTable(ctx, tableInfo.go2grpcTableInfo())
+	res, err := dbConInfo.DbClinet.UpdateTable(ctx, tableInfo.go2grpcTableInfo())
 
 	if res.GetErrMsg().GetCode() < 0 {
 		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
@@ -119,7 +119,7 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableId int32, tableName 
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClinet.QueryTableList(ctx, &hhdbRpc.QueryTableReq{TableId: tableId, TableName: tableName, EnablePage: enablePage, Page: page, Limit: limit})
+	res, err := dbConInfo.DbClinet.QueryTableList(ctx, &hhdbRpc.QueryTableReq{TableId: tableId, TableName: tableName, EnablePage: enablePage, Page: page, Limit: limit})
 	if res.GetErrMsg().GetCode() < 0 {
 		return nil, errors.New(res.GetErrMsg().GetMsg())
 	}

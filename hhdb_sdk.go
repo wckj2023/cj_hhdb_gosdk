@@ -13,16 +13,16 @@ import (
 )
 
 type DbInfo struct {
-	username string `json:"username"` //用户名
-	password string `json:"password"` //用户密码
-	url      string `json:"url"`      //连接信息127.0.0.1:6666
-	dbName   string
+	Username string `json:"username"` //用户名
+	Password string `json:"password"` //用户密码
+	Url      string `json:"url"`      //连接信息127.0.0.1:6666
+	DbName   string
 }
 
 type dbConObject struct {
-	dbInfo   DbInfo
-	dbCon    *grpc.ClientConn
-	dbClinet hhdbRpc.RpcInterfaceClient
+	DbInfo   DbInfo
+	DbCon    *grpc.ClientConn
+	DbClinet hhdbRpc.RpcInterfaceClient
 	isAuth   bool
 	token    string
 	dbId     int32
@@ -35,7 +35,7 @@ type HhdbConPool struct {
 
 func (hhdb *HhdbConPool) SetDbInfo(info *DbInfo) {
 	object := dbConObject{*info, nil, nil, false, "", -1}
-	hhdb.dbConPool.Store(info.dbName, &object)
+	hhdb.dbConPool.Store(info.DbName, &object)
 }
 
 func (hhdb *HhdbConPool) SetOuttime(outtimeSec time.Duration) {
@@ -59,21 +59,21 @@ func (hhdb *HhdbConPool) getDbCon(dbName string) (*dbConObject, error) {
 	}
 
 	//连接未建立或连接断开，则进行重连
-	if dbConInfo.dbCon == nil || dbConInfo.dbCon.GetState().String() == "SHUTDOWN" {
-		con, err := grpc.Dial(dbConInfo.dbInfo.url, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if dbConInfo.DbCon == nil || dbConInfo.DbCon.GetState().String() == "SHUTDOWN" {
+		con, err := grpc.Dial(dbConInfo.DbInfo.Url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return nil, err
 		}
-		dbConInfo.dbCon = con
+		dbConInfo.DbCon = con
 		dbConInfo.isAuth = false
-		dbConInfo.dbClinet = hhdbRpc.NewRpcInterfaceClient(dbConInfo.dbCon)
+		dbConInfo.DbClinet = hhdbRpc.NewRpcInterfaceClient(dbConInfo.DbCon)
 		hhdb.dbConPool.Store(dbName, dbConInfo)
 	}
 
 	if !dbConInfo.isAuth {
 		ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 		defer cancel()
-		res, err := dbConInfo.dbClinet.Auth(ctx, &hhdbRpc.AuthReq{Username: dbConInfo.dbInfo.username, Password: generateMD5(dbConInfo.dbInfo.password)})
+		res, err := dbConInfo.DbClinet.Auth(ctx, &hhdbRpc.AuthReq{Username: dbConInfo.DbInfo.Username, Password: generateMD5(dbConInfo.DbInfo.Password)})
 		if err != nil {
 			return nil, err
 		}

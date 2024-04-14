@@ -127,7 +127,7 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByIdList(dbName string, pointI
 	req.QueryMode = hhdbRpc.RangeQueryMode(mode)
 	req.StartMstime = startMs
 	req.EndMstime = endMs
-	res, err := dbConInfo.dbClinet.QueryHisRangeValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.QueryHisRangeValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -161,7 +161,7 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByNameList(dbName string, poin
 	req.QueryMode = hhdbRpc.RangeQueryMode(mode)
 	req.StartMstime = startMs
 	req.EndMstime = endMs
-	res, err := dbConInfo.dbClinet.QueryHisRangeValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.QueryHisRangeValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -196,7 +196,7 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByIdList(dbName string, pointI
 	req.StartMstime = startMs
 	req.EndMstime = endMs
 	req.PriodMs = priodMs
-	res, err := dbConInfo.dbClinet.QueryHisResampleValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.QueryHisResampleValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -231,7 +231,7 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByNameList(dbName string, poin
 	req.StartMstime = startMs
 	req.EndMstime = endMs
 	req.PriodMs = priodMs
-	res, err := dbConInfo.dbClinet.QueryHisResampleValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.QueryHisResampleValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -264,7 +264,7 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, point
 	req.IdList = *pointIdList
 	req.ResampleMode = hhdbRpc.ResampleMode(mode)
 	req.MsTimePoint = msTimePoint
-	res, err := dbConInfo.dbClinet.QueryHisTimePointValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.QueryHisTimePointValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -294,7 +294,7 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, poi
 	req.NameList = *pointNameList
 	req.ResampleMode = hhdbRpc.ResampleMode(mode)
 	req.MsTimePoint = msTimePoint
-	res, err := dbConInfo.dbClinet.QueryHisTimePointValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.QueryHisTimePointValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -330,7 +330,7 @@ func (hhdb *HhdbConPool) InsertHisValueListByIdList(dbName string, pointIdList *
 		req.ValueLists = append(req.ValueLists, &grpcValueList)
 	}
 
-	res, err := dbConInfo.dbClinet.InsertHisValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.InsertHisValueList(ctx, &req)
 	if err != nil {
 		return nil, err
 	}
@@ -359,7 +359,7 @@ func (hhdb *HhdbConPool) InsertHisValueListByNameList(dbName string, pointNameLi
 		req.ValueLists = append(req.ValueLists, &grpcValueList)
 	}
 
-	res, err := dbConInfo.dbClinet.InsertHisValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.InsertHisValueList(ctx, &req)
 	if err != nil {
 		return nil, err
 	}

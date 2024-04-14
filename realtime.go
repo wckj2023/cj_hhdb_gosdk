@@ -223,7 +223,7 @@ func (hhdb *HhdbConPool) UpdateRealtimeValueListByIdList(dbName string, pointIdL
 		req.ValueList = append(req.ValueList, v.go2grpcPointValue())
 	}
 
-	res, err := dbConInfo.dbClinet.UpdateRealtimeValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.UpdateRealtimeValueList(ctx, &req)
 	if err != nil {
 		return HHDB_RPC_REQ_ERROR, err
 	}
@@ -247,7 +247,7 @@ func (hhdb *HhdbConPool) UpdateRealtimeValueListByNameList(dbName string, pointN
 		req.ValueList = append(req.ValueList, v.go2grpcPointValue())
 	}
 
-	res, err := dbConInfo.dbClinet.UpdateRealtimeValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.UpdateRealtimeValueList(ctx, &req)
 	if err != nil {
 		return HHDB_RPC_REQ_ERROR, err
 	}
@@ -268,7 +268,7 @@ func (hhdb *HhdbConPool) QueryRealtimeValueListByIdList(dbName string, pointIdLi
 	req := hhdbRpc.QueryRealtimeValueListReq{}
 	req.IdList = *pointIdList
 
-	res, err := dbConInfo.dbClinet.QueryRealtimeValueList(ctx, &req)
+	res, err := dbConInfo.DbClinet.QueryRealtimeValueList(ctx, &req)
 	if err != nil {
 		return nil, err
 	}

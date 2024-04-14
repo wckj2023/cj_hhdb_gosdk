@@ -254,7 +254,7 @@ func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (in
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClinet.InsertPoints(ctx, &req)
+	res, err := dbConInfo.DbClinet.InsertPoints(ctx, &req)
 	if res.GetErrMsg().GetCode() < 0 {
 		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
 	}
@@ -272,7 +272,7 @@ func (hhdb *HhdbConPool) DelPoints(dbName string, pointList *[]PointInfo) (int32
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClinet.DelPoints(ctx, &req)
+	res, err := dbConInfo.DbClinet.DelPoints(ctx, &req)
 	if res.GetErrMsg().GetCode() < 0 {
 		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
 	}
@@ -290,7 +290,7 @@ func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (in
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClinet.UpdatePoints(ctx, &req)
+	res, err := dbConInfo.DbClinet.UpdatePoints(ctx, &req)
 	if res.GetErrMsg().GetCode() < 0 {
 		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
 	}
@@ -306,7 +306,7 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableId int32, pointId int32
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClinet.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableId: tableId, PointId: pointId, NameRegex: nameRegex,
+	res, err := dbConInfo.DbClinet.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableId: tableId, PointId: pointId, NameRegex: nameRegex,
 		DescRegex: descRegex, UnitRegex: unitRegex, PointType: pointType, ExtraFields: *extraFields, EnablePage: enablePage,
 		Page: page, Limit: limit})
 	if res.GetErrMsg().GetCode() < 0 {
@@ -328,7 +328,7 @@ func (hhdb *HhdbConPool) QueryPointInfoListByID(dbName string, pointIdList *[]in
 	defer cancel()
 	req := hhdbRpc.QueryRealtimeValueListReq{}
 	req.IdList = *pointIdList
-	res, err := dbConInfo.dbClinet.QueryPointInfoList(ctx, &req)
+	res, err := dbConInfo.DbClinet.QueryPointInfoList(ctx, &req)
 	if res.GetErrMsg().GetCode() < 0 {
 		return nil, errors.New(res.GetErrMsg().GetMsg())
 	}
@@ -348,7 +348,7 @@ func (hhdb *HhdbConPool) QueryPointInfoListByName(dbName string, pointNameList *
 	defer cancel()
 	req := hhdbRpc.QueryRealtimeValueListReq{}
 	req.NameList = *pointNameList
-	res, err := dbConInfo.dbClinet.QueryPointInfoList(ctx, &req)
+	res, err := dbConInfo.DbClinet.QueryPointInfoList(ctx, &req)
 	if res.GetErrMsg().GetCode() < 0 {
 		return nil, errors.New(res.GetErrMsg().GetMsg())
 	}
