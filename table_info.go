@@ -1,10 +1,10 @@
 package cj_hhdb_gosdk
 
 import (
-	"cj_hhdb_gosdk/hhdb/rpc"
-	hhdbRpc "cj_hhdb_gosdk/hhdb/rpc_interface"
 	"context"
 	"errors"
+	"github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc"
+	hhdbRpc "github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc_interface"
 	"time"
 )
 

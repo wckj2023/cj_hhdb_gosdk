@@ -11,7 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	rpc "cj_hhdb_gosdk/hhdb/rpc"
+	rpc "github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc"
 )
 
 // This is a compile-time assertion to ensure that this generated file

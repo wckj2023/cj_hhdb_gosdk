@@ -1,11 +1,11 @@
 package cj_hhdb_gosdk
 
 import (
-	hhdbRpc "cj_hhdb_gosdk/hhdb/rpc_interface"
 	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+	hhdbRpc "github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc_interface"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"sync"

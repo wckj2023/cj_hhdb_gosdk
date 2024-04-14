@@ -1,9 +1,9 @@
 package cj_hhdb_gosdk
 
 import (
-	hhdbRpc "cj_hhdb_gosdk/hhdb/rpc_interface"
 	"context"
 	"errors"
+	hhdbRpc "github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc_interface"
 )
 
 // 降采样取值方式
