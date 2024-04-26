@@ -199,26 +199,27 @@ type PointInfo struct {
 }
 
 func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {
-	grpc.PointId = point.PointId
-	grpc.PointName = point.PointName
-	grpc.PointUnit = point.PointUnit
-	grpc.PointDesc = point.PointDesc
-	grpc.PointType = rpc.PointType(point.PointType)
-	grpc.CompressMode = rpc.CompressMode(point.CompressMode)
-	grpc.CompressParam1 = point.CompressParam1
-	grpc.CompressParam2 = point.CompressParam2
-	grpc.WriteEnable = point.WriteEnable
-	grpc.CheckEnable = point.CheckEnable
-	grpc.LowerThreshold = point.LowerThreshold
-	grpc.UpperThreshold = point.UpperThreshold
-	grpc.ValueOffset = point.ValueOffset
-	grpc.ValueRate = point.ValueRate
-	grpc.OuttimeDay = point.OuttimeDay
-	grpc.ValueType = rpc.ValueType(point.ValueType)
-	grpc.TableId = point.TableId
-	grpc.CreateTime = point.CreateTime
-	grpc.ExtraField = point.ExtraField
-	return grpc
+	var pointInfo rpc.PointInfo
+	pointInfo.PointId = point.PointId
+	pointInfo.PointName = point.PointName
+	pointInfo.PointUnit = point.PointUnit
+	pointInfo.PointDesc = point.PointDesc
+	pointInfo.PointType = rpc.PointType(point.PointType)
+	pointInfo.CompressMode = rpc.CompressMode(point.CompressMode)
+	pointInfo.CompressParam1 = point.CompressParam1
+	pointInfo.CompressParam2 = point.CompressParam2
+	pointInfo.WriteEnable = point.WriteEnable
+	pointInfo.CheckEnable = point.CheckEnable
+	pointInfo.LowerThreshold = point.LowerThreshold
+	pointInfo.UpperThreshold = point.UpperThreshold
+	pointInfo.ValueOffset = point.ValueOffset
+	pointInfo.ValueRate = point.ValueRate
+	pointInfo.OuttimeDay = point.OuttimeDay
+	pointInfo.ValueType = rpc.ValueType(point.ValueType)
+	pointInfo.TableId = point.TableId
+	pointInfo.CreateTime = point.CreateTime
+	pointInfo.ExtraField = point.ExtraField
+	return &pointInfo
 }
 
 func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {

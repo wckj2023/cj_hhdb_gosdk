@@ -85,46 +85,47 @@ type PointValue struct {
 }
 
 func (pointValue *PointValue) go2grpcPointValue() (grpcValue *rpc.PointValue) {
-	grpcValue.Mstime = pointValue.Mstime
-	grpcValue.Status = int32(pointValue.Status)
+	var pv rpc.PointValue
+	pv.Mstime = pointValue.Mstime
+	pv.Status = int32(pointValue.Status)
 	switch pointValue.Value.(type) {
 	case bool:
-		grpcValue.Value = &rpc.PointValue_BoolValue{BoolValue: pointValue.Value.(bool)}
+		pv.Value = &rpc.PointValue_BoolValue{BoolValue: pointValue.Value.(bool)}
 	case float32:
-		grpcValue.Value = &rpc.PointValue_FloatValue{FloatValue: pointValue.Value.(float32)}
+		pv.Value = &rpc.PointValue_FloatValue{FloatValue: pointValue.Value.(float32)}
 	case float64:
-		grpcValue.Value = &rpc.PointValue_DoubleValue{DoubleValue: pointValue.Value.(float64)}
+		pv.Value = &rpc.PointValue_DoubleValue{DoubleValue: pointValue.Value.(float64)}
 	case int8:
-		grpcValue.Value = &rpc.PointValue_IntValue{IntValue: int32(pointValue.Value.(int8))}
+		pv.Value = &rpc.PointValue_IntValue{IntValue: int32(pointValue.Value.(int8))}
 	case int16:
-		grpcValue.Value = &rpc.PointValue_IntValue{IntValue: int32(pointValue.Value.(int16))}
+		pv.Value = &rpc.PointValue_IntValue{IntValue: int32(pointValue.Value.(int16))}
 	case int32:
-		grpcValue.Value = &rpc.PointValue_IntValue{IntValue: pointValue.Value.(int32)}
+		pv.Value = &rpc.PointValue_IntValue{IntValue: pointValue.Value.(int32)}
 	case int64:
-		grpcValue.Value = &rpc.PointValue_LongValue{LongValue: pointValue.Value.(int64)}
+		pv.Value = &rpc.PointValue_LongValue{LongValue: pointValue.Value.(int64)}
 	case uint8:
-		grpcValue.Value = &rpc.PointValue_DwordValue{DwordValue: uint32(pointValue.Value.(uint8))}
+		pv.Value = &rpc.PointValue_DwordValue{DwordValue: uint32(pointValue.Value.(uint8))}
 	case uint16:
-		grpcValue.Value = &rpc.PointValue_DwordValue{DwordValue: uint32(pointValue.Value.(uint16))}
+		pv.Value = &rpc.PointValue_DwordValue{DwordValue: uint32(pointValue.Value.(uint16))}
 	case uint32:
-		grpcValue.Value = &rpc.PointValue_DwordValue{DwordValue: pointValue.Value.(uint32)}
+		pv.Value = &rpc.PointValue_DwordValue{DwordValue: pointValue.Value.(uint32)}
 	case uint64:
-		grpcValue.Value = &rpc.PointValue_QwordValue{QwordValue: pointValue.Value.(uint64)}
+		pv.Value = &rpc.PointValue_QwordValue{QwordValue: pointValue.Value.(uint64)}
 	case string:
-		grpcValue.Value = &rpc.PointValue_StringValue{StringValue: []byte(pointValue.Value.(string))}
+		pv.Value = &rpc.PointValue_StringValue{StringValue: []byte(pointValue.Value.(string))}
 	case []bool:
-		grpcValue.Value = &rpc.PointValue_BoolArr{BoolArr: &rpc.BoolArr{ArrValue: pointValue.Value.([]bool)}}
+		pv.Value = &rpc.PointValue_BoolArr{BoolArr: &rpc.BoolArr{ArrValue: pointValue.Value.([]bool)}}
 	case []float32:
-		grpcValue.Value = &rpc.PointValue_FloatArr{FloatArr: &rpc.FloatArr{ArrValue: pointValue.Value.([]float32)}}
+		pv.Value = &rpc.PointValue_FloatArr{FloatArr: &rpc.FloatArr{ArrValue: pointValue.Value.([]float32)}}
 	case []float64:
-		grpcValue.Value = &rpc.PointValue_DoubleArr{DoubleArr: &rpc.DoubleArr{ArrValue: pointValue.Value.([]float64)}}
+		pv.Value = &rpc.PointValue_DoubleArr{DoubleArr: &rpc.DoubleArr{ArrValue: pointValue.Value.([]float64)}}
 	case []int8:
 		{
 			tempValue := rpc.IntArr{}
 			for _, v := range pointValue.Value.([]int8) {
 				tempValue.ArrValue = append(tempValue.ArrValue, int32(v))
 			}
-			grpcValue.Value = &rpc.PointValue_IntArr{IntArr: &tempValue}
+			pv.Value = &rpc.PointValue_IntArr{IntArr: &tempValue}
 		}
 	case []int16:
 		{
@@ -132,19 +133,19 @@ func (pointValue *PointValue) go2grpcPointValue() (grpcValue *rpc.PointValue) {
 			for _, v := range pointValue.Value.([]int16) {
 				tempValue.ArrValue = append(tempValue.ArrValue, int32(v))
 			}
-			grpcValue.Value = &rpc.PointValue_IntArr{IntArr: &tempValue}
+			pv.Value = &rpc.PointValue_IntArr{IntArr: &tempValue}
 		}
 	case []int32:
-		grpcValue.Value = &rpc.PointValue_IntArr{IntArr: &rpc.IntArr{ArrValue: pointValue.Value.([]int32)}}
+		pv.Value = &rpc.PointValue_IntArr{IntArr: &rpc.IntArr{ArrValue: pointValue.Value.([]int32)}}
 	case []int64:
-		grpcValue.Value = &rpc.PointValue_LongArr{LongArr: &rpc.LongArr{ArrValue: pointValue.Value.([]int64)}}
+		pv.Value = &rpc.PointValue_LongArr{LongArr: &rpc.LongArr{ArrValue: pointValue.Value.([]int64)}}
 	case []uint8:
 		{
 			tempValue := rpc.DwordArr{}
 			for _, v := range pointValue.Value.([]uint8) {
 				tempValue.ArrValue = append(tempValue.ArrValue, uint32(v))
 			}
-			grpcValue.Value = &rpc.PointValue_DwordArr{DwordArr: &tempValue}
+			pv.Value = &rpc.PointValue_DwordArr{DwordArr: &tempValue}
 		}
 	case []uint16:
 		{
@@ -152,22 +153,22 @@ func (pointValue *PointValue) go2grpcPointValue() (grpcValue *rpc.PointValue) {
 			for _, v := range pointValue.Value.([]uint16) {
 				tempValue.ArrValue = append(tempValue.ArrValue, uint32(v))
 			}
-			grpcValue.Value = &rpc.PointValue_DwordArr{DwordArr: &tempValue}
+			pv.Value = &rpc.PointValue_DwordArr{DwordArr: &tempValue}
 		}
 	case []uint32:
-		grpcValue.Value = &rpc.PointValue_DwordArr{DwordArr: &rpc.DwordArr{ArrValue: pointValue.Value.([]uint32)}}
+		pv.Value = &rpc.PointValue_DwordArr{DwordArr: &rpc.DwordArr{ArrValue: pointValue.Value.([]uint32)}}
 	case []uint64:
-		grpcValue.Value = &rpc.PointValue_QwordArr{QwordArr: &rpc.QwordArr{ArrValue: pointValue.Value.([]uint64)}}
+		pv.Value = &rpc.PointValue_QwordArr{QwordArr: &rpc.QwordArr{ArrValue: pointValue.Value.([]uint64)}}
 	case []string:
 		{
 			tempValue := rpc.StringArr{}
 			for _, v := range pointValue.Value.([]string) {
 				tempValue.ArrValue = append(tempValue.ArrValue, []byte(v))
 			}
-			grpcValue.Value = &rpc.PointValue_StringArr{StringArr: &tempValue}
+			pv.Value = &rpc.PointValue_StringArr{StringArr: &tempValue}
 		}
 	}
-	return grpcValue
+	return &pv
 }
 
 func (pointValue *PointValue) grpc2goPointValue(grpcValue *rpc.PointValue) {
