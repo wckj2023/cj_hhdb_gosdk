@@ -11,9 +11,10 @@ import (
 type PointType int32
 
 const (
-	PointType_kPtSwitch  PointType = 0 //开关量
-	PointType_kPtAnalog  PointType = 1 //模拟量
-	PointType_kPtPackage PointType = 2 //打包点
+	PointType_kPtNone    PointType = -1 //无效类型
+	PointType_kPtSwitch  PointType = 0  //开关量
+	PointType_kPtAnalog  PointType = 1  //模拟量
+	PointType_kPtPackage PointType = 2  //打包点
 )
 
 // Enum value maps for PointType.
