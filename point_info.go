@@ -317,7 +317,26 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 	for i := 0; i < len(res.PointInfoList); i++ {
 		pointList[i].grpc2goPointInfo(res.PointInfoList[i])
 	}
-	return &pointList, res.GetErrMsg().GetCode(), nil
+	total = res.GetErrMsg().GetCode()
+	if !enablePage && int32(len(pointList)) < total {
+		pageAdd := 1
+		newLimit := len(pointList)
+		tempInfo := PointInfo{}
+		for int32(len(pointList)) < total {
+			res, err = dbConInfo.DbClinet.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
+				DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: pointSearchInfo.ExtraField, EnablePage: true,
+				Page: uint32(pageAdd), Limit: uint32(newLimit)})
+			if res.GetErrMsg().GetCode() < 0 {
+				break
+			}
+			for i := 0; i < len(res.PointInfoList); i++ {
+				tempInfo.grpc2goPointInfo(res.PointInfoList[i])
+				pointList = append(pointList, tempInfo)
+			}
+		}
+	}
+
+	return &pointList, total, nil
 }
 
 func (hhdb *HhdbConPool) QueryPointInfoListByID(dbName string, pointIdList *[]int32) (*[]PointInfo, error) {
