@@ -298,26 +298,25 @@ func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (in
 	return res.GetErrMsg().GetCode(), res.GetIdOrErrCodeList(), nil
 }
 
-func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, tableId int32, pointId int32, nameRegex string, descRegex string,
-	unitRegex string, pointType int32, extraFields *map[string]string, enablePage bool,
-	page uint32, limit uint32) (*[]PointInfo, error) {
+func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearchInfo *PointInfo, enablePage bool,
+	page uint32, limit uint32) (list *[]PointInfo, total int32, err error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: tableId, PointId: pointId, NameRegex: nameRegex,
-		DescRegex: descRegex, UnitRegex: unitRegex, PointType: pointType, ExtraFields: *extraFields, EnablePage: enablePage,
+	res, err := dbConInfo.DbClinet.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
+		DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: pointSearchInfo.ExtraField, EnablePage: enablePage,
 		Page: page, Limit: limit})
 	if res.GetErrMsg().GetCode() < 0 {
-		return nil, errors.New(res.GetErrMsg().GetMsg())
+		return nil, 0, errors.New(res.GetErrMsg().GetMsg())
 	}
 	pointList := make([]PointInfo, len(res.PointInfoList))
 	for i := 0; i < len(res.PointInfoList); i++ {
 		pointList[i].grpc2goPointInfo(res.PointInfoList[i])
 	}
-	return &pointList, nil
+	return &pointList, res.GetErrMsg().GetCode(), nil
 }
 
 func (hhdb *HhdbConPool) QueryPointInfoListByID(dbName string, pointIdList *[]int32) (*[]PointInfo, error) {
