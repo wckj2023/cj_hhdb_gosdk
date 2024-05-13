@@ -20,14 +20,14 @@ const (
 // Enum value maps for PointType.
 var (
 	PointType_name = map[int32]string{
-		0: "kPtSwitch",
-		1: "kPtAnalog",
-		2: "kPtPackage",
+		0: "开关量",
+		1: "模拟量",
+		2: "打包点",
 	}
 	PointType_value = map[string]int32{
-		"kPtSwitch":  0,
-		"kPtAnalog":  1,
-		"kPtPackage": 2,
+		"开关量": 0,
+		"模拟量": 1,
+		"打包点": 2,
 	}
 )
 
@@ -55,18 +55,18 @@ const (
 // Enum value maps for CompressMode.
 var (
 	CompressMode_name = map[int32]string{
-		0: "kCmThreshold",
-		1: "kCmLeap",
-		2: "kCmTime",
-		3: "kCmLoss",
-		4: "kCmNone",
+		0: "阈值压缩",
+		1: "跳变压缩",
+		2: "定时压缩",
+		3: "有损压缩",
+		4: "无损压缩",
 	}
 	CompressMode_value = map[string]int32{
-		"kCmThreshold": 0,
-		"kCmLeap":      1,
-		"kCmTime":      2,
-		"kCmLoss":      3,
-		"kCmNone":      4,
+		"阈值压缩": 0,
+		"跳变压缩": 1,
+		"定时压缩": 2,
+		"有损压缩": 3,
+		"无损压缩": 4,
 	}
 )
 
@@ -113,56 +113,56 @@ const (
 // Enum value maps for ValueType.
 var (
 	ValueType_name = map[int32]string{
-		0:  "kVtBool",      // true 或 false 的二进制值
-		1:  "kVtFloat",     //32 位实数值浮点型 IEEE-754 标准定义
-		2:  "kVtDouble",    //64 位实数值双精度 IEEE-754 标准定义
-		3:  "kVtChar",      // 有符号的 8 位整数数据
-		4:  "kVtByte",      //无符号的 8 位整数数据
-		5:  "kVtShort",     //有符号的 16 位整数数据
-		6:  "kVtWord",      //无符号的 16 位整数数据
-		7:  "kVtInt",       //有符号的 32 位整数数据
-		8:  "kVtDword",     // 无符号的 32 位整数数据
-		9:  "kVtLong",      //有符号的 64 位整数数据
-		10: "kVtQword",     //无符号的 64 位整数数据
-		11: "kVtString",    //字符串
-		12: "kVtBoolArr",   //bool数组
-		13: "kVtFloatArr",  //32 位实数值浮点型数组
-		14: "kVtDoubleArr", //64 位实数值浮点型数组
-		15: "kVtCharArr",   //char数组
-		16: "kVtByteArr",   //byte数组
-		17: "kVtShortArr",  //short数组
-		18: "kVtWordArr",   //word数组
-		19: "kVtIntArr",    //有符号的 32 位整数数据数组
-		20: "kVtDwordArr",  //无符号的 32 位整数数据数组
-		21: "kVtLongArr",   //有符号的 64 位整数数据数组
-		22: "kVtQwordArr",  //无符号的 64 位整数数据数组
-		23: "kVtStringArr", //字符串数组
+		0:  "bool",         // true 或 false 的二进制值
+		1:  "float",        //32 位实数值浮点型 IEEE-754 标准定义
+		2:  "double",       //64 位实数值双精度 IEEE-754 标准定义
+		3:  "char",         // 有符号的 8 位整数数据
+		4:  "byte",         //无符号的 8 位整数数据
+		5:  "short",        //有符号的 16 位整数数据
+		6:  "word",         //无符号的 16 位整数数据
+		7:  "int",          //有符号的 32 位整数数据
+		8:  "dword",        // 无符号的 32 位整数数据
+		9:  "long",         //有符号的 64 位整数数据
+		10: "qword",        //无符号的 64 位整数数据
+		11: "string",       //字符串
+		12: "bool array",   //bool数组
+		13: "float array",  //32 位实数值浮点型数组
+		14: "double array", //64 位实数值浮点型数组
+		15: "char array",   //char数组
+		16: "byte array",   //byte数组
+		17: "short array",  //short数组
+		18: "word array",   //word数组
+		19: "int array",    //有符号的 32 位整数数据数组
+		20: "dword array",  //无符号的 32 位整数数据数组
+		21: "long array",   //有符号的 64 位整数数据数组
+		22: "qword array",  //无符号的 64 位整数数据数组
+		23: "string array", //字符串数组
 	}
 	ValueType_value = map[string]int32{
-		"kVtBool":      0,
-		"kVtFloat":     1,
-		"kVtDouble":    2,
-		"kVtChar":      3,
-		"kVtByte":      4,
-		"kVtShort":     5,
-		"kVtWord":      6,
-		"kVtInt":       7,
-		"kVtDword":     8,
-		"kVtLong":      9,
-		"kVtQword":     10,
-		"kVtString":    11,
-		"kVtBoolArr":   12,
-		"kVtFloatArr":  13,
-		"kVtDoubleArr": 14,
-		"kVtCharArr":   15,
-		"kVtByteArr":   16,
-		"kVtShortArr":  17,
-		"kVtWordArr":   18,
-		"kVtIntArr":    19,
-		"kVtDwordArr":  20,
-		"kVtLongArr":   21,
-		"kVtQwordArr":  22,
-		"kVtStringArr": 23,
+		"bool":         0,
+		"float":        1,
+		"double":       2,
+		"char":         3,
+		"byte":         4,
+		"short":        5,
+		"word":         6,
+		"int":          7,
+		"dword":        8,
+		"long":         9,
+		"qword":        10,
+		"string":       11,
+		"bool array":   12,
+		"float array":  13,
+		"double array": 14,
+		"char array":   15,
+		"byte array":   16,
+		"short array":  17,
+		"word array":   18,
+		"int array":    19,
+		"dword array":  20,
+		"long array":   21,
+		"qword array":  22,
+		"string array": 23,
 	}
 )
 
