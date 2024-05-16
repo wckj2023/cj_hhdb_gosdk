@@ -41,6 +41,10 @@ func (x PointType) String() string {
 	return PointType_name[int32(x)]
 }
 
+func (x PointType) StrEnum(str string) {
+	x = PointType(PointType_value[str])
+}
+
 // 压缩模式
 type CompressMode int32
 
@@ -69,6 +73,10 @@ var (
 		"无损压缩": 4,
 	}
 )
+
+func (x CompressMode) StrEnum(str string) {
+	x = CompressMode(CompressMode_value[str])
+}
 
 func (x CompressMode) Enum() *CompressMode {
 	p := new(CompressMode)
@@ -170,6 +178,10 @@ func (x ValueType) Enum() *ValueType {
 	p := new(ValueType)
 	*p = x
 	return p
+}
+
+func (x ValueType) StrEnum(str string) {
+	x = ValueType(ValueType_value[str])
 }
 
 func (x ValueType) String() string {

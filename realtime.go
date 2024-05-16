@@ -74,6 +74,10 @@ func (x PointStatus) Enum() *PointStatus {
 	return p
 }
 
+func (x PointStatus) StrEnum(str string) {
+	x = PointStatus(PointStatus_value[str])
+}
+
 func (x PointStatus) String() string {
 	return PointStatus_name[int32(x)]
 }
