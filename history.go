@@ -127,9 +127,9 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByIdList(dbName string, pointI
 	req.QueryMode = hhdbRpc.RangeQueryMode(mode)
 	req.StartMstime = startMs
 	req.EndMstime = endMs
-	res, err := dbConInfo.DbClinet.QueryHisRangeValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.QueryHisRangeValueList(ctx, &req)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, hhdb.handleGrpcError(&err)
 	}
 
 	if res.GetErrMsg().GetCode() < 0 {
@@ -161,9 +161,9 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByNameList(dbName string, poin
 	req.QueryMode = hhdbRpc.RangeQueryMode(mode)
 	req.StartMstime = startMs
 	req.EndMstime = endMs
-	res, err := dbConInfo.DbClinet.QueryHisRangeValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.QueryHisRangeValueList(ctx, &req)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, hhdb.handleGrpcError(&err)
 	}
 
 	if res.GetErrMsg().GetCode() < 0 {
@@ -196,9 +196,9 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByIdList(dbName string, pointI
 	req.StartMstime = startMs
 	req.EndMstime = endMs
 	req.PriodMs = priodMs
-	res, err := dbConInfo.DbClinet.QueryHisResampleValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.QueryHisResampleValueList(ctx, &req)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, hhdb.handleGrpcError(&err)
 	}
 
 	if res.GetErrMsg().GetCode() < 0 {
@@ -231,9 +231,9 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByNameList(dbName string, poin
 	req.StartMstime = startMs
 	req.EndMstime = endMs
 	req.PriodMs = priodMs
-	res, err := dbConInfo.DbClinet.QueryHisResampleValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.QueryHisResampleValueList(ctx, &req)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, hhdb.handleGrpcError(&err)
 	}
 
 	if res.GetErrMsg().GetCode() < 0 {
@@ -264,9 +264,9 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, point
 	req.IdList = *pointIdList
 	req.ResampleMode = hhdbRpc.ResampleMode(mode)
 	req.MsTimePoint = msTimePoint
-	res, err := dbConInfo.DbClinet.QueryHisTimePointValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.QueryHisTimePointValueList(ctx, &req)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, hhdb.handleGrpcError(&err)
 	}
 
 	if res.GetErrMsg().GetCode() < 0 {
@@ -294,9 +294,9 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, poi
 	req.NameList = *pointNameList
 	req.ResampleMode = hhdbRpc.ResampleMode(mode)
 	req.MsTimePoint = msTimePoint
-	res, err := dbConInfo.DbClinet.QueryHisTimePointValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.QueryHisTimePointValueList(ctx, &req)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, hhdb.handleGrpcError(&err)
 	}
 
 	if res.GetErrMsg().GetCode() < 0 {
@@ -330,9 +330,9 @@ func (hhdb *HhdbConPool) InsertHisValueListByIdList(dbName string, pointIdList *
 		req.ValueLists = append(req.ValueLists, &grpcValueList)
 	}
 
-	res, err := dbConInfo.DbClinet.InsertHisValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.InsertHisValueList(ctx, &req)
 	if err != nil {
-		return nil, err
+		return nil, hhdb.handleGrpcError(&err)
 	}
 	if res.GetErrMsg().GetCode() < 0 {
 		return nil, errors.New(res.GetErrMsg().GetMsg())
@@ -359,9 +359,9 @@ func (hhdb *HhdbConPool) InsertHisValueListByNameList(dbName string, pointNameLi
 		req.ValueLists = append(req.ValueLists, &grpcValueList)
 	}
 
-	res, err := dbConInfo.DbClinet.InsertHisValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.InsertHisValueList(ctx, &req)
 	if err != nil {
-		return nil, err
+		return nil, hhdb.handleGrpcError(&err)
 	}
 	if res.GetErrMsg().GetCode() < 0 {
 		return nil, errors.New(res.GetErrMsg().GetMsg())

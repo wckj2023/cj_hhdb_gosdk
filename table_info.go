@@ -2,7 +2,6 @@ package cj_hhdb_gosdk
 
 import (
 	"context"
-	"errors"
 	"github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc"
 	hhdbRpc "github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc_interface"
 	"time"
@@ -42,7 +41,7 @@ func (table *TableInfo) grpc2goTableInfo(grpcTableInfo *rpc.TableInfo) {
 func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo TableInfo) (int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, err
+		return 0, err
 	}
 
 	tableInfo.operatorInfo.createTime = uint64(time.Now().UTC().UnixMilli())
@@ -52,9 +51,9 @@ func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo TableInfo) (int32,
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.InsertTable(ctx, tableInfo.go2grpcTableInfo())
-	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+	res, err := dbConInfo.dbClient.InsertTable(ctx, tableInfo.go2grpcTableInfo())
+	if err != nil {
+		return 0, hhdb.handleGrpcError(&err)
 	}
 	return res.GetErrMsg().GetCode(), nil
 }
@@ -62,15 +61,14 @@ func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo TableInfo) (int32,
 func (hhdb *HhdbConPool) DeleteTable(dbName string, TableId int32, TableName string) (int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, err
+		return 0, err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.DelTable(ctx, &rpc.TableInfo{TableId: TableId, TableName: TableName})
-
-	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+	res, err := dbConInfo.dbClient.DelTable(ctx, &rpc.TableInfo{TableId: TableId, TableName: TableName})
+	if err != nil {
+		return 0, hhdb.handleGrpcError(&err)
 	}
 	return res.GetErrMsg().GetCode(), nil
 }
@@ -78,15 +76,14 @@ func (hhdb *HhdbConPool) DeleteTable(dbName string, TableId int32, TableName str
 func (hhdb *HhdbConPool) ClearTable(dbName string, TableId int32, TableName string) (int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, err
+		return 0, err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.ClearTable(ctx, &rpc.TableInfo{TableId: TableId, TableName: TableName})
-
-	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+	res, err := dbConInfo.dbClient.ClearTable(ctx, &rpc.TableInfo{TableId: TableId, TableName: TableName})
+	if err != nil {
+		return 0, hhdb.handleGrpcError(&err)
 	}
 	return res.GetErrMsg().GetCode(), nil
 }
@@ -94,7 +91,7 @@ func (hhdb *HhdbConPool) ClearTable(dbName string, TableId int32, TableName stri
 func (hhdb *HhdbConPool) UpdateTable(dbName string, tableInfo *TableInfo) (int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, err
+		return 0, err
 	}
 
 	tableInfo.operatorInfo.updateTime = uint64(time.Now().UTC().UnixMilli())
@@ -102,10 +99,9 @@ func (hhdb *HhdbConPool) UpdateTable(dbName string, tableInfo *TableInfo) (int32
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.UpdateTable(ctx, tableInfo.go2grpcTableInfo())
-
-	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+	res, err := dbConInfo.dbClient.UpdateTable(ctx, tableInfo.go2grpcTableInfo())
+	if err != nil {
+		return 0, hhdb.handleGrpcError(&err)
 	}
 	return res.GetErrMsg().GetCode(), nil
 }
@@ -119,9 +115,9 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, TableId int32, TableName 
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.QueryTableList(ctx, &hhdbRpc.QueryTableReq{TableId: TableId, TableName: TableName, EnablePage: enablePage, Page: page, Limit: limit})
-	if res.GetErrMsg().GetCode() < 0 {
-		return nil, errors.New(res.GetErrMsg().GetMsg())
+	res, err := dbConInfo.dbClient.QueryTableList(ctx, &hhdbRpc.QueryTableReq{TableId: TableId, TableName: TableName, EnablePage: enablePage, Page: page, Limit: limit})
+	if err != nil {
+		return nil, hhdb.handleGrpcError(&err)
 	}
 	tableInfoList := make([]TableInfo, len(res.TableInfoList))
 	for i, v := range res.TableInfoList {

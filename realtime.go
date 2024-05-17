@@ -214,10 +214,10 @@ func (pointValue *PointValue) grpc2goPointValue(grpcValue *rpc.PointValue) {
 	}
 }
 
-func (hhdb *HhdbConPool) UpdateRealtimeValueListByIdList(dbName string, pointIdList *[]int32, valueList *[]PointValue, useSysTime bool) (int32, error) {
+func (hhdb *HhdbConPool) UpdateRealtimeValueListByIdList(dbName string, pointIdList *[]int32, valueList *[]PointValue, useSysTime bool) (int32, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, err
+		return 0, nil, err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
@@ -228,20 +228,18 @@ func (hhdb *HhdbConPool) UpdateRealtimeValueListByIdList(dbName string, pointIdL
 		req.ValueList = append(req.ValueList, v.go2grpcPointValue())
 	}
 
-	res, err := dbConInfo.DbClinet.UpdateRealtimeValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.UpdateRealtimeValueList(ctx, &req)
 	if err != nil {
-		return HHDB_RPC_REQ_ERROR, err
+		return 0, nil, hhdb.handleGrpcError(&err)
 	}
-	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
-	}
-	return res.GetErrMsg().GetCode(), nil
+
+	return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, nil
 }
 
-func (hhdb *HhdbConPool) UpdateRealtimeValueListByNameList(dbName string, pointNameList *[]string, valueList *[]PointValue, useSysTime bool) (int32, error) {
+func (hhdb *HhdbConPool) UpdateRealtimeValueListByNameList(dbName string, pointNameList *[]string, valueList *[]PointValue, useSysTime bool) (int32, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, err
+		return 0, nil, err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
@@ -252,20 +250,20 @@ func (hhdb *HhdbConPool) UpdateRealtimeValueListByNameList(dbName string, pointN
 		req.ValueList = append(req.ValueList, v.go2grpcPointValue())
 	}
 
-	res, err := dbConInfo.DbClinet.UpdateRealtimeValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.UpdateRealtimeValueList(ctx, &req)
 	if err != nil {
-		return HHDB_RPC_REQ_ERROR, err
+		return 0, nil, hhdb.handleGrpcError(&err)
 	}
 	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+		return 0, nil, errors.New(res.GetErrMsg().GetMsg())
 	}
-	return res.GetErrMsg().GetCode(), nil
+	return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, nil
 }
 
-func (hhdb *HhdbConPool) QueryRealtimeValueListByIdList(dbName string, pointIdList *[]int32) (*[]PointValue, error) {
+func (hhdb *HhdbConPool) QueryRealtimeValueListByIdList(dbName string, pointIdList *[]int32) (*[]PointValue, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
@@ -273,17 +271,18 @@ func (hhdb *HhdbConPool) QueryRealtimeValueListByIdList(dbName string, pointIdLi
 	req := hhdbRpc.QueryRealtimeValueListReq{}
 	req.IdList = *pointIdList
 
-	res, err := dbConInfo.DbClinet.QueryRealtimeValueList(ctx, &req)
+	res, err := dbConInfo.dbClient.QueryRealtimeValueList(ctx, &req)
 	if err != nil {
-		return nil, err
+		return nil, nil, hhdb.handleGrpcError(&err)
 	}
 	if res.GetErrMsg().GetCode() < 0 {
-		return nil, errors.New(res.GetErrMsg().GetMsg())
+		return nil, nil, errors.New(res.GetErrMsg().GetMsg())
 	}
 
 	valueList := make([]PointValue, len(res.ValueList))
 	for i, v := range res.ValueList {
 		valueList[i].grpc2goPointValue(v)
 	}
-	return &valueList, nil
+
+	return &valueList, &res.ResultList, nil
 }

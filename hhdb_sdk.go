@@ -21,25 +21,37 @@ type DbInfo struct {
 
 type dbConObject struct {
 	DbInfo   DbInfo
-	DbCon    *grpc.ClientConn
-	DbClinet hhdbRpc.RpcInterfaceClient
+	dbCon    *grpc.ClientConn
+	dbClient hhdbRpc.RpcInterfaceClient
 	isAuth   bool
 	token    string
 	dbId     int32
 }
 
 type HhdbConPool struct {
-	dbConPool sync.Map
-	outtime   time.Duration
+	dbConPool          sync.Map
+	outtime            time.Duration
+	disconnectTimewait time.Duration
 }
 
-func (hhdb *HhdbConPool) SetDbInfo(info *DbInfo) {
+func (hhdb *HhdbConPool) AddDbInfo(info *DbInfo) {
 	object := dbConObject{*info, nil, nil, false, "", -1}
 	hhdb.dbConPool.Store(info.DbName, &object)
 }
 
 func (hhdb *HhdbConPool) SetOuttime(outtimeSec time.Duration) {
 	hhdb.outtime = outtimeSec
+}
+
+func (hhdb *HhdbConPool) SetDisconnectTimewait(disconnectTimewait time.Duration) {
+	hhdb.disconnectTimewait = disconnectTimewait
+}
+
+func NewHhdbConPool() *HhdbConPool {
+	return &HhdbConPool{
+		outtime:            30 * time.Second, // 设置 outtime 字段的默认值为 30 秒
+		disconnectTimewait: 3 * time.Second,  // 断开连接时的等待时间
+	}
 }
 
 func generateMD5(input string) string {
@@ -50,7 +62,7 @@ func generateMD5(input string) string {
 func (hhdb *HhdbConPool) getDbCon(dbName string) (*dbConObject, error) {
 	value, found := hhdb.dbConPool.Load(dbName)
 	if !found {
-		return nil, errors.New("please call SetDbInfo to add db connect info;")
+		return nil, HHDB_LOSS_DB_CONNECT_PARAMS_ERR
 	}
 
 	dbConInfo, typeOk := value.(*dbConObject)
@@ -59,23 +71,23 @@ func (hhdb *HhdbConPool) getDbCon(dbName string) (*dbConObject, error) {
 	}
 
 	//连接未建立或连接断开，则进行重连
-	if dbConInfo.DbCon == nil || dbConInfo.DbCon.GetState().String() == "SHUTDOWN" {
+	if dbConInfo.dbCon == nil || dbConInfo.dbCon.GetState().String() == "SHUTDOWN" {
 		con, err := grpc.Dial(dbConInfo.DbInfo.Url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
-			return nil, err
+			return nil, hhdb.handleGrpcError(&err)
 		}
-		dbConInfo.DbCon = con
+		dbConInfo.dbCon = con
 		dbConInfo.isAuth = false
-		dbConInfo.DbClinet = hhdbRpc.NewRpcInterfaceClient(dbConInfo.DbCon)
+		dbConInfo.dbClient = hhdbRpc.NewRpcInterfaceClient(dbConInfo.dbCon)
 		hhdb.dbConPool.Store(dbName, dbConInfo)
 	}
 
 	if !dbConInfo.isAuth {
 		ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 		defer cancel()
-		res, err := dbConInfo.DbClinet.Auth(ctx, &hhdbRpc.AuthReq{Username: dbConInfo.DbInfo.Username, Password: generateMD5(dbConInfo.DbInfo.Password)})
+		res, err := dbConInfo.dbClient.Auth(ctx, &hhdbRpc.AuthReq{Username: dbConInfo.DbInfo.Username, Password: generateMD5(dbConInfo.DbInfo.Password)})
 		if err != nil {
-			return nil, err
+			return nil, hhdb.handleGrpcError(&err)
 		}
 		if res.GetErrMsg().GetCode() < 0 {
 			dbConInfo.isAuth = false

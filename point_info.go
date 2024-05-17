@@ -260,7 +260,7 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, []int32{}, err
+		return 0, []int32{}, err
 	}
 	req := hhdbRpc.PointInfoListReq{}
 	for i := 0; i < len(*pointList); i++ {
@@ -268,17 +268,21 @@ func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (in
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.InsertPoints(ctx, &req)
+	res, err := dbConInfo.dbClient.InsertPoints(ctx, &req)
+	if err != nil {
+		return 0, nil, hhdb.handleGrpcError(&err)
+	}
+
 	if res.GetErrMsg().GetCode() < 0 {
 		return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
 	}
 	return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, nil
 }
 
-func (hhdb *HhdbConPool) DelPoints(dbName string, pointList *[]PointInfo) (int32, error) {
+func (hhdb *HhdbConPool) DelPoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, err
+		return 0, nil, err
 	}
 	req := hhdbRpc.PointInfoListReq{}
 	for i := 0; i < len(*pointList); i++ {
@@ -286,17 +290,21 @@ func (hhdb *HhdbConPool) DelPoints(dbName string, pointList *[]PointInfo) (int32
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.DelPoints(ctx, &req)
-	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+	res, err := dbConInfo.dbClient.DelPoints(ctx, &req)
+	if err != nil {
+		return 0, nil, hhdb.handleGrpcError(&err)
 	}
-	return res.GetErrMsg().GetCode(), nil
+
+	if res.GetErrMsg().GetCode() < 0 {
+		return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
+	}
+	return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, nil
 }
 
 func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return HHDB_GET_CON_ERROR, []int32{}, err
+		return 0, []int32{}, err
 	}
 	req := hhdbRpc.PointInfoListReq{}
 	for i := 0; i < len(*pointList); i++ {
@@ -304,9 +312,12 @@ func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (in
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.UpdatePoints(ctx, &req)
+	res, err := dbConInfo.dbClient.UpdatePoints(ctx, &req)
+	if err != nil {
+		return 0, nil, hhdb.handleGrpcError(&err)
+	}
 	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), res.GetIdOrErrCodeList(), errors.New(res.GetErrMsg().GetMsg())
+		return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
 	}
 	return res.GetErrMsg().GetCode(), res.GetIdOrErrCodeList(), nil
 }
@@ -319,12 +330,16 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.DbClinet.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
+	res, err := dbConInfo.dbClient.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
 		DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: pointSearchInfo.ExtraField, EnablePage: enablePage,
 		Page: page, Limit: limit})
+	if err != nil {
+		return nil, 0, hhdb.handleGrpcError(&err)
+	}
 	if res.GetErrMsg().GetCode() < 0 {
 		return nil, 0, errors.New(res.GetErrMsg().GetMsg())
 	}
+
 	pointList := make([]PointInfo, len(res.PointInfoList))
 	for i := 0; i < len(res.PointInfoList); i++ {
 		pointList[i].grpc2goPointInfo(res.PointInfoList[i])
@@ -335,7 +350,7 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 		newLimit := len(pointList)
 		tempInfo := PointInfo{}
 		for int32(len(pointList)) < total {
-			res, err = dbConInfo.DbClinet.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
+			res, err = dbConInfo.dbClient.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
 				DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: pointSearchInfo.ExtraField, EnablePage: true,
 				Page: uint32(pageAdd), Limit: uint32(newLimit)})
 			if res.GetErrMsg().GetCode() < 0 {
@@ -360,10 +375,15 @@ func (hhdb *HhdbConPool) QueryPointInfoListByID(dbName string, pointIdList *[]in
 	defer cancel()
 	req := hhdbRpc.QueryRealtimeValueListReq{}
 	req.IdList = *pointIdList
-	res, err := dbConInfo.DbClinet.QueryPointInfoList(ctx, &req)
+	res, err := dbConInfo.dbClient.QueryPointInfoList(ctx, &req)
+	if err != nil {
+		return nil, hhdb.handleGrpcError(&err)
+	}
+
 	if res.GetErrMsg().GetCode() < 0 {
 		return nil, errors.New(res.GetErrMsg().GetMsg())
 	}
+
 	pointList := make([]PointInfo, len(res.PointInfoList))
 	for i := 0; i < len(res.PointInfoList); i++ {
 		pointList[i].grpc2goPointInfo(res.PointInfoList[i])
@@ -380,7 +400,10 @@ func (hhdb *HhdbConPool) QueryPointInfoListByName(dbName string, pointNameList *
 	defer cancel()
 	req := hhdbRpc.QueryRealtimeValueListReq{}
 	req.NameList = *pointNameList
-	res, err := dbConInfo.DbClinet.QueryPointInfoList(ctx, &req)
+	res, err := dbConInfo.dbClient.QueryPointInfoList(ctx, &req)
+	if err != nil {
+		return nil, hhdb.handleGrpcError(&err)
+	}
 	if res.GetErrMsg().GetCode() < 0 {
 		return nil, errors.New(res.GetErrMsg().GetMsg())
 	}
