@@ -107,21 +107,22 @@ func (hhdb *HhdbConPool) UpdateTable(dbName string, tableInfo *TableInfo) (int32
 }
 
 func (hhdb *HhdbConPool) QueryTableList(dbName string, TableId int32, TableName string,
-	enablePage bool, page uint32, limit uint32) (*[]TableInfo, error) {
+	enablePage bool, page uint32, limit uint32) (*[]TableInfo, int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
 	res, err := dbConInfo.dbClient.QueryTableList(ctx, &hhdbRpc.QueryTableReq{TableId: TableId, TableName: TableName, EnablePage: enablePage, Page: page, Limit: limit})
 	if err != nil {
-		return nil, hhdb.handleGrpcError(&err)
+		return nil, 0, hhdb.handleGrpcError(&err)
 	}
 	tableInfoList := make([]TableInfo, len(res.TableInfoList))
 	for i, v := range res.TableInfoList {
 		tableInfoList[i].grpc2goTableInfo(v)
 	}
-	return &tableInfoList, nil
+
+	return &tableInfoList, res.GetTotal(), nil
 }

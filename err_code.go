@@ -16,7 +16,7 @@ func (hhdb *HhdbConPool) handleGrpcError(grpcErr *error) error {
 	if *grpcErr != nil {
 		st, ok := status.FromError(*grpcErr)
 		if ok && st.Code() == codes.Unavailable {
-			time.Sleep(hhdb.disconnectTimewait)
+			time.Sleep(hhdb.reconnectTimewait)
 			return HHDB_CONNECT_ERR
 		}
 	}

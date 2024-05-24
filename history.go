@@ -124,7 +124,7 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByIdList(dbName string, pointI
 	defer cancel()
 	req := hhdbRpc.QueryHisRangeValueListReq{}
 	req.IdList = *pointIdList
-	req.QueryMode = hhdbRpc.RangeQueryMode(mode)
+	req.QueryMode = RangeQueryMode_value[mode.String()]
 	req.StartMstime = startMs
 	req.EndMstime = endMs
 	res, err := dbConInfo.dbClient.QueryHisRangeValueList(ctx, &req)
@@ -158,7 +158,7 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByNameList(dbName string, poin
 	defer cancel()
 	req := hhdbRpc.QueryHisRangeValueListReq{}
 	req.NameList = *pointNameList
-	req.QueryMode = hhdbRpc.RangeQueryMode(mode)
+	req.QueryMode = RangeQueryMode_value[mode.String()]
 	req.StartMstime = startMs
 	req.EndMstime = endMs
 	res, err := dbConInfo.dbClient.QueryHisRangeValueList(ctx, &req)
@@ -192,7 +192,7 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByIdList(dbName string, pointI
 	defer cancel()
 	req := hhdbRpc.QueryHisResamplesValueListReq{}
 	req.IdList = *pointIdList
-	req.ResampleMode = hhdbRpc.ResampleMode(mode)
+	req.ResampleMode = ResampleMode_value[mode.String()]
 	req.StartMstime = startMs
 	req.EndMstime = endMs
 	req.PriodMs = priodMs
@@ -227,7 +227,7 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByNameList(dbName string, poin
 	defer cancel()
 	req := hhdbRpc.QueryHisResamplesValueListReq{}
 	req.NameList = *pointNameList
-	req.ResampleMode = hhdbRpc.ResampleMode(mode)
+	req.ResampleMode = ResampleMode_value[mode.String()]
 	req.StartMstime = startMs
 	req.EndMstime = endMs
 	req.PriodMs = priodMs
@@ -252,7 +252,7 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByNameList(dbName string, poin
 	return &valuesList, &result, nil
 }
 
-func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, pointIdList *[]int32, msTimePoint uint64, mode ResampleMode) (*[]PointValue, *[]int32, error) {
+func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, pointIdList *[]int32, MsTimePointList *[]uint64, mode ResampleMode) (*[]PointValue, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, nil, err
@@ -262,8 +262,8 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, point
 	defer cancel()
 	req := hhdbRpc.QueryHisTimePointValueListReq{}
 	req.IdList = *pointIdList
-	req.ResampleMode = hhdbRpc.ResampleMode(mode)
-	req.MsTimePoint = msTimePoint
+	req.ResampleMode = ResampleMode_value[mode.String()]
+	req.MsTimePointList = *MsTimePointList
 	res, err := dbConInfo.dbClient.QueryHisTimePointValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, hhdb.handleGrpcError(&err)
@@ -282,7 +282,7 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, point
 	return &valueList, &result, nil
 }
 
-func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, pointNameList *[]string, msTimePoint uint64, mode ResampleMode) (*[]PointValue, *[]int32, error) {
+func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, pointNameList *[]string, MsTimePointList *[]uint64, mode ResampleMode) (*[]PointValue, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, nil, err
@@ -292,8 +292,8 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, poi
 	defer cancel()
 	req := hhdbRpc.QueryHisTimePointValueListReq{}
 	req.NameList = *pointNameList
-	req.ResampleMode = hhdbRpc.ResampleMode(mode)
-	req.MsTimePoint = msTimePoint
+	req.ResampleMode = ResampleMode_value[mode.String()]
+	req.MsTimePointList = *MsTimePointList
 	res, err := dbConInfo.dbClient.QueryHisTimePointValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, hhdb.handleGrpcError(&err)

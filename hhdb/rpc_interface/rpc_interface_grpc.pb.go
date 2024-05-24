@@ -78,31 +78,31 @@ type RpcInterfaceClient interface {
 	QueryTableList(ctx context.Context, in *QueryTableReq, opts ...grpc.CallOption) (*QueryTableReply, error)
 	// 功能：测点操作--添加测点
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为添加成功的个数,失败<=0
+	// errMsg.code：成功>=0，为添加成功的个数,失败<0
 	// 备注：CommonRes中resultList返回各个测点的ID，小于0时代表添加失败的错误码，全成功时为空
 	InsertPoints(ctx context.Context, in *PointInfoListReq, opts ...grpc.CallOption) (*CommonReply, error)
 	// 功能：测点操作--删除测点
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为删除成功的个数,失败<=0
+	// errMsg.code：成功>=0，为删除成功的个数,失败<0
 	// 备注：通过PointInfo中的id进行关联删除，如果首个元素id为-1，则通过使用name进行匹配删除，
 	DelPoints(ctx context.Context, in *PointInfoListReq, opts ...grpc.CallOption) (*CommonReply, error)
 	// 功能：测点操作--更新测点基础信息
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为更新成功的个数,失败<=0
+	// errMsg.code：成功>=0，为更新成功的个数,失败<0
 	// 备注：通过PointInfo中的id进行关联修改，如果首个元素id为-1，则通过使用name进行匹配更新
 	// CommonRes中resultList返回更新成功的各个测点ID，返回小于0时代表添加失败的错误码，全成功时为空
 	UpdatePoints(ctx context.Context, in *PointInfoListReq, opts ...grpc.CallOption) (*CommonReply, error)
 	// 功能：测点操作--查询测点基础信息
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>=0，为查询成功的个数,失败<0
+	// errMsg.code：成功>=0，满足条件的总个数,失败<0
 	QueryPoints(ctx context.Context, in *QueryPointInfoReq, opts ...grpc.CallOption) (*QueryPointInfoReply, error)
 	// 功能：测点操作--使用测点名查询测点ID
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为查询成功的个数,失败<=0
+	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	QueryPointIdListByNameList(ctx context.Context, in *NameList, opts ...grpc.CallOption) (*QueryPointIdListByNameListReply, error)
 	// 功能：测点操作--使用测点名或ID批量查询测点信息
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为查询成功的个数,失败<=0
+	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	QueryPointInfoList(ctx context.Context, in *QueryRealtimeValueListReq, opts ...grpc.CallOption) (*QueryPointInfoReply, error)
 	// 实时值--写入实时值
 	// 参数说明：入参、出差参考请求、响应体注释
@@ -111,20 +111,20 @@ type RpcInterfaceClient interface {
 	UpdateRealtimeValueList(ctx context.Context, in *UpdateRealtimeValueListReq, opts ...grpc.CallOption) (*CommonReply, error)
 	// 实时值--通获取实时值
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为查询成功的个数,失败<=0
+	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	// 备注：DataListRes中resultList为获取各个值的成功状态，失败<0为对应的错误码，全成功时为空
 	QueryRealtimeValueList(ctx context.Context, in *QueryRealtimeValueListReq, opts ...grpc.CallOption) (*ValueListReply, error)
 	// 历史值--通过测点ID查询时间段范围内的数据值
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为查询成功的个数,失败<=0
+	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	QueryHisRangeValueList(ctx context.Context, in *QueryHisRangeValueListReq, opts ...grpc.CallOption) (*QueryHisValueListReply, error)
 	// 历史值--通过测点ID查询时间段范围内重采样的数据值
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为查询成功的个数,失败<=0
+	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	QueryHisResampleValueList(ctx context.Context, in *QueryHisResamplesValueListReq, opts ...grpc.CallOption) (*QueryHisValueListReply, error)
 	// 历史值--通过测点ID查询时间点的数据值
 	// 参数说明：入参、出差参考请求、响应体注释
-	// error_code.app_code说明：为查询成功的数据个数成功>0,失败<=0
+	// error_code.app_code说明：为查询成功的数据个数成功>=0,失败<0
 	// 备注：DataListRes中value_list与测点ID下标一一对应，result_list为每个测点查询的错误码，全成功时为空
 	QueryHisTimePointValueList(ctx context.Context, in *QueryHisTimePointValueListReq, opts ...grpc.CallOption) (*ValueListReply, error)
 	// 历史值--通过测点ID写入测点历史值
@@ -349,31 +349,31 @@ type RpcInterfaceServer interface {
 	QueryTableList(context.Context, *QueryTableReq) (*QueryTableReply, error)
 	// 功能：测点操作--添加测点
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为添加成功的个数,失败<=0
+	// errMsg.code：成功>=0，为添加成功的个数,失败<0
 	// 备注：CommonRes中resultList返回各个测点的ID，小于0时代表添加失败的错误码，全成功时为空
 	InsertPoints(context.Context, *PointInfoListReq) (*CommonReply, error)
 	// 功能：测点操作--删除测点
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为删除成功的个数,失败<=0
+	// errMsg.code：成功>=0，为删除成功的个数,失败<0
 	// 备注：通过PointInfo中的id进行关联删除，如果首个元素id为-1，则通过使用name进行匹配删除，
 	DelPoints(context.Context, *PointInfoListReq) (*CommonReply, error)
 	// 功能：测点操作--更新测点基础信息
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为更新成功的个数,失败<=0
+	// errMsg.code：成功>=0，为更新成功的个数,失败<0
 	// 备注：通过PointInfo中的id进行关联修改，如果首个元素id为-1，则通过使用name进行匹配更新
 	// CommonRes中resultList返回更新成功的各个测点ID，返回小于0时代表添加失败的错误码，全成功时为空
 	UpdatePoints(context.Context, *PointInfoListReq) (*CommonReply, error)
 	// 功能：测点操作--查询测点基础信息
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>=0，为查询成功的个数,失败<0
+	// errMsg.code：成功>=0，满足条件的总个数,失败<0
 	QueryPoints(context.Context, *QueryPointInfoReq) (*QueryPointInfoReply, error)
 	// 功能：测点操作--使用测点名查询测点ID
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为查询成功的个数,失败<=0
+	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	QueryPointIdListByNameList(context.Context, *NameList) (*QueryPointIdListByNameListReply, error)
 	// 功能：测点操作--使用测点名或ID批量查询测点信息
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为查询成功的个数,失败<=0
+	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	QueryPointInfoList(context.Context, *QueryRealtimeValueListReq) (*QueryPointInfoReply, error)
 	// 实时值--写入实时值
 	// 参数说明：入参、出差参考请求、响应体注释
@@ -382,20 +382,20 @@ type RpcInterfaceServer interface {
 	UpdateRealtimeValueList(context.Context, *UpdateRealtimeValueListReq) (*CommonReply, error)
 	// 实时值--通获取实时值
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为查询成功的个数,失败<=0
+	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	// 备注：DataListRes中resultList为获取各个值的成功状态，失败<0为对应的错误码，全成功时为空
 	QueryRealtimeValueList(context.Context, *QueryRealtimeValueListReq) (*ValueListReply, error)
 	// 历史值--通过测点ID查询时间段范围内的数据值
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为查询成功的个数,失败<=0
+	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	QueryHisRangeValueList(context.Context, *QueryHisRangeValueListReq) (*QueryHisValueListReply, error)
 	// 历史值--通过测点ID查询时间段范围内重采样的数据值
 	// 参数说明：入参、出差参考请求、响应体注释
-	// errMsg.code：成功>0，为查询成功的个数,失败<=0
+	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	QueryHisResampleValueList(context.Context, *QueryHisResamplesValueListReq) (*QueryHisValueListReply, error)
 	// 历史值--通过测点ID查询时间点的数据值
 	// 参数说明：入参、出差参考请求、响应体注释
-	// error_code.app_code说明：为查询成功的数据个数成功>0,失败<=0
+	// error_code.app_code说明：为查询成功的数据个数成功>=0,失败<0
 	// 备注：DataListRes中value_list与测点ID下标一一对应，result_list为每个测点查询的错误码，全成功时为空
 	QueryHisTimePointValueList(context.Context, *QueryHisTimePointValueListReq) (*ValueListReply, error)
 	// 历史值--通过测点ID写入测点历史值

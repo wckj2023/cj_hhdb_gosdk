@@ -217,8 +217,8 @@ func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {
 	pointInfo.PointName = point.PointName
 	pointInfo.PointUnit = point.PointUnit
 	pointInfo.PointDesc = point.PointDesc
-	pointInfo.PointType = rpc.PointType(point.PointType)
-	pointInfo.CompressMode = rpc.CompressMode(point.CompressMode)
+	pointInfo.PointType = PointType_value[point.PointType.String()]
+	pointInfo.CompressMode = CompressMode_value[point.CompressMode.String()]
 	pointInfo.CompressParam1 = point.CompressParam1
 	pointInfo.CompressParam2 = point.CompressParam2
 	pointInfo.WriteEnable = point.WriteEnable
@@ -228,7 +228,7 @@ func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {
 	pointInfo.ValueOffset = point.ValueOffset
 	pointInfo.ValueRate = point.ValueRate
 	pointInfo.OuttimeDay = point.OuttimeDay
-	pointInfo.ValueType = rpc.ValueType(point.ValueType)
+	pointInfo.ValueType = ValueType_value[point.ValueType.String()]
 	pointInfo.TableId = point.TableId
 	pointInfo.CreateTime = point.CreateTime
 	pointInfo.ExtraField = point.ExtraField
@@ -344,7 +344,7 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 	for i := 0; i < len(res.PointInfoList); i++ {
 		pointList[i].grpc2goPointInfo(res.PointInfoList[i])
 	}
-	total = res.GetErrMsg().GetCode()
+	total = res.GetTotal()
 	if !enablePage && int32(len(pointList)) < total {
 		pageAdd := 1
 		newLimit := len(pointList)

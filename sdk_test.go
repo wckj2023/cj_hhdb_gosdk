@@ -16,7 +16,7 @@ func TestAdd(t *testing.T) {
 		t.Log("insert table table1 success,table id:", tableId)
 	}
 
-	list, err := hhdbPool.QueryTableList(dbName, tableId, "", false, 0, 0)
+	list, _, err := hhdbPool.QueryTableList(dbName, tableId, "", false, 0, 0)
 	if err != nil {
 		t.Errorf(err.Error())
 	} else {

@@ -29,9 +29,9 @@ type dbConObject struct {
 }
 
 type HhdbConPool struct {
-	dbConPool          sync.Map
-	outtime            time.Duration
-	disconnectTimewait time.Duration
+	dbConPool         sync.Map
+	outtime           time.Duration
+	reconnectTimewait time.Duration
 }
 
 func (hhdb *HhdbConPool) AddDbInfo(info *DbInfo) {
@@ -43,14 +43,14 @@ func (hhdb *HhdbConPool) SetOuttime(outtimeSec time.Duration) {
 	hhdb.outtime = outtimeSec
 }
 
-func (hhdb *HhdbConPool) SetDisconnectTimewait(disconnectTimewait time.Duration) {
-	hhdb.disconnectTimewait = disconnectTimewait
+func (hhdb *HhdbConPool) SetDisconnectTimewait(reconnectTimewait time.Duration) {
+	hhdb.reconnectTimewait = reconnectTimewait
 }
 
 func NewHhdbConPool() *HhdbConPool {
 	return &HhdbConPool{
-		outtime:            30 * time.Second, // 设置 outtime 字段的默认值为 30 秒
-		disconnectTimewait: 3 * time.Second,  // 断开连接时的等待时间
+		outtime:           30 * time.Second, // 设置 outtime 字段的默认值为 30 秒
+		reconnectTimewait: 3 * time.Second,  // 断开连接时的等待时间
 	}
 }
 

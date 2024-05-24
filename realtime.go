@@ -286,3 +286,30 @@ func (hhdb *HhdbConPool) QueryRealtimeValueListByIdList(dbName string, pointIdLi
 
 	return &valueList, &res.ResultList, nil
 }
+
+func (hhdb *HhdbConPool) QueryRealtimeValueListByNameList(dbName string, pointNameList *[]string) (*[]PointValue, *[]int32, error) {
+	dbConInfo, err := hhdb.getDbCon(dbName)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
+	defer cancel()
+	req := hhdbRpc.QueryRealtimeValueListReq{}
+	req.NameList = *pointNameList
+
+	res, err := dbConInfo.dbClient.QueryRealtimeValueList(ctx, &req)
+	if err != nil {
+		return nil, nil, hhdb.handleGrpcError(&err)
+	}
+	if res.GetErrMsg().GetCode() < 0 {
+		return nil, nil, errors.New(res.GetErrMsg().GetMsg())
+	}
+
+	valueList := make([]PointValue, len(res.ValueList))
+	for i, v := range res.ValueList {
+		valueList[i].grpc2goPointValue(v)
+	}
+
+	return &valueList, &res.ResultList, nil
+}
