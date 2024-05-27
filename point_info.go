@@ -235,6 +235,30 @@ func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {
 	return &pointInfo
 }
 
+func (point *PointInfo) go2grpcPointInfoWithTableId(tableId int32) (grpc *rpc.PointInfo) {
+	var pointInfo rpc.PointInfo
+	pointInfo.PointId = point.PointId
+	pointInfo.PointName = point.PointName
+	pointInfo.PointUnit = point.PointUnit
+	pointInfo.PointDesc = point.PointDesc
+	pointInfo.PointType = PointType_value[point.PointType.String()]
+	pointInfo.CompressMode = CompressMode_value[point.CompressMode.String()]
+	pointInfo.CompressParam1 = point.CompressParam1
+	pointInfo.CompressParam2 = point.CompressParam2
+	pointInfo.WriteEnable = point.WriteEnable
+	pointInfo.CheckEnable = point.CheckEnable
+	pointInfo.LowerThreshold = point.LowerThreshold
+	pointInfo.UpperThreshold = point.UpperThreshold
+	pointInfo.ValueOffset = point.ValueOffset
+	pointInfo.ValueRate = point.ValueRate
+	pointInfo.OuttimeDay = point.OuttimeDay
+	pointInfo.ValueType = ValueType_value[point.ValueType.String()]
+	pointInfo.TableId = tableId
+	pointInfo.CreateTime = point.CreateTime
+	pointInfo.ExtraField = point.ExtraField
+	return &pointInfo
+}
+
 func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.PointId = grpc.PointId
 	point.PointName = grpc.PointName
@@ -257,14 +281,27 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.ExtraField = grpc.ExtraField
 }
 
-func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
+func (hhdb *HhdbConPool) InsertPoints(dbName string, tableName string, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, []int32{}, err
 	}
+	tableList, _, err := hhdb.QueryTableList(dbName, -1, tableName, false, 0, 0)
+	if err != nil {
+		return 0, nil, err
+	}
+	var tableId int32
+	if len(*tableList) == 0 {
+		tableId, err = hhdb.InsertTable(dbName, TableInfo{TableName: tableName})
+		if err != nil {
+			return 0, nil, err
+		}
+	} else {
+		tableId = (*tableList)[0].TableId
+	}
 	req := hhdbRpc.PointInfoListReq{}
 	for i := 0; i < len(*pointList); i++ {
-		req.PointInfoList = append(req.PointInfoList, (*pointList)[i].go2grpcPointInfo())
+		req.PointInfoList = append(req.PointInfoList, (*pointList)[i].go2grpcPointInfoWithTableId(tableId))
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
