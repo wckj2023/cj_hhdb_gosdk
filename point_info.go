@@ -192,6 +192,7 @@ func (x ValueType) String() string {
 type PointInfo struct {
 	PointId        int32             `json:"pointId"`        //测点ID，为>=0的整数
 	PointName      string            `json:"pointName"`      //测点名
+	PointShowName  string            `json:"pointShowName"`  //测点展示名
 	PointUnit      string            `json:"pointUnit"`      //测点单位
 	PointDesc      string            `json:"pointDesc"`      //测点描述
 	PointType      PointType         `json:"pointType"`      //测点类型
@@ -215,6 +216,7 @@ func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {
 	var pointInfo rpc.PointInfo
 	pointInfo.PointId = point.PointId
 	pointInfo.PointName = point.PointName
+	pointInfo.PointShowName = point.PointShowName
 	pointInfo.PointUnit = point.PointUnit
 	pointInfo.PointDesc = point.PointDesc
 	pointInfo.PointType = PointType_value[point.PointType.String()]
@@ -239,6 +241,7 @@ func (point *PointInfo) go2grpcPointInfoWithTableId(tableId int32) (grpc *rpc.Po
 	var pointInfo rpc.PointInfo
 	pointInfo.PointId = point.PointId
 	pointInfo.PointName = point.PointName
+	pointInfo.PointShowName = point.PointShowName
 	pointInfo.PointUnit = point.PointUnit
 	pointInfo.PointDesc = point.PointDesc
 	pointInfo.PointType = PointType_value[point.PointType.String()]
