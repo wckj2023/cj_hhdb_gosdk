@@ -265,6 +265,7 @@ func (point *PointInfo) go2grpcPointInfoWithTableId(tableId int32) (grpc *rpc.Po
 func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.PointId = grpc.PointId
 	point.PointName = grpc.PointName
+	point.PointShowName = grpc.PointShowName
 	point.PointDesc = grpc.PointDesc
 	point.PointUnit = grpc.PointUnit
 	point.PointType = PointType(grpc.PointType)
