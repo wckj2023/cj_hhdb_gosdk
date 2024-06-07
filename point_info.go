@@ -285,27 +285,28 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.ExtraField = grpc.ExtraField
 }
 
-func (hhdb *HhdbConPool) InsertPoints(dbName string, tableName string, pointList *[]PointInfo) (int32, []int32, error) {
+func (hhdb *HhdbConPool) InsertPoints(dbName string, tableId int32, tableName string, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, []int32{}, err
 	}
-	tableList, _, err := hhdb.QueryTableList(dbName, -1, tableName, false, 0, 0)
+	tableInfo := TableInfo{TableId: tableId, TableName: tableName}
+	tableList, _, err := hhdb.QueryTableList(dbName, &tableInfo, false, false, false, 0, 0)
 	if err != nil {
 		return 0, nil, err
 	}
-	var tableId int32
+
 	if len(*tableList) == 0 {
-		tableId, err = hhdb.InsertTable(dbName, TableInfo{TableName: tableName})
+		tableInfo.TableId, err = hhdb.InsertTable(dbName, TableInfo{TableName: tableName})
 		if err != nil {
 			return 0, nil, err
 		}
 	} else {
-		tableId = (*tableList)[0].TableId
+		tableInfo.TableId = (*tableList)[0].TableId
 	}
 	req := hhdbRpc.PointInfoListReq{}
 	for i := 0; i < len(*pointList); i++ {
-		req.PointInfoList = append(req.PointInfoList, (*pointList)[i].go2grpcPointInfoWithTableId(tableId))
+		req.PointInfoList = append(req.PointInfoList, (*pointList)[i].go2grpcPointInfoWithTableId(tableInfo.TableId))
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
@@ -372,7 +373,7 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
 	res, err := dbConInfo.dbClient.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
-		DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: pointSearchInfo.ExtraField, EnablePage: enablePage,
+		ShowNameRegex: pointSearchInfo.PointShowName, DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: pointSearchInfo.ExtraField, EnablePage: enablePage,
 		Page: page, Limit: limit})
 	if err != nil {
 		return nil, 0, hhdb.handleGrpcError(&err)
@@ -392,7 +393,7 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 		tempInfo := PointInfo{}
 		for int32(len(pointList)) < total {
 			res, err = dbConInfo.dbClient.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
-				DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: pointSearchInfo.ExtraField, EnablePage: true,
+				ShowNameRegex: pointSearchInfo.PointShowName, DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: pointSearchInfo.ExtraField, EnablePage: true,
 				Page: uint32(pageAdd), Limit: uint32(newLimit)})
 			if res.GetErrMsg().GetCode() < 0 {
 				break
