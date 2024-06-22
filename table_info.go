@@ -20,7 +20,7 @@ type TableInfo struct {
 	TableShowName     string            `json:"tableShowName"`     //表展示名
 	TableRemark       string            `json:"tableRemark"`       //表备注
 	TableParentId     int32             `json:"tableParentId"`     //表父节点ID
-	ExtraFiledAndDesc map[string]string `json:"extraFiledAndDesc"` //额外的字段与字段名
+	ExtraFiledAndDesc map[string][]byte `json:"extraFiledAndDesc"` //额外的字段与字段名
 	operatorInfo      OperatorInfo      `json:"operatorInfo"`      //用户信息
 }
 

@@ -209,7 +209,7 @@ type PointInfo struct {
 	ValueType      ValueType         `json:"valueType"`      //测点值类型
 	TableId        int32             `json:"tableId"`        //点组ID
 	CreateTime     uint64            `json:"createTime"`     //测点创建时间
-	ExtraField     map[string]string `json:"extraField"`     //自定义的拓展字段
+	ExtraField     map[string][]byte `json:"extraField"`     //自定义的拓展字段
 }
 
 func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {

@@ -713,7 +713,7 @@ type QueryPointInfoReq struct {
 	DescRegex     string            `protobuf:"bytes,6,opt,name=descRegex,proto3" json:"descRegex,omitempty"`                                                                                             //不为空时，按正则匹配描述符合的测点，两则都不为空时取交集
 	UnitRegex     string            `protobuf:"bytes,7,opt,name=unitRegex,proto3" json:"unitRegex,omitempty"`                                                                                             //不为空时，按正则匹配
 	PointType     int32             `protobuf:"varint,8,opt,name=pointType,proto3" json:"pointType,omitempty"`                                                                                            //测点类型，>=0时，查询指定测点类型的信息
-	ExtraFields   map[string]string `protobuf:"bytes,9,rep,name=extraFields,proto3" json:"extraFields,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"` //需要检索的字段，key为字段名，value为检索的字段值
+	ExtraFields   map[string][]byte `protobuf:"bytes,9,rep,name=extraFields,proto3" json:"extraFields,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"` //需要检索的字段，key为字段名，value为检索的字段值
 	EnablePage    bool              `protobuf:"varint,10,opt,name=enablePage,proto3" json:"enablePage,omitempty"`                                                                                         //是否启用分页
 	Page          uint32            `protobuf:"varint,11,opt,name=page,proto3" json:"page,omitempty"`                                                                                                     //页数,page从0开始计数
 	Limit         uint32            `protobuf:"varint,12,opt,name=limit,proto3" json:"limit,omitempty"`                                                                                                   //每页的数量
@@ -807,7 +807,7 @@ func (x *QueryPointInfoReq) GetPointType() int32 {
 	return 0
 }
 
-func (x *QueryPointInfoReq) GetExtraFields() map[string]string {
+func (x *QueryPointInfoReq) GetExtraFields() map[string][]byte {
 	if x != nil {
 		return x.ExtraFields
 	}
@@ -1754,7 +1754,7 @@ var file_hhdb_rpc_interface_rpc_interface_mes_proto_rawDesc = []byte{
 	0x3e, 0x0a, 0x10, 0x45, 0x78, 0x74, 0x72, 0x61, 0x46, 0x69, 0x65, 0x6c, 0x64, 0x73, 0x45, 0x6e,
 	0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22,
+	0x20, 0x01, 0x28, 0x0c, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x22,
 	0x90, 0x01, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x49, 0x6e,
 	0x66, 0x6f, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x28, 0x0a, 0x06, 0x65, 0x72, 0x72, 0x4d, 0x73,
 	0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x68, 0x68, 0x64, 0x62, 0x2e, 0x72,
