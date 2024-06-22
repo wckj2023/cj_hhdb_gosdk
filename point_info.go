@@ -233,9 +233,12 @@ func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {
 	pointInfo.ValueType = ValueType_value[point.ValueType.String()]
 	pointInfo.TableId = point.TableId
 	pointInfo.CreateTime = point.CreateTime
+
+	var extraField map[string][]byte
 	for k, v := range point.ExtraField {
-		pointInfo.ExtraField[k] = []byte(v)
+		extraField[k] = []byte(v)
 	}
+	pointInfo.ExtraField = extraField
 	return &pointInfo
 }
 
@@ -260,9 +263,12 @@ func (point *PointInfo) go2grpcPointInfoWithTableId(tableId int32) (grpc *rpc.Po
 	pointInfo.ValueType = ValueType_value[point.ValueType.String()]
 	pointInfo.TableId = tableId
 	pointInfo.CreateTime = point.CreateTime
+
+	var extraField map[string][]byte
 	for k, v := range point.ExtraField {
-		pointInfo.ExtraField[k] = []byte(v)
+		extraField[k] = []byte(v)
 	}
+	pointInfo.ExtraField = extraField
 	return &pointInfo
 }
 
@@ -286,9 +292,12 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.ValueType = ValueType(grpc.ValueType)
 	point.TableId = grpc.TableId
 	point.CreateTime = grpc.CreateTime
+
+	var extraField map[string]string
 	for k, v := range grpc.ExtraField {
-		point.ExtraField[k] = string(v)
+		extraField[k] = string(v)
 	}
+	point.ExtraField = extraField
 }
 
 func (hhdb *HhdbConPool) InsertPoints(dbName string, tableId int32, tableName string, pointList *[]PointInfo) (int32, []int32, error) {

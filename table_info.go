@@ -25,12 +25,12 @@ type TableInfo struct {
 }
 
 func (table *TableInfo) go2grpcTableInfo() *rpc.TableInfo {
-	var searchMap map[string][]byte
+	var extraFiledAndDesc map[string][]byte
 	for k, v := range table.ExtraFiledAndDesc {
-		searchMap[k] = []byte(v)
+		extraFiledAndDesc[k] = []byte(v)
 	}
 	grpcTable := rpc.TableInfo{TableId: table.TableId, TableName: table.TableName, TableShowName: table.TableShowName,
-		TableRemark: table.TableRemark, TableParentId: table.TableParentId, ExtraFiledAndDesc: searchMap,
+		TableRemark: table.TableRemark, TableParentId: table.TableParentId, ExtraFiledAndDesc: extraFiledAndDesc,
 		OperatorInfo: &rpc.OperatorInfo{CreateTime: table.operatorInfo.createTime, UpdateTime: table.operatorInfo.updateTime,
 			CreateUserId: uint32(table.operatorInfo.createUserId), UpdateUserId: uint32(table.operatorInfo.updateUserId)}}
 	return &grpcTable
@@ -46,9 +46,11 @@ func (table *TableInfo) grpc2goTableInfo(grpcTableInfo *rpc.TableInfo) {
 	table.operatorInfo.updateTime = grpcTableInfo.OperatorInfo.UpdateTime
 	table.operatorInfo.createUserId = int32(grpcTableInfo.OperatorInfo.CreateUserId)
 	table.operatorInfo.updateUserId = int32(grpcTableInfo.OperatorInfo.UpdateUserId)
+	var extraFiledAndDesc map[string]string
 	for k, v := range grpcTableInfo.ExtraFiledAndDesc {
-		table.ExtraFiledAndDesc[k] = string(v)
+		extraFiledAndDesc[k] = string(v)
 	}
+	table.ExtraFiledAndDesc = extraFiledAndDesc
 }
 
 func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo TableInfo) (int32, error) {
