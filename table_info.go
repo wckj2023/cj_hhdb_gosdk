@@ -20,17 +20,17 @@ type TableInfo struct {
 	TableShowName     string            `json:"tableShowName"`     //表展示名
 	TableRemark       string            `json:"tableRemark"`       //表备注
 	TableParentId     int32             `json:"tableParentId"`     //表父节点ID
-	ExtraFiledAndDesc map[string]string `json:"extraFiledAndDesc"` //额外的字段与字段名
+	ExtraFieldAndDesc map[string]string `json:"extraFiledAndDesc"` //额外的字段与字段名
 	operatorInfo      OperatorInfo      `json:"operatorInfo"`      //用户信息
 }
 
 func (table *TableInfo) go2grpcTableInfo() *rpc.TableInfo {
-	var extraFiledAndDesc map[string][]byte
-	for k, v := range table.ExtraFiledAndDesc {
-		extraFiledAndDesc[k] = []byte(v)
+	extraFieldAndDesc := make(map[string][]byte)
+	for k, v := range table.ExtraFieldAndDesc {
+		extraFieldAndDesc[k] = []byte(v)
 	}
 	grpcTable := rpc.TableInfo{TableId: table.TableId, TableName: table.TableName, TableShowName: table.TableShowName,
-		TableRemark: table.TableRemark, TableParentId: table.TableParentId, ExtraFiledAndDesc: extraFiledAndDesc,
+		TableRemark: table.TableRemark, TableParentId: table.TableParentId, ExtraFieldAndDesc: extraFieldAndDesc,
 		OperatorInfo: &rpc.OperatorInfo{CreateTime: table.operatorInfo.createTime, UpdateTime: table.operatorInfo.updateTime,
 			CreateUserId: uint32(table.operatorInfo.createUserId), UpdateUserId: uint32(table.operatorInfo.updateUserId)}}
 	return &grpcTable
@@ -46,11 +46,11 @@ func (table *TableInfo) grpc2goTableInfo(grpcTableInfo *rpc.TableInfo) {
 	table.operatorInfo.updateTime = grpcTableInfo.OperatorInfo.UpdateTime
 	table.operatorInfo.createUserId = int32(grpcTableInfo.OperatorInfo.CreateUserId)
 	table.operatorInfo.updateUserId = int32(grpcTableInfo.OperatorInfo.UpdateUserId)
-	var extraFiledAndDesc map[string]string
-	for k, v := range grpcTableInfo.ExtraFiledAndDesc {
-		extraFiledAndDesc[k] = string(v)
+	extraFieldAndDesc := make(map[string]string)
+	for k, v := range grpcTableInfo.ExtraFieldAndDesc {
+		extraFieldAndDesc[k] = string(v)
 	}
-	table.ExtraFiledAndDesc = extraFiledAndDesc
+	table.ExtraFieldAndDesc = extraFieldAndDesc
 }
 
 func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo TableInfo) (int32, error) {

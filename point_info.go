@@ -234,7 +234,7 @@ func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {
 	pointInfo.TableId = point.TableId
 	pointInfo.CreateTime = point.CreateTime
 
-	var extraField map[string][]byte
+	extraField := make(map[string][]byte)
 	for k, v := range point.ExtraField {
 		extraField[k] = []byte(v)
 	}
@@ -264,7 +264,7 @@ func (point *PointInfo) go2grpcPointInfoWithTableId(tableId int32) (grpc *rpc.Po
 	pointInfo.TableId = tableId
 	pointInfo.CreateTime = point.CreateTime
 
-	var extraField map[string][]byte
+	extraField := make(map[string][]byte)
 	for k, v := range point.ExtraField {
 		extraField[k] = []byte(v)
 	}
@@ -293,7 +293,7 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.TableId = grpc.TableId
 	point.CreateTime = grpc.CreateTime
 
-	var extraField map[string]string
+	extraField := make(map[string]string)
 	for k, v := range grpc.ExtraField {
 		extraField[k] = string(v)
 	}
@@ -387,7 +387,7 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	var searchMap map[string][]byte
+	searchMap := make(map[string][]byte)
 	for k, v := range pointSearchInfo.ExtraField {
 		searchMap[k] = []byte(v)
 	}
