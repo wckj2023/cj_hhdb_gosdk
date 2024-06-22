@@ -20,13 +20,17 @@ type TableInfo struct {
 	TableShowName     string            `json:"tableShowName"`     //表展示名
 	TableRemark       string            `json:"tableRemark"`       //表备注
 	TableParentId     int32             `json:"tableParentId"`     //表父节点ID
-	ExtraFiledAndDesc map[string][]byte `json:"extraFiledAndDesc"` //额外的字段与字段名
+	ExtraFiledAndDesc map[string]string `json:"extraFiledAndDesc"` //额外的字段与字段名
 	operatorInfo      OperatorInfo      `json:"operatorInfo"`      //用户信息
 }
 
 func (table *TableInfo) go2grpcTableInfo() *rpc.TableInfo {
+	var searchMap map[string][]byte
+	for k, v := range table.ExtraFiledAndDesc {
+		searchMap[k] = []byte(v)
+	}
 	grpcTable := rpc.TableInfo{TableId: table.TableId, TableName: table.TableName, TableShowName: table.TableShowName,
-		TableRemark: table.TableRemark, TableParentId: table.TableParentId, ExtraFiledAndDesc: table.ExtraFiledAndDesc,
+		TableRemark: table.TableRemark, TableParentId: table.TableParentId, ExtraFiledAndDesc: searchMap,
 		OperatorInfo: &rpc.OperatorInfo{CreateTime: table.operatorInfo.createTime, UpdateTime: table.operatorInfo.updateTime,
 			CreateUserId: uint32(table.operatorInfo.createUserId), UpdateUserId: uint32(table.operatorInfo.updateUserId)}}
 	return &grpcTable
@@ -38,11 +42,13 @@ func (table *TableInfo) grpc2goTableInfo(grpcTableInfo *rpc.TableInfo) {
 	table.TableShowName = grpcTableInfo.TableShowName
 	table.TableRemark = grpcTableInfo.TableRemark
 	table.TableParentId = grpcTableInfo.TableParentId
-	table.ExtraFiledAndDesc = grpcTableInfo.ExtraFiledAndDesc
 	table.operatorInfo.createTime = grpcTableInfo.OperatorInfo.CreateTime
 	table.operatorInfo.updateTime = grpcTableInfo.OperatorInfo.UpdateTime
 	table.operatorInfo.createUserId = int32(grpcTableInfo.OperatorInfo.CreateUserId)
 	table.operatorInfo.updateUserId = int32(grpcTableInfo.OperatorInfo.UpdateUserId)
+	for k, v := range grpcTableInfo.ExtraFiledAndDesc {
+		table.ExtraFiledAndDesc[k] = string(v)
+	}
 }
 
 func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo TableInfo) (int32, error) {
