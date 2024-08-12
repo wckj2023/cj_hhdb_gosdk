@@ -24,6 +24,13 @@ type TableInfo struct {
 	operatorInfo      OperatorInfo      `json:"operatorInfo"`      //用户信息
 }
 
+type TablePointCount struct {
+	Total        int32 `json:"total"`        //总点数
+	SwitchTotal  int32 `json:"switchTotal"`  //开关量总点数
+	AnalogTotal  int32 `json:"analogTotal"`  //模拟量总点数
+	PackageTotal int32 `json:"packageTotal"` //打包点总点数
+}
+
 func (table *TableInfo) go2grpcTableInfo() *rpc.TableInfo {
 	extraFieldAndDesc := make(map[string][]byte)
 	for k, v := range table.ExtraFieldAndDesc {
@@ -143,18 +150,21 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 	return &tableInfoList, res.GetTotal(), nil
 }
 
-func (hhdb *HhdbConPool) QueryTablePointCount(dbName string, tableInfo *TableInfo, queryAllChildren bool) (total int32, switchTotal int32, analogTotal int32, packageTotal int32, err error) {
+func (hhdb *HhdbConPool) QueryTablePointCount(dbName string, tableInfo *TableInfo, queryAllChildren bool) (pointCount TablePointCount, err error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return 0, 0, 0, 0, err
+		return pointCount, err
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
 	res, err := dbConInfo.dbClient.QueryTablePointCount(ctx, &hhdbRpc.QueryPointCountReq{TableId: tableInfo.TableId, TableName: tableInfo.TableName, QueryAllChildren: queryAllChildren})
 	if err != nil {
-		return 0, 0, 0, 0, hhdb.handleGrpcError(&err)
+		return pointCount, hhdb.handleGrpcError(&err)
 	}
-
-	return res.GetTotal(), res.GetSwitchTotal(), res.GetAnalogTotal(), res.GetPackageTotal(), nil
+	pointCount.Total = res.GetTotal()
+	pointCount.SwitchTotal = res.GetSwitchTotal()
+	pointCount.AnalogTotal = res.GetAnalogTotal()
+	pointCount.PackageTotal = res.GetPackageTotal()
+	return pointCount, nil
 }
