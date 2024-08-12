@@ -27,6 +27,7 @@ const (
 	RpcInterface_ClearTable_FullMethodName                 = "/hhdb.rpc_interface.RpcInterface/ClearTable"
 	RpcInterface_UpdateTable_FullMethodName                = "/hhdb.rpc_interface.RpcInterface/UpdateTable"
 	RpcInterface_QueryTableList_FullMethodName             = "/hhdb.rpc_interface.RpcInterface/QueryTableList"
+	RpcInterface_QueryTablePointCount_FullMethodName       = "/hhdb.rpc_interface.RpcInterface/QueryTablePointCount"
 	RpcInterface_InsertPoints_FullMethodName               = "/hhdb.rpc_interface.RpcInterface/InsertPoints"
 	RpcInterface_DelPoints_FullMethodName                  = "/hhdb.rpc_interface.RpcInterface/DelPoints"
 	RpcInterface_UpdatePoints_FullMethodName               = "/hhdb.rpc_interface.RpcInterface/UpdatePoints"
@@ -76,6 +77,11 @@ type RpcInterfaceClient interface {
 	// errMsg.code：成功>=0，失败<0
 	// group_id>=0时,通过id获取点组信息,当group_id<0时,通过GroupInfo.group_name进行匹配获取数据,group_name为空且group_id<0时返回全部点组
 	QueryTableList(ctx context.Context, in *QueryTableReq, opts ...grpc.CallOption) (*QueryTableReply, error)
+	// 功能：点组操作--查询指定点组或整库下的测点数量
+	// 参数说明：入参、出差参考请求、响应体注释
+	// errMsg.code：成功>=0，失败<0
+	// group_id>=0时,通过点组id获取测点数量信息,当group_id<0时,通过GroupInfo.group_name进行匹配获取数据,group_name为空且group_id<0时返回整库测点数据
+	QueryTablePointCount(ctx context.Context, in *QueryPointCountReq, opts ...grpc.CallOption) (*QueryPointCountReply, error)
 	// 功能：测点操作--添加测点
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为添加成功的个数,失败<0
@@ -198,6 +204,15 @@ func (c *rpcInterfaceClient) UpdateTable(ctx context.Context, in *rpc.TableInfo,
 func (c *rpcInterfaceClient) QueryTableList(ctx context.Context, in *QueryTableReq, opts ...grpc.CallOption) (*QueryTableReply, error) {
 	out := new(QueryTableReply)
 	err := c.cc.Invoke(ctx, RpcInterface_QueryTableList_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcInterfaceClient) QueryTablePointCount(ctx context.Context, in *QueryPointCountReq, opts ...grpc.CallOption) (*QueryPointCountReply, error) {
+	out := new(QueryPointCountReply)
+	err := c.cc.Invoke(ctx, RpcInterface_QueryTablePointCount_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -347,6 +362,11 @@ type RpcInterfaceServer interface {
 	// errMsg.code：成功>=0，失败<0
 	// group_id>=0时,通过id获取点组信息,当group_id<0时,通过GroupInfo.group_name进行匹配获取数据,group_name为空且group_id<0时返回全部点组
 	QueryTableList(context.Context, *QueryTableReq) (*QueryTableReply, error)
+	// 功能：点组操作--查询指定点组或整库下的测点数量
+	// 参数说明：入参、出差参考请求、响应体注释
+	// errMsg.code：成功>=0，失败<0
+	// group_id>=0时,通过点组id获取测点数量信息,当group_id<0时,通过GroupInfo.group_name进行匹配获取数据,group_name为空且group_id<0时返回整库测点数据
+	QueryTablePointCount(context.Context, *QueryPointCountReq) (*QueryPointCountReply, error)
 	// 功能：测点操作--添加测点
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为添加成功的个数,失败<0
@@ -429,6 +449,9 @@ func (UnimplementedRpcInterfaceServer) UpdateTable(context.Context, *rpc.TableIn
 }
 func (UnimplementedRpcInterfaceServer) QueryTableList(context.Context, *QueryTableReq) (*QueryTableReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryTableList not implemented")
+}
+func (UnimplementedRpcInterfaceServer) QueryTablePointCount(context.Context, *QueryPointCountReq) (*QueryPointCountReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryTablePointCount not implemented")
 }
 func (UnimplementedRpcInterfaceServer) InsertPoints(context.Context, *PointInfoListReq) (*CommonReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InsertPoints not implemented")
@@ -601,6 +624,24 @@ func _RpcInterface_QueryTableList_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(RpcInterfaceServer).QueryTableList(ctx, req.(*QueryTableReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcInterface_QueryTablePointCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPointCountReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcInterfaceServer).QueryTablePointCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RpcInterface_QueryTablePointCount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcInterfaceServer).QueryTablePointCount(ctx, req.(*QueryPointCountReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -855,6 +896,10 @@ var RpcInterface_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryTableList",
 			Handler:    _RpcInterface_QueryTableList_Handler,
+		},
+		{
+			MethodName: "QueryTablePointCount",
+			Handler:    _RpcInterface_QueryTablePointCount_Handler,
 		},
 		{
 			MethodName: "InsertPoints",

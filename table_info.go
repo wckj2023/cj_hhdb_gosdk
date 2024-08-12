@@ -142,3 +142,19 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 
 	return &tableInfoList, res.GetTotal(), nil
 }
+
+func (hhdb *HhdbConPool) QueryTablePointCount(dbName string, tableInfo *TableInfo, queryAllChildren bool) (total int32, switchTotal int32, analogTotal int32, packageTotal int32, err error) {
+	dbConInfo, err := hhdb.getDbCon(dbName)
+	if err != nil {
+		return 0, 0, 0, 0, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
+	defer cancel()
+	res, err := dbConInfo.dbClient.QueryTablePointCount(ctx, &hhdbRpc.QueryPointCountReq{TableId: tableInfo.TableId, TableName: tableInfo.TableName, QueryAllChildren: queryAllChildren})
+	if err != nil {
+		return 0, 0, 0, 0, hhdb.handleGrpcError(&err)
+	}
+
+	return res.GetTotal(), res.GetSwitchTotal(), res.GetAnalogTotal(), res.GetPackageTotal(), nil
+}
