@@ -60,7 +60,7 @@ func (table *TableInfo) grpc2goTableInfo(grpcTableInfo *rpc.TableInfo) {
 	table.ExtraFieldAndDesc = extraFieldAndDesc
 }
 
-func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo TableInfo) (int32, error) {
+func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo *TableInfo) (int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, err
@@ -80,7 +80,7 @@ func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo TableInfo) (int32,
 	return res.GetErrMsg().GetCode(), nil
 }
 
-func (hhdb *HhdbConPool) DeleteTable(dbName string, TableId int32, TableName string) (int32, error) {
+func (hhdb *HhdbConPool) DeleteTable(dbName string, tableInfo *TableInfo) (int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, err
@@ -88,14 +88,14 @@ func (hhdb *HhdbConPool) DeleteTable(dbName string, TableId int32, TableName str
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClient.DelTable(ctx, &rpc.TableInfo{TableId: TableId, TableName: TableName})
+	res, err := dbConInfo.dbClient.DelTable(ctx, tableInfo.go2grpcTableInfo())
 	if err != nil {
 		return 0, hhdb.handleGrpcError(&err)
 	}
 	return res.GetErrMsg().GetCode(), nil
 }
 
-func (hhdb *HhdbConPool) ClearTable(dbName string, TableId int32, TableName string) (int32, error) {
+func (hhdb *HhdbConPool) ClearTable(dbName string, tableInfo *TableInfo) (int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, err
@@ -103,7 +103,7 @@ func (hhdb *HhdbConPool) ClearTable(dbName string, TableId int32, TableName stri
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClient.ClearTable(ctx, &rpc.TableInfo{TableId: TableId, TableName: TableName})
+	res, err := dbConInfo.dbClient.ClearTable(ctx, tableInfo.go2grpcTableInfo())
 	if err != nil {
 		return 0, hhdb.handleGrpcError(&err)
 	}
