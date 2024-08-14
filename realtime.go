@@ -214,6 +214,9 @@ func (pointValue *PointValue) grpc2goPointValue(grpcValue *rpc.PointValue) {
 	}
 }
 
+// 实时值--写入实时值
+// 参数说明：dbName：数据库名，pointIdList:测点ID列表 ，valueList：测点值列表，useSysTime：是否使用系统时间写入
+// 返回值：int32:成功>=0,写入成功的个数,失败<0，*[]int32：各个值写入的状态，失败<0为对应的错误码，全成功时为空，error：错误信息
 func (hhdb *HhdbConPool) UpdateRealtimeValueListByIdList(dbName string, pointIdList *[]int32, valueList *[]PointValue, useSysTime bool) (int32, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
@@ -227,7 +230,7 @@ func (hhdb *HhdbConPool) UpdateRealtimeValueListByIdList(dbName string, pointIdL
 	for _, v := range *valueList {
 		req.ValueList = append(req.ValueList, v.go2grpcPointValue())
 	}
-
+	req.UseServerTimeFlag = useSysTime
 	res, err := dbConInfo.dbClient.UpdateRealtimeValueList(ctx, &req)
 	if err != nil {
 		return 0, nil, hhdb.handleGrpcError(&err)
@@ -236,6 +239,9 @@ func (hhdb *HhdbConPool) UpdateRealtimeValueListByIdList(dbName string, pointIdL
 	return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, nil
 }
 
+// 实时值--写入实时值
+// 参数说明：dbName：数据库名，pointNameList:测点名列表 ，valueList：测点值列表，useSysTime：是否使用系统时间写入
+// 返回值：int32:成功>=0,写入成功的个数,失败<0，*[]int32：各个值写入的状态，失败<0为对应的错误码，全成功时为空，error：错误信息
 func (hhdb *HhdbConPool) UpdateRealtimeValueListByNameList(dbName string, pointNameList *[]string, valueList *[]PointValue, useSysTime bool) (int32, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
@@ -260,6 +266,9 @@ func (hhdb *HhdbConPool) UpdateRealtimeValueListByNameList(dbName string, pointN
 	return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, nil
 }
 
+// 实时值--查询实时值
+// 参数说明：dbName：数据库名，pointIdList:测点名列表
+// 返回值：valueList：测点值列表，*[]int32：各个值查询的状态，失败<0为对应的错误码，全成功时为空，error：错误信息
 func (hhdb *HhdbConPool) QueryRealtimeValueListByIdList(dbName string, pointIdList *[]int32) (*[]PointValue, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
@@ -287,6 +296,9 @@ func (hhdb *HhdbConPool) QueryRealtimeValueListByIdList(dbName string, pointIdLi
 	return &valueList, &res.ResultList, nil
 }
 
+// 实时值--查询实时值
+// 参数说明：dbName：数据库名，pointNameList:测点名列表
+// 返回值：valueList：测点值列表，*[]int32：各个值查询的状态，失败<0为对应的错误码，全成功时为空，error：错误信息
 func (hhdb *HhdbConPool) QueryRealtimeValueListByNameList(dbName string, pointNameList *[]string) (*[]PointValue, *[]int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {

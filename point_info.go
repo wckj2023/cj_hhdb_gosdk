@@ -300,6 +300,9 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.ExtraField = extraField
 }
 
+// 功能：测点操作--添加测点
+// 参数说明：dbName：数据库名，tableInfo：点表信息，tableId<0时通过tableName进行匹配，pointList:插入测点列表
+// 返回值：int32：成功>0，为添加成功的个数,失败<=0， []int32：返回各个测点的ID，小于0时代表添加失败的错误码，全成功时为空
 func (hhdb *HhdbConPool) InsertPoints(dbName string, tableInfo *TableInfo, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
@@ -335,6 +338,9 @@ func (hhdb *HhdbConPool) InsertPoints(dbName string, tableInfo *TableInfo, point
 	return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, nil
 }
 
+// 功能：测点操作--删除测点
+// 参数说明：dbName：数据库名，pointList:删除测点列表，通过PointId进行关联删除，如果首个元素PointId为-1，则通过使用PointName进行匹配删除
+// 返回值：int32：成功>0，为删除成功的个数,失败<=0， []int32：返回各个测点的ID，小于0时代表失败的错误码，全成功时为空
 func (hhdb *HhdbConPool) DelPoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
@@ -357,6 +363,9 @@ func (hhdb *HhdbConPool) DelPoints(dbName string, pointList *[]PointInfo) (int32
 	return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, nil
 }
 
+// 功能：测点操作--更新测点基础信息
+// 参数说明：dbName：数据库名，pointList:更新测点列表，通过PointId进行关联更新，如果首个元素PointId为-1，则通过使用PointName进行匹配更新
+// 返回值：int32：成功>0，为更新成功的个数,失败<=0，[]int32：返回更新成功的各个测点ID，返回小于0时代表添加失败的错误码，全成功时为空
 func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
@@ -378,6 +387,22 @@ func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (in
 	return res.GetErrMsg().GetCode(), res.GetIdOrErrCodeList(), nil
 }
 
+// 功能：测点操作--查询测点基础信息
+// 参数说明：dbName：数据库名，tableName：点表名,
+//
+//	pointSearchInfo.pointId:>=0时，查询指定测点ID的信息
+//	pointSearchInfo.tableId:<0时，整库查询，>=0时在指定表内检索
+//	pointSearchInfo.nameRegex:不为空时，按正则匹配点名符合的测点
+//	pointSearchInfo.showNameRegex:查询的测点名，为空时使用tableId为准，不为空时，以tableName进行查找
+//	pointSearchInfo.descRegex:不为空时，按正则匹配描述符合的测点，两则都不为空时取交集
+//	pointSearchInfo.unitRegex:不为空时，按正则匹配
+//	pointSearchInfo.pointType:测点类型，>=0时，查询指定测点类型的信息
+//	pointSearchInfo.extraFields:需要检索的字段，key为字段名，value为检索的字段值
+//	enablePage:是否启用分页
+//	page:页数,page从0开始计数
+//	limit:每页的数量
+//
+// 返回值：list：查询结果，total：符合条件的总条数，err:错误信息
 func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearchInfo *PointInfo, enablePage bool,
 	page uint32, limit uint32) (list *[]PointInfo, total int32, err error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
@@ -426,6 +451,9 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 	return &pointList, total, nil
 }
 
+// 功能：测点操作--使用测点ID批量查询测点信息
+// 参数说明：dbName：数据库名，pointIdList:测点ID列表
+// 返回值：测点信息列表
 func (hhdb *HhdbConPool) QueryPointInfoListByID(dbName string, pointIdList *[]int32) (*[]PointInfo, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
@@ -451,6 +479,9 @@ func (hhdb *HhdbConPool) QueryPointInfoListByID(dbName string, pointIdList *[]in
 	return &pointList, nil
 }
 
+// 功能：测点操作--使用测点名批量查询测点信息
+// 参数说明：dbName：数据库名，pointNameList:测点名列表
+// 返回值：测点信息列表
 func (hhdb *HhdbConPool) QueryPointInfoListByName(dbName string, pointNameList *[]string) (*[]PointInfo, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
