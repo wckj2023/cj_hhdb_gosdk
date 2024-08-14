@@ -300,19 +300,18 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.ExtraField = extraField
 }
 
-func (hhdb *HhdbConPool) InsertPoints(dbName string, tableId int32, tableName string, pointList *[]PointInfo) (int32, []int32, error) {
+func (hhdb *HhdbConPool) InsertPoints(dbName string, tableInfo *TableInfo, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, []int32{}, err
 	}
-	tableInfo := TableInfo{TableId: tableId, TableName: tableName}
-	tableList, _, err := hhdb.QueryTableList(dbName, &tableInfo, false, false, false, 0, 0)
+	tableList, _, err := hhdb.QueryTableList(dbName, tableInfo, false, false, false, 0, 0)
 	if err != nil {
 		return 0, nil, err
 	}
 
 	if len(*tableList) == 0 {
-		tableInfo.TableId, err = hhdb.InsertTable(dbName, TableInfo{TableName: tableName})
+		tableInfo.TableId, err = hhdb.InsertTable(dbName, tableInfo)
 		if err != nil {
 			return 0, nil, err
 		}
