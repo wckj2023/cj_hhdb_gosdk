@@ -277,7 +277,7 @@ func (hhdb *HhdbConPool) QueryRealtimeValueListByIdList(dbName string, pointIdLi
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	req := hhdbRpc.QueryRealtimeValueListReq{}
+	req := hhdbRpc.IdOrNameListReq{}
 	req.IdList = *pointIdList
 
 	res, err := dbConInfo.dbClient.QueryRealtimeValueList(ctx, &req)
@@ -307,7 +307,7 @@ func (hhdb *HhdbConPool) QueryRealtimeValueListByNameList(dbName string, pointNa
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	req := hhdbRpc.QueryRealtimeValueListReq{}
+	req := hhdbRpc.IdOrNameListReq{}
 	req.NameList = *pointNameList
 
 	res, err := dbConInfo.dbClient.QueryRealtimeValueList(ctx, &req)

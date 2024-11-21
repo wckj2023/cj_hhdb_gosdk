@@ -28,8 +28,10 @@ const (
 	RpcInterface_UpdateTable_FullMethodName                = "/hhdb.rpc_interface.RpcInterface/UpdateTable"
 	RpcInterface_QueryTableList_FullMethodName             = "/hhdb.rpc_interface.RpcInterface/QueryTableList"
 	RpcInterface_QueryTablePointCount_FullMethodName       = "/hhdb.rpc_interface.RpcInterface/QueryTablePointCount"
+	RpcInterface_InsertPoint_FullMethodName                = "/hhdb.rpc_interface.RpcInterface/InsertPoint"
 	RpcInterface_InsertPoints_FullMethodName               = "/hhdb.rpc_interface.RpcInterface/InsertPoints"
 	RpcInterface_DelPoints_FullMethodName                  = "/hhdb.rpc_interface.RpcInterface/DelPoints"
+	RpcInterface_UpdatePoint_FullMethodName                = "/hhdb.rpc_interface.RpcInterface/UpdatePoint"
 	RpcInterface_UpdatePoints_FullMethodName               = "/hhdb.rpc_interface.RpcInterface/UpdatePoints"
 	RpcInterface_QueryPoints_FullMethodName                = "/hhdb.rpc_interface.RpcInterface/QueryPoints"
 	RpcInterface_QueryPointIdListByNameList_FullMethodName = "/hhdb.rpc_interface.RpcInterface/QueryPointIdListByNameList"
@@ -84,6 +86,10 @@ type RpcInterfaceClient interface {
 	QueryTablePointCount(ctx context.Context, in *QueryPointCountReq, opts ...grpc.CallOption) (*QueryPointCountReply, error)
 	// 功能：测点操作--添加测点
 	// 参数说明：入参、出差参考请求、响应体注释
+	// errMsg.code：成功>=0，为添加成功点的ID,失败<0
+	InsertPoint(ctx context.Context, in *rpc.PointInfo, opts ...grpc.CallOption) (*CommonReply, error)
+	// 功能：测点操作--添加测点
+	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为添加成功的个数,失败<0
 	// 备注：CommonRes中resultList返回各个测点的ID，小于0时代表添加失败的错误码，全成功时为空
 	InsertPoints(ctx context.Context, in *PointInfoListReq, opts ...grpc.CallOption) (*CommonReply, error)
@@ -91,7 +97,12 @@ type RpcInterfaceClient interface {
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为删除成功的个数,失败<0
 	// 备注：通过PointInfo中的id进行关联删除，如果首个元素id为-1，则通过使用name进行匹配删除，
-	DelPoints(ctx context.Context, in *PointInfoListReq, opts ...grpc.CallOption) (*CommonReply, error)
+	DelPoints(ctx context.Context, in *IdOrNameListReq, opts ...grpc.CallOption) (*CommonReply, error)
+	// 功能：测点操作--更新测点基础信息
+	// 参数说明：入参、出差参考请求、响应体注释
+	// errMsg.code：成功>=0，失败<0
+	// 备注：通过PointInfo中的pointId更新测点
+	UpdatePoint(ctx context.Context, in *rpc.PointInfo, opts ...grpc.CallOption) (*CommonReply, error)
 	// 功能：测点操作--更新测点基础信息
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为更新成功的个数,失败<0
@@ -105,11 +116,11 @@ type RpcInterfaceClient interface {
 	// 功能：测点操作--使用测点名查询测点ID
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为查询成功的个数,失败<0
-	QueryPointIdListByNameList(ctx context.Context, in *NameList, opts ...grpc.CallOption) (*QueryPointIdListByNameListReply, error)
+	QueryPointIdListByNameList(ctx context.Context, in *NameListReq, opts ...grpc.CallOption) (*QueryPointIdListByNameListReply, error)
 	// 功能：测点操作--使用测点名或ID批量查询测点信息
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为查询成功的个数,失败<0
-	QueryPointInfoList(ctx context.Context, in *QueryRealtimeValueListReq, opts ...grpc.CallOption) (*QueryPointInfoReply, error)
+	QueryPointInfoList(ctx context.Context, in *IdOrNameListReq, opts ...grpc.CallOption) (*QueryPointInfoReply, error)
 	// 实时值--写入实时值
 	// 参数说明：入参、出差参考请求、响应体注释
 	// error_code.app_code说明：成功>=0,写入成功的个数,失败<0
@@ -119,7 +130,7 @@ type RpcInterfaceClient interface {
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	// 备注：DataListRes中resultList为获取各个值的成功状态，失败<0为对应的错误码，全成功时为空
-	QueryRealtimeValueList(ctx context.Context, in *QueryRealtimeValueListReq, opts ...grpc.CallOption) (*ValueListReply, error)
+	QueryRealtimeValueList(ctx context.Context, in *IdOrNameListReq, opts ...grpc.CallOption) (*ValueListReply, error)
 	// 历史值--通过测点ID查询时间段范围内的数据值
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为查询成功的个数,失败<0
@@ -219,6 +230,15 @@ func (c *rpcInterfaceClient) QueryTablePointCount(ctx context.Context, in *Query
 	return out, nil
 }
 
+func (c *rpcInterfaceClient) InsertPoint(ctx context.Context, in *rpc.PointInfo, opts ...grpc.CallOption) (*CommonReply, error) {
+	out := new(CommonReply)
+	err := c.cc.Invoke(ctx, RpcInterface_InsertPoint_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rpcInterfaceClient) InsertPoints(ctx context.Context, in *PointInfoListReq, opts ...grpc.CallOption) (*CommonReply, error) {
 	out := new(CommonReply)
 	err := c.cc.Invoke(ctx, RpcInterface_InsertPoints_FullMethodName, in, out, opts...)
@@ -228,9 +248,18 @@ func (c *rpcInterfaceClient) InsertPoints(ctx context.Context, in *PointInfoList
 	return out, nil
 }
 
-func (c *rpcInterfaceClient) DelPoints(ctx context.Context, in *PointInfoListReq, opts ...grpc.CallOption) (*CommonReply, error) {
+func (c *rpcInterfaceClient) DelPoints(ctx context.Context, in *IdOrNameListReq, opts ...grpc.CallOption) (*CommonReply, error) {
 	out := new(CommonReply)
 	err := c.cc.Invoke(ctx, RpcInterface_DelPoints_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *rpcInterfaceClient) UpdatePoint(ctx context.Context, in *rpc.PointInfo, opts ...grpc.CallOption) (*CommonReply, error) {
+	out := new(CommonReply)
+	err := c.cc.Invoke(ctx, RpcInterface_UpdatePoint_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -255,7 +284,7 @@ func (c *rpcInterfaceClient) QueryPoints(ctx context.Context, in *QueryPointInfo
 	return out, nil
 }
 
-func (c *rpcInterfaceClient) QueryPointIdListByNameList(ctx context.Context, in *NameList, opts ...grpc.CallOption) (*QueryPointIdListByNameListReply, error) {
+func (c *rpcInterfaceClient) QueryPointIdListByNameList(ctx context.Context, in *NameListReq, opts ...grpc.CallOption) (*QueryPointIdListByNameListReply, error) {
 	out := new(QueryPointIdListByNameListReply)
 	err := c.cc.Invoke(ctx, RpcInterface_QueryPointIdListByNameList_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -264,7 +293,7 @@ func (c *rpcInterfaceClient) QueryPointIdListByNameList(ctx context.Context, in 
 	return out, nil
 }
 
-func (c *rpcInterfaceClient) QueryPointInfoList(ctx context.Context, in *QueryRealtimeValueListReq, opts ...grpc.CallOption) (*QueryPointInfoReply, error) {
+func (c *rpcInterfaceClient) QueryPointInfoList(ctx context.Context, in *IdOrNameListReq, opts ...grpc.CallOption) (*QueryPointInfoReply, error) {
 	out := new(QueryPointInfoReply)
 	err := c.cc.Invoke(ctx, RpcInterface_QueryPointInfoList_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -282,7 +311,7 @@ func (c *rpcInterfaceClient) UpdateRealtimeValueList(ctx context.Context, in *Up
 	return out, nil
 }
 
-func (c *rpcInterfaceClient) QueryRealtimeValueList(ctx context.Context, in *QueryRealtimeValueListReq, opts ...grpc.CallOption) (*ValueListReply, error) {
+func (c *rpcInterfaceClient) QueryRealtimeValueList(ctx context.Context, in *IdOrNameListReq, opts ...grpc.CallOption) (*ValueListReply, error) {
 	out := new(ValueListReply)
 	err := c.cc.Invoke(ctx, RpcInterface_QueryRealtimeValueList_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -369,6 +398,10 @@ type RpcInterfaceServer interface {
 	QueryTablePointCount(context.Context, *QueryPointCountReq) (*QueryPointCountReply, error)
 	// 功能：测点操作--添加测点
 	// 参数说明：入参、出差参考请求、响应体注释
+	// errMsg.code：成功>=0，为添加成功点的ID,失败<0
+	InsertPoint(context.Context, *rpc.PointInfo) (*CommonReply, error)
+	// 功能：测点操作--添加测点
+	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为添加成功的个数,失败<0
 	// 备注：CommonRes中resultList返回各个测点的ID，小于0时代表添加失败的错误码，全成功时为空
 	InsertPoints(context.Context, *PointInfoListReq) (*CommonReply, error)
@@ -376,7 +409,12 @@ type RpcInterfaceServer interface {
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为删除成功的个数,失败<0
 	// 备注：通过PointInfo中的id进行关联删除，如果首个元素id为-1，则通过使用name进行匹配删除，
-	DelPoints(context.Context, *PointInfoListReq) (*CommonReply, error)
+	DelPoints(context.Context, *IdOrNameListReq) (*CommonReply, error)
+	// 功能：测点操作--更新测点基础信息
+	// 参数说明：入参、出差参考请求、响应体注释
+	// errMsg.code：成功>=0，失败<0
+	// 备注：通过PointInfo中的pointId更新测点
+	UpdatePoint(context.Context, *rpc.PointInfo) (*CommonReply, error)
 	// 功能：测点操作--更新测点基础信息
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为更新成功的个数,失败<0
@@ -390,11 +428,11 @@ type RpcInterfaceServer interface {
 	// 功能：测点操作--使用测点名查询测点ID
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为查询成功的个数,失败<0
-	QueryPointIdListByNameList(context.Context, *NameList) (*QueryPointIdListByNameListReply, error)
+	QueryPointIdListByNameList(context.Context, *NameListReq) (*QueryPointIdListByNameListReply, error)
 	// 功能：测点操作--使用测点名或ID批量查询测点信息
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为查询成功的个数,失败<0
-	QueryPointInfoList(context.Context, *QueryRealtimeValueListReq) (*QueryPointInfoReply, error)
+	QueryPointInfoList(context.Context, *IdOrNameListReq) (*QueryPointInfoReply, error)
 	// 实时值--写入实时值
 	// 参数说明：入参、出差参考请求、响应体注释
 	// error_code.app_code说明：成功>=0,写入成功的个数,失败<0
@@ -404,7 +442,7 @@ type RpcInterfaceServer interface {
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为查询成功的个数,失败<0
 	// 备注：DataListRes中resultList为获取各个值的成功状态，失败<0为对应的错误码，全成功时为空
-	QueryRealtimeValueList(context.Context, *QueryRealtimeValueListReq) (*ValueListReply, error)
+	QueryRealtimeValueList(context.Context, *IdOrNameListReq) (*ValueListReply, error)
 	// 历史值--通过测点ID查询时间段范围内的数据值
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为查询成功的个数,失败<0
@@ -453,11 +491,17 @@ func (UnimplementedRpcInterfaceServer) QueryTableList(context.Context, *QueryTab
 func (UnimplementedRpcInterfaceServer) QueryTablePointCount(context.Context, *QueryPointCountReq) (*QueryPointCountReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryTablePointCount not implemented")
 }
+func (UnimplementedRpcInterfaceServer) InsertPoint(context.Context, *rpc.PointInfo) (*CommonReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InsertPoint not implemented")
+}
 func (UnimplementedRpcInterfaceServer) InsertPoints(context.Context, *PointInfoListReq) (*CommonReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InsertPoints not implemented")
 }
-func (UnimplementedRpcInterfaceServer) DelPoints(context.Context, *PointInfoListReq) (*CommonReply, error) {
+func (UnimplementedRpcInterfaceServer) DelPoints(context.Context, *IdOrNameListReq) (*CommonReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DelPoints not implemented")
+}
+func (UnimplementedRpcInterfaceServer) UpdatePoint(context.Context, *rpc.PointInfo) (*CommonReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePoint not implemented")
 }
 func (UnimplementedRpcInterfaceServer) UpdatePoints(context.Context, *PointInfoListReq) (*CommonReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdatePoints not implemented")
@@ -465,16 +509,16 @@ func (UnimplementedRpcInterfaceServer) UpdatePoints(context.Context, *PointInfoL
 func (UnimplementedRpcInterfaceServer) QueryPoints(context.Context, *QueryPointInfoReq) (*QueryPointInfoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryPoints not implemented")
 }
-func (UnimplementedRpcInterfaceServer) QueryPointIdListByNameList(context.Context, *NameList) (*QueryPointIdListByNameListReply, error) {
+func (UnimplementedRpcInterfaceServer) QueryPointIdListByNameList(context.Context, *NameListReq) (*QueryPointIdListByNameListReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryPointIdListByNameList not implemented")
 }
-func (UnimplementedRpcInterfaceServer) QueryPointInfoList(context.Context, *QueryRealtimeValueListReq) (*QueryPointInfoReply, error) {
+func (UnimplementedRpcInterfaceServer) QueryPointInfoList(context.Context, *IdOrNameListReq) (*QueryPointInfoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryPointInfoList not implemented")
 }
 func (UnimplementedRpcInterfaceServer) UpdateRealtimeValueList(context.Context, *UpdateRealtimeValueListReq) (*CommonReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRealtimeValueList not implemented")
 }
-func (UnimplementedRpcInterfaceServer) QueryRealtimeValueList(context.Context, *QueryRealtimeValueListReq) (*ValueListReply, error) {
+func (UnimplementedRpcInterfaceServer) QueryRealtimeValueList(context.Context, *IdOrNameListReq) (*ValueListReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryRealtimeValueList not implemented")
 }
 func (UnimplementedRpcInterfaceServer) QueryHisRangeValueList(context.Context, *QueryHisRangeValueListReq) (*QueryHisValueListReply, error) {
@@ -646,6 +690,24 @@ func _RpcInterface_QueryTablePointCount_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RpcInterface_InsertPoint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rpc.PointInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcInterfaceServer).InsertPoint(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RpcInterface_InsertPoint_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcInterfaceServer).InsertPoint(ctx, req.(*rpc.PointInfo))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RpcInterface_InsertPoints_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PointInfoListReq)
 	if err := dec(in); err != nil {
@@ -665,7 +727,7 @@ func _RpcInterface_InsertPoints_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _RpcInterface_DelPoints_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PointInfoListReq)
+	in := new(IdOrNameListReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -677,7 +739,25 @@ func _RpcInterface_DelPoints_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: RpcInterface_DelPoints_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RpcInterfaceServer).DelPoints(ctx, req.(*PointInfoListReq))
+		return srv.(RpcInterfaceServer).DelPoints(ctx, req.(*IdOrNameListReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RpcInterface_UpdatePoint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(rpc.PointInfo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcInterfaceServer).UpdatePoint(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RpcInterface_UpdatePoint_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcInterfaceServer).UpdatePoint(ctx, req.(*rpc.PointInfo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -719,7 +799,7 @@ func _RpcInterface_QueryPoints_Handler(srv interface{}, ctx context.Context, dec
 }
 
 func _RpcInterface_QueryPointIdListByNameList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NameList)
+	in := new(NameListReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -731,13 +811,13 @@ func _RpcInterface_QueryPointIdListByNameList_Handler(srv interface{}, ctx conte
 		FullMethod: RpcInterface_QueryPointIdListByNameList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RpcInterfaceServer).QueryPointIdListByNameList(ctx, req.(*NameList))
+		return srv.(RpcInterfaceServer).QueryPointIdListByNameList(ctx, req.(*NameListReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _RpcInterface_QueryPointInfoList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryRealtimeValueListReq)
+	in := new(IdOrNameListReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -749,7 +829,7 @@ func _RpcInterface_QueryPointInfoList_Handler(srv interface{}, ctx context.Conte
 		FullMethod: RpcInterface_QueryPointInfoList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RpcInterfaceServer).QueryPointInfoList(ctx, req.(*QueryRealtimeValueListReq))
+		return srv.(RpcInterfaceServer).QueryPointInfoList(ctx, req.(*IdOrNameListReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -773,7 +853,7 @@ func _RpcInterface_UpdateRealtimeValueList_Handler(srv interface{}, ctx context.
 }
 
 func _RpcInterface_QueryRealtimeValueList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryRealtimeValueListReq)
+	in := new(IdOrNameListReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -785,7 +865,7 @@ func _RpcInterface_QueryRealtimeValueList_Handler(srv interface{}, ctx context.C
 		FullMethod: RpcInterface_QueryRealtimeValueList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(RpcInterfaceServer).QueryRealtimeValueList(ctx, req.(*QueryRealtimeValueListReq))
+		return srv.(RpcInterfaceServer).QueryRealtimeValueList(ctx, req.(*IdOrNameListReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -902,12 +982,20 @@ var RpcInterface_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _RpcInterface_QueryTablePointCount_Handler,
 		},
 		{
+			MethodName: "InsertPoint",
+			Handler:    _RpcInterface_InsertPoint_Handler,
+		},
+		{
 			MethodName: "InsertPoints",
 			Handler:    _RpcInterface_InsertPoints_Handler,
 		},
 		{
 			MethodName: "DelPoints",
 			Handler:    _RpcInterface_DelPoints_Handler,
+		},
+		{
+			MethodName: "UpdatePoint",
+			Handler:    _RpcInterface_UpdatePoint_Handler,
 		},
 		{
 			MethodName: "UpdatePoints",
