@@ -15,13 +15,15 @@ type OperatorInfo struct {
 }
 
 type TableInfo struct {
-	TableId           int32             `json:"tableId"`           //表ID
-	TableName         string            `json:"tableName"`         //表名
-	TableShowName     string            `json:"tableShowName"`     //表展示名
-	TableDesc         string            `json:"tableDesc"`         //表描述
-	TableParentId     int32             `json:"tableParentId"`     //表父节点ID
-	ExtraFieldAndDesc map[string]string `json:"extraFiledAndDesc"` //额外的字段与字段名
-	operatorInfo      OperatorInfo      `json:"operatorInfo"`      //用户信息
+	TableId           int32             `json:"tableId"`                                 //表ID
+	TableName         string            `json:"tableName"`                               //表名
+	TableShowName     string            `json:"tableShowName"`                           //表展示名
+	TableDesc         string            `json:"tableDesc"`                               //表描述
+	TableParentId     int32             `json:"tableParentId"`                           //表父节点ID
+	ExtraFieldAndDesc map[string]string `json:"extraFiledAndDesc"`                       //额外的字段与字段名
+	operatorInfo      OperatorInfo      `json:"operatorInfo"`                            //用户信息
+	Children          *[]TableInfo      `json:"children" form:"children" gorm:"-"`       //子点表
+	HasChildren       bool              `json:"hasChildren" form:"hasChildren" gorm:"-"` //是否有子点表
 }
 
 type TablePointCount struct {
@@ -164,6 +166,40 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 	tableInfoList := make([]TableInfo, len(res.TableInfoList))
 	for i, v := range res.TableInfoList {
 		tableInfoList[i].grpc2goTableInfo(v)
+	}
+
+	if queryChildren {
+		dataMap := make(map[int32]*TableInfo)
+		var allData []*TableInfo
+		var rootData []TableInfo
+
+		for _, data := range tableInfoList {
+			// 创建菜单项的映射
+			dataCopy := data
+			dataCopy.Children = &[]TableInfo{}
+			dataCopy.HasChildren = false
+			allData = append(allData, &dataCopy)
+			dataMap[dataCopy.TableId] = &dataCopy
+		}
+
+		for _, data := range allData {
+			if data.TableParentId < 0 {
+				rootData = append(rootData, *data)
+				continue
+			}
+
+			// 有父菜单项，将其添加到父菜单的 Children 中
+			dataParentId := data.TableParentId
+			parentTable, exists := dataMap[dataParentId]
+			if exists {
+				*parentTable.Children = append(*parentTable.Children, *dataMap[data.TableParentId])
+				parentTable.HasChildren = true
+			} else {
+				rootData = append(rootData, *data)
+			}
+		}
+
+		return &rootData, res.GetTotal(), nil
 	}
 
 	return &tableInfoList, res.GetTotal(), nil
