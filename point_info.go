@@ -45,6 +45,81 @@ func (x PointType) StrEnum(str string) PointType {
 	return PointType(PointType_value[str])
 }
 
+// 访问模式
+type AccessMode int32
+
+const (
+	AccessMode_kAmRead  AccessMode = 0 //只读
+	AccessMode_kAmWrite AccessMode = 1 //只写
+	AccessMode_kAmRW    AccessMode = 2 //读写
+)
+
+var (
+	AccessMode_name = map[int32]string{
+		0: "只读",
+		1: "只写",
+		2: "读写",
+	}
+	AccessMode_value = map[string]int32{
+		"只读": 0,
+		"只写": 1,
+		"读写": 2,
+	}
+)
+
+func (x AccessMode) StrEnum(str string) AccessMode {
+	return AccessMode(AccessMode_value[str])
+}
+
+func (x AccessMode) Enum() *AccessMode {
+	p := new(AccessMode)
+	*p = x
+	return p
+}
+
+func (x AccessMode) String() string {
+	return AccessMode_name[int32(x)]
+}
+
+// 字节序
+type ByteOrder int32
+
+const (
+	ByteOrder_kBoABCD ByteOrder = 0
+	ByteOrder_kBoBADC ByteOrder = 1
+	ByteOrder_kBoCDAB ByteOrder = 2
+	ByteOrder_kBoDCBA ByteOrder = 3
+)
+
+var (
+	ByteOrder_name = map[int32]string{
+		0: "ABCD",
+		1: "BADC",
+		2: "CDAB",
+		3: "DCBA",
+	}
+	ByteOrder_value = map[string]int32{
+		"ABCD": 0,
+		"BADC": 1,
+		"CDAB": 2,
+		"DCBA": 3,
+	}
+)
+
+func (x ByteOrder) StrEnum(str string) ByteOrder {
+	return ByteOrder(ByteOrder_value[str])
+}
+
+func (x ByteOrder) Enum() *ByteOrder {
+	p := new(ByteOrder)
+	*p = x
+	return p
+}
+
+func (x ByteOrder) String() string {
+	return ByteOrder_name[int32(x)]
+}
+
 // 压缩模式
 type CompressMode int32
 
@@ -196,7 +271,7 @@ type PointInfo struct {
 	PointUnit      string            `json:"pointUnit"`      //测点单位
 	PointDesc      string            `json:"pointDesc"`      //测点描述
 	PointType      PointType         `json:"pointType"`      //测点类型
-	WriteEnable    bool              `json:"writeEnable"`    //是否可写
+	Access         AccessMode        `json:"access"`         //访问模式
 	CheckEnable    bool              `json:"checkEnable"`    //是否进行值校验
 	LowerThreshold float64           `json:"lowerThreshold"` //低限阈值
 	UpperThreshold float64           `json:"upperThreshold"` //高限阈值
@@ -209,6 +284,8 @@ type PointInfo struct {
 	ValueType      ValueType         `json:"valueType"`      //测点值类型
 	TableId        int32             `json:"tableId"`        //点组ID
 	CreateTime     uint64            `json:"createTime"`     //测点创建时间
+	ByteOrder      ByteOrder         `json:"byteOrder"`      //访问模式
+	SecurityNum    int32             `json:"securityNum"`    //点组ID
 	ExtraField     map[string]string `json:"extraField"`     //自定义的拓展字段
 }
 
@@ -223,7 +300,7 @@ func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {
 	pointInfo.CompressMode = CompressMode_value[point.CompressMode.String()]
 	pointInfo.CompressParam1 = point.CompressParam1
 	pointInfo.CompressParam2 = point.CompressParam2
-	pointInfo.WriteEnable = point.WriteEnable
+	pointInfo.Access = AccessMode_value[point.Access.String()]
 	pointInfo.CheckEnable = point.CheckEnable
 	pointInfo.LowerThreshold = point.LowerThreshold
 	pointInfo.UpperThreshold = point.UpperThreshold
@@ -233,6 +310,8 @@ func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {
 	pointInfo.ValueType = ValueType_value[point.ValueType.String()]
 	pointInfo.TableId = point.TableId
 	pointInfo.CreateTime = point.CreateTime
+	pointInfo.ByteOrder = ByteOrder_value[point.ByteOrder.String()]
+	pointInfo.SecurityNum = point.SecurityNum
 
 	extraField := make(map[string][]byte)
 	for k, v := range point.ExtraField {
@@ -253,7 +332,7 @@ func (point *PointInfo) go2grpcPointInfoWithTableId(tableId int32) (grpc *rpc.Po
 	pointInfo.CompressMode = CompressMode_value[point.CompressMode.String()]
 	pointInfo.CompressParam1 = point.CompressParam1
 	pointInfo.CompressParam2 = point.CompressParam2
-	pointInfo.WriteEnable = point.WriteEnable
+	pointInfo.Access = AccessMode_value[point.Access.String()]
 	pointInfo.CheckEnable = point.CheckEnable
 	pointInfo.LowerThreshold = point.LowerThreshold
 	pointInfo.UpperThreshold = point.UpperThreshold
@@ -263,6 +342,8 @@ func (point *PointInfo) go2grpcPointInfoWithTableId(tableId int32) (grpc *rpc.Po
 	pointInfo.ValueType = ValueType_value[point.ValueType.String()]
 	pointInfo.TableId = tableId
 	pointInfo.CreateTime = point.CreateTime
+	pointInfo.ByteOrder = ByteOrder_value[point.ByteOrder.String()]
+	pointInfo.SecurityNum = point.SecurityNum
 
 	extraField := make(map[string][]byte)
 	for k, v := range point.ExtraField {
@@ -283,7 +364,7 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.CompressParam1 = grpc.CompressParam1
 	point.CompressParam2 = grpc.CompressParam2
 	point.OuttimeDay = grpc.OuttimeDay
-	point.WriteEnable = grpc.WriteEnable
+	point.Access = AccessMode(grpc.Access)
 	point.CheckEnable = grpc.CheckEnable
 	point.LowerThreshold = grpc.LowerThreshold
 	point.UpperThreshold = grpc.UpperThreshold
@@ -292,6 +373,8 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 	point.ValueType = ValueType(grpc.ValueType)
 	point.TableId = grpc.TableId
 	point.CreateTime = grpc.CreateTime
+	point.ByteOrder = ByteOrder(grpc.ByteOrder)
+	point.SecurityNum = grpc.SecurityNum
 
 	extraField := make(map[string]string)
 	for k, v := range grpc.ExtraField {

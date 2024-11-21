@@ -18,7 +18,7 @@ type TableInfo struct {
 	TableId           int32             `json:"tableId"`           //表ID
 	TableName         string            `json:"tableName"`         //表名
 	TableShowName     string            `json:"tableShowName"`     //表展示名
-	TableRemark       string            `json:"tableRemark"`       //表备注
+	TableDesc         string            `json:"tableDesc"`         //表描述
 	TableParentId     int32             `json:"tableParentId"`     //表父节点ID
 	ExtraFieldAndDesc map[string]string `json:"extraFiledAndDesc"` //额外的字段与字段名
 	operatorInfo      OperatorInfo      `json:"operatorInfo"`      //用户信息
@@ -37,7 +37,7 @@ func (table *TableInfo) go2grpcTableInfo() *rpc.TableInfo {
 		extraFieldAndDesc[k] = []byte(v)
 	}
 	grpcTable := rpc.TableInfo{TableId: table.TableId, TableName: table.TableName, TableShowName: table.TableShowName,
-		TableRemark: table.TableRemark, TableParentId: table.TableParentId, ExtraFieldAndDesc: extraFieldAndDesc,
+		TableDesc: table.TableDesc, TableParentId: table.TableParentId, ExtraFieldAndDesc: extraFieldAndDesc,
 		OperatorInfo: &rpc.OperatorInfo{CreateTime: table.operatorInfo.createTime, UpdateTime: table.operatorInfo.updateTime,
 			CreateUserId: uint32(table.operatorInfo.createUserId), UpdateUserId: uint32(table.operatorInfo.updateUserId)}}
 	return &grpcTable
@@ -47,7 +47,7 @@ func (table *TableInfo) grpc2goTableInfo(grpcTableInfo *rpc.TableInfo) {
 	table.TableId = grpcTableInfo.TableId
 	table.TableName = grpcTableInfo.TableName
 	table.TableShowName = grpcTableInfo.TableShowName
-	table.TableRemark = grpcTableInfo.TableRemark
+	table.TableDesc = grpcTableInfo.TableDesc
 	table.TableParentId = grpcTableInfo.TableParentId
 	table.operatorInfo.createTime = grpcTableInfo.OperatorInfo.CreateTime
 	table.operatorInfo.updateTime = grpcTableInfo.OperatorInfo.UpdateTime
@@ -156,7 +156,7 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClient.QueryTableList(ctx, &hhdbRpc.QueryTableReq{TableId: tableInfo.TableId, TableName: tableInfo.TableName, TableShowName: tableInfo.TableShowName, TableRemark: tableInfo.TableRemark,
+	res, err := dbConInfo.dbClient.QueryTableList(ctx, &hhdbRpc.QueryTableReq{TableId: tableInfo.TableId, TableName: tableInfo.TableName, TableShowName: tableInfo.TableShowName, TableDesc: tableInfo.TableDesc,
 		QueryChildren: queryChildren, QueryAllChildren: queryAllChildren, EnablePage: enablePage, Page: page, Limit: limit})
 	if err != nil {
 		return nil, 0, hhdb.handleGrpcError(&err)
