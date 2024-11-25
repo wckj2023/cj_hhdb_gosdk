@@ -2,6 +2,7 @@ package cj_hhdb_gosdk
 
 import (
 	"context"
+	"errors"
 	"github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc"
 	hhdbRpc "github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc_interface"
 	"time"
@@ -82,6 +83,10 @@ func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo *TableInfo) (int32
 	if err != nil {
 		return 0, hhdb.handleGrpcError(&err)
 	}
+
+	if res.GetErrMsg().GetCode() < 0 {
+		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+	}
 	return res.GetErrMsg().GetCode(), nil
 }
 
@@ -101,6 +106,10 @@ func (hhdb *HhdbConPool) DeleteTable(dbName string, tableInfo *TableInfo) (int32
 	if err != nil {
 		return 0, hhdb.handleGrpcError(&err)
 	}
+
+	if res.GetErrMsg().GetCode() < 0 {
+		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+	}
 	return res.GetErrMsg().GetCode(), nil
 }
 
@@ -119,6 +128,10 @@ func (hhdb *HhdbConPool) ClearTable(dbName string, tableInfo *TableInfo) (int32,
 	res, err := dbConInfo.dbClient.ClearTable(ctx, tableInfo.go2grpcTableInfo())
 	if err != nil {
 		return 0, hhdb.handleGrpcError(&err)
+	}
+
+	if res.GetErrMsg().GetCode() < 0 {
+		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
 	}
 	return res.GetErrMsg().GetCode(), nil
 }
@@ -142,6 +155,10 @@ func (hhdb *HhdbConPool) UpdateTable(dbName string, tableInfo *TableInfo) (int32
 	if err != nil {
 		return 0, hhdb.handleGrpcError(&err)
 	}
+
+	if res.GetErrMsg().GetCode() < 0 {
+		return res.GetErrMsg().GetCode(), errors.New(res.GetErrMsg().GetMsg())
+	}
 	return res.GetErrMsg().GetCode(), nil
 }
 
@@ -162,6 +179,10 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 		QueryChildren: queryChildren, QueryAllChildren: queryAllChildren, EnablePage: enablePage, Page: page, Limit: limit})
 	if err != nil {
 		return nil, 0, hhdb.handleGrpcError(&err)
+	}
+
+	if res.GetErrMsg().GetCode() < 0 {
+		return nil, 0, errors.New(res.GetErrMsg().GetMsg())
 	}
 	tableInfoList := make([]TableInfo, len(res.TableInfoList))
 	for i, v := range res.TableInfoList {
@@ -220,6 +241,10 @@ func (hhdb *HhdbConPool) QueryTablePointCount(dbName string, tableInfo *TableInf
 	res, err := dbConInfo.dbClient.QueryTablePointCount(ctx, &hhdbRpc.QueryPointCountReq{TableId: tableInfo.TableId, TableName: tableInfo.TableName, QueryAllChildren: queryAllChildren})
 	if err != nil {
 		return pointCount, hhdb.handleGrpcError(&err)
+	}
+
+	if res.GetErrMsg().GetCode() < 0 {
+		return pointCount, errors.New(res.GetErrMsg().GetMsg())
 	}
 	pointCount.Total = res.GetTotal()
 	pointCount.SwitchTotal = res.GetSwitchTotal()
