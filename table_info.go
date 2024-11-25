@@ -213,7 +213,7 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 			dataParentId := data.TableParentId
 			parentTable, exists := dataMap[dataParentId]
 			if exists {
-				*parentTable.Children = append(*parentTable.Children, *dataMap[data.TableParentId])
+				*parentTable.Children = append(*parentTable.Children, *data)
 				parentTable.HasChildren = true
 			} else {
 				rootData = append(rootData, *data)
