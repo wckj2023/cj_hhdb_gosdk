@@ -265,28 +265,28 @@ func (x ValueType) String() string {
 
 // 测点全量信息
 type PointInfo struct {
-	PointId        int32             `json:"pointId"`        //测点ID，为>=0的整数
-	PointName      string            `json:"pointName"`      //测点名
-	PointShowName  string            `json:"pointShowName"`  //测点展示名
-	PointUnit      string            `json:"pointUnit"`      //测点单位
-	PointDesc      string            `json:"pointDesc"`      //测点描述
-	PointType      PointType         `json:"pointType"`      //测点类型
-	Access         AccessMode        `json:"access"`         //访问模式
-	CheckEnable    bool              `json:"checkEnable"`    //是否进行值校验
-	LowerThreshold float64           `json:"lowerThreshold"` //低限阈值
-	UpperThreshold float64           `json:"upperThreshold"` //高限阈值
-	ValueOffset    float64           `json:"valueOffset"`    //数据偏移量
-	ValueRate      float64           `json:"valueRate"`      //数据倍率
-	CompressMode   CompressMode      `json:"compressMode"`   //压缩模式
-	CompressParam1 float64           `json:"compressParam1"` //压缩备用参数1
-	CompressParam2 float64           `json:"compressParam2"` //压缩备用参数2
-	OuttimeDay     int32             `json:"outtimeDay"`     //超时时间（单位：天）=0则不启用，>0为对应的超时时间，<0代表仅缓存实时数据不存储历史数据
-	ValueType      ValueType         `json:"valueType"`      //测点值类型
-	TableId        int32             `json:"tableId"`        //点组ID
-	CreateTime     uint64            `json:"createTime"`     //测点创建时间
-	ByteOrder      ByteOrder         `json:"byteOrder"`      //访问模式
-	SecurityNum    int32             `json:"securityNum"`    //点组ID
-	ExtraField     map[string]string `json:"extraField"`     //自定义的拓展字段
+	PointId        int32             `json:"pointId" form:"pointId"`               //测点ID，为>=0的整数
+	PointName      string            `json:"pointName" form:"pointName"`           //测点名
+	PointShowName  string            `json:"pointShowName" form:"pointShowName"`   //测点展示名
+	PointUnit      string            `json:"pointUnit" form:"pointUnit"`           //测点单位
+	PointDesc      string            `json:"pointDesc" form:"pointDesc"`           //测点描述
+	PointType      PointType         `json:"pointType" form:"pointType"`           //测点类型
+	Access         AccessMode        `json:"access" form:"access"`                 //访问模式
+	CheckEnable    bool              `json:"checkEnable" form:"checkEnable"`       //是否进行值校验
+	LowerThreshold float64           `json:"lowerThreshold" form:"lowerThreshold"` //低限阈值
+	UpperThreshold float64           `json:"upperThreshold" form:"upperThreshold"` //高限阈值
+	ValueOffset    float64           `json:"valueOffset" form:"valueOffset"`       //数据偏移量
+	ValueRate      float64           `json:"valueRate" form:"valueRate"`           //数据倍率
+	CompressMode   CompressMode      `json:"compressMode" form:"compressMode"`     //压缩模式
+	CompressParam1 float64           `json:"compressParam1" form:"compressParam1"` //压缩备用参数1
+	CompressParam2 float64           `json:"compressParam2" form:"compressParam2"` //压缩备用参数2
+	OuttimeDay     int32             `json:"outtimeDay" form:"outtimeDay"`         //超时时间（单位：天）=0则不启用，>0为对应的超时时间，<0代表仅缓存实时数据不存储历史数据
+	ValueType      ValueType         `json:"valueType" form:"valueType"`           //测点值类型
+	TableId        int32             `json:"tableId" form:"tableId"`               //点组ID
+	CreateTime     uint64            `json:"createTime" form:"createTime"`         //测点创建时间
+	ByteOrder      ByteOrder         `json:"byteOrder" form:"byteOrder"`           //访问模式
+	SecurityNum    int32             `json:"securityNum" form:"securityNum"`       //点组ID
+	ExtraField     map[string]string `json:"extraField" form:"extraField"`         //自定义的拓展字段
 }
 
 func (point *PointInfo) go2grpcPointInfo() (grpc *rpc.PointInfo) {

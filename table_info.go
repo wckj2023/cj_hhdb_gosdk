@@ -9,29 +9,29 @@ import (
 )
 
 type OperatorInfo struct {
-	createTime   uint64 `json:"createTime"`   //创建时间
-	updateTime   uint64 `json:"updateTime"`   //更新时间
-	createUserId int32  `json:"createUserId"` //创建用户ID
-	updateUserId int32  `json:"updateUserId"` //修改用户ID
+	CreateTime   uint64 `json:"CreateTime" form:"CreateTime"`     //创建时间
+	UpdateTime   uint64 `json:"UpdateTime" form:"UpdateTime"`     //更新时间
+	CreateUserId int32  `json:"CreateUserId" form:"CreateUserId"` //创建用户ID
+	UpdateUserId int32  `json:"UpdateUserId" form:"UpdateUserId"` //修改用户ID
 }
 
 type TableInfo struct {
-	TableId           int32             `json:"tableId"`                                 //表ID
-	TableName         string            `json:"tableName"`                               //表名
-	TableShowName     string            `json:"tableShowName"`                           //表展示名
-	TableDesc         string            `json:"tableDesc"`                               //表描述
-	TableParentId     int32             `json:"tableParentId"`                           //表父节点ID
-	ExtraFieldAndDesc map[string]string `json:"extraFiledAndDesc"`                       //额外的字段与字段名
-	operatorInfo      OperatorInfo      `json:"operatorInfo"`                            //用户信息
-	Children          *[]TableInfo      `json:"children" form:"children" gorm:"-"`       //子点表
-	HasChildren       bool              `json:"hasChildren" form:"hasChildren" gorm:"-"` //是否有子点表
+	TableId           int32             `json:"tableId" form:"tableId"`                     //表ID
+	TableName         string            `json:"tableName" form:"tableName"`                 //表名
+	TableShowName     string            `json:"tableShowName" form:"tableShowName"`         //表展示名
+	TableDesc         string            `json:"tableDesc" form:"tableDesc"`                 //表描述
+	TableParentId     int32             `json:"tableParentId" form:"tableParentId"`         //表父节点ID
+	ExtraFieldAndDesc map[string]string `json:"extraFiledAndDesc" form:"extraFiledAndDesc"` //额外的字段与字段名
+	OperatorInfo      OperatorInfo      `json:"OperatorInfo" form:"OperatorInfo"`           //用户信息
+	Children          *[]TableInfo      `json:"children" form:"children" `                  //子点表
+	HasChildren       bool              `json:"hasChildren" form:"hasChildren" `            //是否有子点表
 }
 
 type TablePointCount struct {
-	Total        int32 `json:"total"`        //总点数
-	SwitchTotal  int32 `json:"switchTotal"`  //开关量总点数
-	AnalogTotal  int32 `json:"analogTotal"`  //模拟量总点数
-	PackageTotal int32 `json:"packageTotal"` //打包点总点数
+	Total        int32 `json:"total" form:"total"`               //总点数
+	SwitchTotal  int32 `json:"switchTotal" form:"switchTotal"`   //开关量总点数
+	AnalogTotal  int32 `json:"analogTotal" form:"analogTotal"`   //模拟量总点数
+	PackageTotal int32 `json:"packageTotal" form:"packageTotal"` //打包点总点数
 }
 
 func (table *TableInfo) go2grpcTableInfo() *rpc.TableInfo {
@@ -41,8 +41,8 @@ func (table *TableInfo) go2grpcTableInfo() *rpc.TableInfo {
 	}
 	grpcTable := rpc.TableInfo{TableId: table.TableId, TableName: table.TableName, TableShowName: table.TableShowName,
 		TableDesc: table.TableDesc, TableParentId: table.TableParentId, ExtraFieldAndDesc: extraFieldAndDesc,
-		OperatorInfo: &rpc.OperatorInfo{CreateTime: table.operatorInfo.createTime, UpdateTime: table.operatorInfo.updateTime,
-			CreateUserId: uint32(table.operatorInfo.createUserId), UpdateUserId: uint32(table.operatorInfo.updateUserId)}}
+		OperatorInfo: &rpc.OperatorInfo{CreateTime: table.OperatorInfo.CreateTime, UpdateTime: table.OperatorInfo.UpdateTime,
+			CreateUserId: uint32(table.OperatorInfo.CreateUserId), UpdateUserId: uint32(table.OperatorInfo.UpdateUserId)}}
 	return &grpcTable
 }
 
@@ -52,10 +52,10 @@ func (table *TableInfo) grpc2goTableInfo(grpcTableInfo *rpc.TableInfo) {
 	table.TableShowName = grpcTableInfo.TableShowName
 	table.TableDesc = grpcTableInfo.TableDesc
 	table.TableParentId = grpcTableInfo.TableParentId
-	table.operatorInfo.createTime = grpcTableInfo.OperatorInfo.CreateTime
-	table.operatorInfo.updateTime = grpcTableInfo.OperatorInfo.UpdateTime
-	table.operatorInfo.createUserId = int32(grpcTableInfo.OperatorInfo.CreateUserId)
-	table.operatorInfo.updateUserId = int32(grpcTableInfo.OperatorInfo.UpdateUserId)
+	table.OperatorInfo.CreateTime = grpcTableInfo.OperatorInfo.CreateTime
+	table.OperatorInfo.UpdateTime = grpcTableInfo.OperatorInfo.UpdateTime
+	table.OperatorInfo.CreateUserId = int32(grpcTableInfo.OperatorInfo.CreateUserId)
+	table.OperatorInfo.UpdateUserId = int32(grpcTableInfo.OperatorInfo.UpdateUserId)
 	extraFieldAndDesc := make(map[string]string)
 	for k, v := range grpcTableInfo.ExtraFieldAndDesc {
 		extraFieldAndDesc[k] = string(v)
@@ -72,10 +72,10 @@ func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo *TableInfo) (int32
 		return 0, err
 	}
 
-	tableInfo.operatorInfo.createTime = uint64(time.Now().UTC().UnixMilli())
-	tableInfo.operatorInfo.updateTime = uint64(time.Now().UTC().UnixMilli())
-	tableInfo.operatorInfo.createUserId = dbConInfo.dbId
-	tableInfo.operatorInfo.updateUserId = dbConInfo.dbId
+	tableInfo.OperatorInfo.CreateTime = uint64(time.Now().UTC().UnixMilli())
+	tableInfo.OperatorInfo.UpdateTime = uint64(time.Now().UTC().UnixMilli())
+	tableInfo.OperatorInfo.CreateUserId = dbConInfo.dbId
+	tableInfo.OperatorInfo.UpdateUserId = dbConInfo.dbId
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
@@ -146,8 +146,8 @@ func (hhdb *HhdbConPool) UpdateTable(dbName string, tableInfo *TableInfo) (int32
 		return 0, err
 	}
 
-	tableInfo.operatorInfo.updateTime = uint64(time.Now().UTC().UnixMilli())
-	tableInfo.operatorInfo.updateUserId = dbConInfo.dbId
+	tableInfo.OperatorInfo.UpdateTime = uint64(time.Now().UTC().UnixMilli())
+	tableInfo.OperatorInfo.UpdateUserId = dbConInfo.dbId
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()

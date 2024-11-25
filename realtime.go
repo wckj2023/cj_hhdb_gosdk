@@ -83,9 +83,9 @@ func (x PointStatus) String() string {
 }
 
 type PointValue struct {
-	Value  interface{} `json:"v"` //测点值
-	Mstime uint64      `json:"t"` //测点值时间
-	Status PointStatus `json:"s"` //测点值状态
+	Value  interface{} `json:"v" form:"v"` //测点值
+	Mstime uint64      `json:"t" form:"t"` //测点值时间
+	Status PointStatus `json:"s" form:"s"` //测点值状态
 }
 
 func (pointValue *PointValue) go2grpcPointValue() (grpcValue *rpc.PointValue) {
