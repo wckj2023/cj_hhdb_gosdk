@@ -94,7 +94,7 @@ func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo *TableInfo) (int32
 // 参数说明：dbName：数据库名，tableInfo：删除点表信息
 // 返回值：成功int32>=0，为删除表的ID,失败<0
 // 备注：通过TableInfo中的tableId删除表,tableId<0时,使用tableName进行匹配删除
-func (hhdb *HhdbConPool) DeleteTable(dbName string, tableInfo *TableInfo) (int32, error) {
+func (hhdb *HhdbConPool) DelTable(dbName string, tableInfo *TableInfo) (int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, err
