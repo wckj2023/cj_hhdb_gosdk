@@ -408,27 +408,14 @@ func (hhdb *HhdbConPool) InsertPoint(dbName string, point *PointInfo) (int32, er
 // 功能：测点操作--添加测点
 // 参数说明：dbName：数据库名，tableInfo：点表信息，tableId<0时通过tableName进行匹配，pointList:插入测点列表
 // 返回值：int32：成功>0，为添加成功的个数,失败<=0， []int32：返回各个测点的ID，小于0时代表添加失败的错误码，全成功时为空
-func (hhdb *HhdbConPool) InsertPoints(dbName string, tableInfo *TableInfo, pointList *[]PointInfo) (int32, []int32, error) {
+func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, []int32{}, err
 	}
-	tableList, _, err := hhdb.QueryTableList(dbName, tableInfo, false, false, false, 0, 0)
-	if err != nil {
-		return 0, nil, err
-	}
-
-	if len(*tableList) == 0 {
-		tableInfo.TableId, err = hhdb.InsertTable(dbName, tableInfo)
-		if err != nil {
-			return 0, nil, err
-		}
-	} else {
-		tableInfo.TableId = (*tableList)[0].TableId
-	}
 	req := hhdbRpc.PointInfoListReq{}
 	for i := 0; i < len(*pointList); i++ {
-		req.PointInfoList = append(req.PointInfoList, (*pointList)[i].go2grpcPointInfoWithTableId(tableInfo.TableId))
+		req.PointInfoList = append(req.PointInfoList, (*pointList)[i].go2grpcPointInfo())
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
