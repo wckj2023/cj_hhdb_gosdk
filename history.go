@@ -125,8 +125,8 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByIdList(dbName string, pointI
 	req := hhdbRpc.QueryHisRangeValueListReq{}
 	req.IdList = *pointIdList
 	req.QueryMode = RangeQueryMode_value[mode.String()]
-	req.StartMstime = startMs
-	req.EndMstime = endMs
+	req.StartMsTime = startMs
+	req.EndMsTime = endMs
 	res, err := dbConInfo.dbClient.QueryHisRangeValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, hhdb.handleGrpcError(&err)
@@ -159,8 +159,8 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByNameList(dbName string, poin
 	req := hhdbRpc.QueryHisRangeValueListReq{}
 	req.NameList = *pointNameList
 	req.QueryMode = RangeQueryMode_value[mode.String()]
-	req.StartMstime = startMs
-	req.EndMstime = endMs
+	req.StartMsTime = startMs
+	req.EndMsTime = endMs
 	res, err := dbConInfo.dbClient.QueryHisRangeValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, hhdb.handleGrpcError(&err)
@@ -193,9 +193,9 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByIdList(dbName string, pointI
 	req := hhdbRpc.QueryHisResamplesValueListReq{}
 	req.IdList = *pointIdList
 	req.ResampleMode = ResampleMode_value[mode.String()]
-	req.StartMstime = startMs
-	req.EndMstime = endMs
-	req.PriodMs = priodMs
+	req.StartMsTime = startMs
+	req.EndMsTime = endMs
+	req.PeriodMs = priodMs
 	res, err := dbConInfo.dbClient.QueryHisResampleValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, hhdb.handleGrpcError(&err)
@@ -228,9 +228,9 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByNameList(dbName string, poin
 	req := hhdbRpc.QueryHisResamplesValueListReq{}
 	req.NameList = *pointNameList
 	req.ResampleMode = ResampleMode_value[mode.String()]
-	req.StartMstime = startMs
-	req.EndMstime = endMs
-	req.PriodMs = priodMs
+	req.StartMsTime = startMs
+	req.EndMsTime = endMs
+	req.PeriodMs = priodMs
 	res, err := dbConInfo.dbClient.QueryHisResampleValueList(ctx, &req)
 	if err != nil {
 		return nil, nil, hhdb.handleGrpcError(&err)
