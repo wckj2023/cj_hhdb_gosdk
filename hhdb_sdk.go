@@ -7,6 +7,7 @@ import (
 	"errors"
 	hhdbRpc "github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc_interface"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 	"sync"
 	"time"
@@ -71,7 +72,7 @@ func (hhdb *HhdbConPool) getDbCon(dbName string) (*dbConObject, error) {
 	}
 
 	//连接未建立或连接断开，则进行重连
-	if dbConInfo.dbCon == nil || dbConInfo.dbCon.GetState().String() == "SHUTDOWN" {
+	if dbConInfo.dbCon == nil || dbConInfo.dbCon.GetState() > connectivity.Ready {
 		con, err := grpc.Dial(dbConInfo.DbInfo.Url, grpc.WithTransportCredentials(insecure.NewCredentials()))
 		if err != nil {
 			return nil, hhdb.handleGrpcError(&err)
