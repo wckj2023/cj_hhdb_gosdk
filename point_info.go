@@ -179,18 +179,19 @@ const (
 	ValueType_kVtLong      ValueType = 9  //有符号的 64 位整数数据
 	ValueType_kVtQword     ValueType = 10 //无符号的 64 位整数数据
 	ValueType_kVtString    ValueType = 11 //字符串
-	ValueType_kVtBoolArr   ValueType = 12 //bool数组
-	ValueType_kVtFloatArr  ValueType = 13 //32 位实数值浮点型数组
-	ValueType_kVtDoubleArr ValueType = 14 //64 位实数值浮点型数组
-	ValueType_kVtCharArr   ValueType = 15 //char数组
-	ValueType_kVtByteArr   ValueType = 16 //byte数组
-	ValueType_kVtShortArr  ValueType = 17 //short数组
-	ValueType_kVtWordArr   ValueType = 18 //word数组
-	ValueType_kVtIntArr    ValueType = 19 //有符号的 32 位整数数据数组
-	ValueType_kVtDwordArr  ValueType = 20 //无符号的 32 位整数数据数组
-	ValueType_kVtLongArr   ValueType = 21 //有符号的 64 位整数数据数组
-	ValueType_kVtQwordArr  ValueType = 22 //无符号的 64 位整数数据数组
-	ValueType_kVtStringArr ValueType = 23 //字符串数组
+	ValueType_kVtBlob      ValueType = 12 //字符串
+	ValueType_kVtBoolArr   ValueType = 13 //bool数组
+	ValueType_kVtFloatArr  ValueType = 14 //32 位实数值浮点型数组
+	ValueType_kVtDoubleArr ValueType = 15 //64 位实数值浮点型数组
+	ValueType_kVtCharArr   ValueType = 16 //char数组
+	ValueType_kVtByteArr   ValueType = 17 //byte数组
+	ValueType_kVtShortArr  ValueType = 18 //short数组
+	ValueType_kVtWordArr   ValueType = 19 //word数组
+	ValueType_kVtIntArr    ValueType = 20 //有符号的 32 位整数数据数组
+	ValueType_kVtDwordArr  ValueType = 21 //无符号的 32 位整数数据数组
+	ValueType_kVtLongArr   ValueType = 22 //有符号的 64 位整数数据数组
+	ValueType_kVtQwordArr  ValueType = 23 //无符号的 64 位整数数据数组
+	ValueType_kVtStringArr ValueType = 24 //字符串数组
 )
 
 // Enum value maps for ValueType.
@@ -208,18 +209,19 @@ var (
 		9:  "long",         //有符号的 64 位整数数据
 		10: "qword",        //无符号的 64 位整数数据
 		11: "string",       //字符串
-		12: "bool array",   //bool数组
-		13: "float array",  //32 位实数值浮点型数组
-		14: "double array", //64 位实数值浮点型数组
-		15: "char array",   //char数组
-		16: "byte array",   //byte数组
-		17: "short array",  //short数组
-		18: "word array",   //word数组
-		19: "int array",    //有符号的 32 位整数数据数组
-		20: "dword array",  //无符号的 32 位整数数据数组
-		21: "long array",   //有符号的 64 位整数数据数组
-		22: "qword array",  //无符号的 64 位整数数据数组
-		23: "string array", //字符串数组
+		12: "blob",         //二进制块
+		13: "bool array",   //bool数组
+		14: "float array",  //32 位实数值浮点型数组
+		15: "double array", //64 位实数值浮点型数组
+		16: "char array",   //char数组
+		17: "byte array",   //byte数组
+		18: "short array",  //short数组
+		19: "word array",   //word数组
+		20: "int array",    //有符号的 32 位整数数据数组
+		21: "dword array",  //无符号的 32 位整数数据数组
+		22: "long array",   //有符号的 64 位整数数据数组
+		23: "qword array",  //无符号的 64 位整数数据数组
+		24: "string array", //字符串数组
 	}
 	ValueType_value = map[string]int32{
 		"bool":         0,
@@ -234,18 +236,19 @@ var (
 		"long":         9,
 		"qword":        10,
 		"string":       11,
-		"bool array":   12,
-		"float array":  13,
-		"double array": 14,
-		"char array":   15,
-		"byte array":   16,
-		"short array":  17,
-		"word array":   18,
-		"int array":    19,
-		"dword array":  20,
-		"long array":   21,
-		"qword array":  22,
-		"string array": 23,
+		"blob":         12,
+		"bool array":   13,
+		"float array":  14,
+		"double array": 15,
+		"char array":   16,
+		"byte array":   17,
+		"short array":  18,
+		"word array":   19,
+		"int array":    20,
+		"dword array":  21,
+		"long array":   22,
+		"qword array":  23,
+		"string array": 24,
 	}
 )
 
