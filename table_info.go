@@ -178,7 +178,7 @@ func (hhdb *HhdbConPool) UpdateTable(dbName string, tableInfo *TableInfo) (int32
 // 参数说明：dbName：数据库名，tableInfo：查询点表信息，queryChildren：是否查询下一级子节点，queryAllChildren：是否查询所有关联层级子节点
 // 返回值：点组列表,查询总数,错误信息
 // group_id>=0时,通过id获取点组信息,当group_id<0时,通过GroupInfo.group_name进行匹配获取数据,group_name为空且group_id<0时返回全部点组
-func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, queryChildren bool, queryAllChildren bool,
+func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, queryChildren bool, queryAllChildren bool, treeEnable bool,
 	enablePage bool, page uint32, limit uint32) (*[]TableInfo, int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
@@ -212,7 +212,7 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 		tableInfoList[i].grpc2goTableInfo(v)
 	}
 
-	if queryChildren {
+	if treeEnable {
 		dataMap := make(map[int32]*TableInfo)
 		var allData []*TableInfo
 		var rootData []TableInfo
