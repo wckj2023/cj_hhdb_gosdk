@@ -390,6 +390,9 @@ func (point *PointInfo) grpc2goPointInfo(grpc *rpc.PointInfo) {
 // 参数说明：dbName：数据库名，point：创建测点
 // 返回值：int32：成功>0，为添加成功的点位ID,失败<=0
 func (hhdb *HhdbConPool) InsertPoint(dbName string, point *PointInfo) (int32, error) {
+	if point == nil {
+		return -1, errors.New("point info is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return -1, err
@@ -411,10 +414,13 @@ func (hhdb *HhdbConPool) InsertPoint(dbName string, point *PointInfo) (int32, er
 // 功能：测点操作--添加测点
 // 参数说明：dbName：数据库名，tableInfo：点表信息，tableId<0时通过tableName进行匹配，pointList:插入测点列表
 // 返回值：int32：成功>0，为添加成功的个数,失败<=0， []int32：返回各个测点的ID，小于0时代表添加失败的错误码，全成功时为空
-func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
+func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (int32, *[]int32, error) {
+	if pointList == nil {
+		return -1, nil, errors.New("point info is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return 0, []int32{}, err
+		return 0, nil, err
 	}
 	req := hhdbRpc.PointInfoListReq{}
 	for i := 0; i < len(*pointList); i++ {
@@ -428,9 +434,9 @@ func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (in
 	}
 
 	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
+		return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
 	}
-	return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, nil
+	return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, nil
 }
 
 // 功能：测点操作--删除测点
@@ -459,7 +465,10 @@ func (hhdb *HhdbConPool) DelPoint(dbName string, id int32) (int32, error) {
 // 功能：测点操作--删除测点
 // 参数说明：dbName：数据库名，idList:删除测点ID列表，nameList：删除测点点名列表，idList不为空时，忽略nameList
 // 返回值：int32：成功>0，为删除成功的个数,失败<=0， []int32：返回各个测点的ID，小于0时代表失败的错误码，全成功时为空
-func (hhdb *HhdbConPool) DelPoints(dbName string, idList *[]int32, nameList *[]string) (int32, []int32, error) {
+func (hhdb *HhdbConPool) DelPoints(dbName string, idList *[]int32, nameList *[]string) (int32, *[]int32, error) {
+	if idList == nil {
+		return -1, nil, errors.New("id[] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, nil, err
@@ -478,15 +487,18 @@ func (hhdb *HhdbConPool) DelPoints(dbName string, idList *[]int32, nameList *[]s
 	}
 
 	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
+		return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
 	}
-	return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, nil
+	return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, nil
 }
 
 // 功能：测点操作--通过测点ID更新测点基础信息
 // 参数说明：dbName：数据库名，point:测点信息
 // 返回值：int32：成功>0，为删除成功的个数,失败<=0
 func (hhdb *HhdbConPool) UpdatePoint(dbName string, point *PointInfo) (int32, error) {
+	if point == nil {
+		return -1, errors.New("point is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, err
@@ -506,10 +518,13 @@ func (hhdb *HhdbConPool) UpdatePoint(dbName string, point *PointInfo) (int32, er
 // 功能：测点操作--更新测点基础信息
 // 参数说明：dbName：数据库名，pointList:更新测点列表，通过PointId进行关联更新，如果首个元素PointId为-1，则通过使用PointName进行匹配更新
 // 返回值：int32：成功>0，为更新成功的个数,失败<=0，[]int32：返回更新成功的各个测点ID，返回小于0时代表添加失败的错误码，全成功时为空
-func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (int32, []int32, error) {
+func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (int32, *[]int32, error) {
+	if pointList == nil {
+		return -1, nil, errors.New("point[] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
-		return 0, []int32{}, err
+		return 0, nil, err
 	}
 	req := hhdbRpc.PointInfoListReq{}
 	for i := 0; i < len(*pointList); i++ {
@@ -522,9 +537,9 @@ func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (in
 		return 0, nil, hhdb.handleGrpcError(&err)
 	}
 	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
+		return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
 	}
-	return res.GetErrMsg().GetCode(), res.GetIdOrErrCodeList(), nil
+	return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, nil
 }
 
 // 功能：测点操作--查询测点基础信息
@@ -551,13 +566,20 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
+	var req *hhdbRpc.QueryPointInfoReq
 	searchMap := make(map[string][]byte)
-	for k, v := range pointSearchInfo.ExtraField {
-		searchMap[k] = []byte(v)
+	if pointSearchInfo == nil {
+		req = &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: -1, PointId: -1, PointType: -1, EnablePage: enablePage,
+			Page: page, Limit: limit}
+	} else {
+		for k, v := range pointSearchInfo.ExtraField {
+			searchMap[k] = []byte(v)
+		}
+		req = &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
+			ShowNameRegex: pointSearchInfo.PointShowName, DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: searchMap, EnablePage: enablePage,
+			Page: page, Limit: limit}
 	}
-	res, err := dbConInfo.dbClient.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
-		ShowNameRegex: pointSearchInfo.PointShowName, DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: searchMap, EnablePage: enablePage,
-		Page: page, Limit: limit})
+	res, err := dbConInfo.dbClient.QueryPoints(ctx, req)
 	if err != nil {
 		return nil, 0, hhdb.handleGrpcError(&err)
 	}
@@ -570,14 +592,16 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 		pointList[i].grpc2goPointInfo(res.PointInfoList[i])
 	}
 	total = res.GetTotal()
+	//测点太多遍历获取完
 	if !enablePage && int32(len(pointList)) < total {
 		pageAdd := 1
 		newLimit := len(pointList)
 		tempInfo := PointInfo{}
 		for int32(len(pointList)) < total {
-			res, err = dbConInfo.dbClient.QueryPoints(ctx, &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
-				ShowNameRegex: pointSearchInfo.PointShowName, DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: searchMap, EnablePage: true,
-				Page: uint32(pageAdd), Limit: uint32(newLimit)})
+			req.Page = uint32(pageAdd)
+			req.Limit = uint32(newLimit)
+
+			res, err = dbConInfo.dbClient.QueryPoints(ctx, req)
 			if res.GetErrMsg().GetCode() < 0 {
 				break
 			}
@@ -595,6 +619,9 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 // 参数说明：dbName：数据库名，pointIdList:测点ID列表
 // 返回值：测点信息列表
 func (hhdb *HhdbConPool) QueryPointInfoListByID(dbName string, pointIdList *[]int32) (*[]PointInfo, error) {
+	if pointIdList == nil {
+		return nil, errors.New("id[] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, err
@@ -623,6 +650,9 @@ func (hhdb *HhdbConPool) QueryPointInfoListByID(dbName string, pointIdList *[]in
 // 参数说明：dbName：数据库名，pointNameList:测点名列表
 // 返回值：测点信息列表
 func (hhdb *HhdbConPool) QueryPointInfoListByName(dbName string, pointNameList *[]string) (*[]PointInfo, error) {
+	if pointNameList == nil {
+		return nil, errors.New("name[] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, err

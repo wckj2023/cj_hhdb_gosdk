@@ -115,6 +115,9 @@ func (x RangeQueryMode) String() string {
 }
 
 func (hhdb *HhdbConPool) QueryHisRangeValueListReqByIdList(dbName string, pointIdList *[]int32, startMs uint64, endMs uint64, mode RangeQueryMode) (*[][]PointValue, *[]int32, error) {
+	if pointIdList == nil {
+		return nil, nil, errors.New("id[] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, nil, err
@@ -149,6 +152,9 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByIdList(dbName string, pointI
 }
 
 func (hhdb *HhdbConPool) QueryHisRangeValueListReqByNameList(dbName string, pointNameList *[]string, startMs uint64, endMs uint64, mode RangeQueryMode) (*[][]PointValue, *[]int32, error) {
+	if pointNameList == nil {
+		return nil, nil, errors.New("name[] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, nil, err
@@ -183,6 +189,9 @@ func (hhdb *HhdbConPool) QueryHisRangeValueListReqByNameList(dbName string, poin
 }
 
 func (hhdb *HhdbConPool) QueryHisResampleValueListByIdList(dbName string, pointIdList *[]int32, startMs uint64, endMs uint64, priodMs uint64, mode ResampleMode) (*[][]PointValue, *[]int32, error) {
+	if pointIdList == nil {
+		return nil, nil, errors.New("id [] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, nil, err
@@ -218,6 +227,9 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByIdList(dbName string, pointI
 }
 
 func (hhdb *HhdbConPool) QueryHisResampleValueListByNameList(dbName string, pointNameList *[]string, startMs uint64, endMs uint64, priodMs uint64, mode ResampleMode) (*[][]PointValue, *[]int32, error) {
+	if pointNameList == nil {
+		return nil, nil, errors.New("name[] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, nil, err
@@ -253,6 +265,9 @@ func (hhdb *HhdbConPool) QueryHisResampleValueListByNameList(dbName string, poin
 }
 
 func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, pointIdList *[]int32, MsTimePointList *[]uint64, mode ResampleMode) (*[]PointValue, *[]int32, error) {
+	if pointIdList == nil {
+		return nil, nil, errors.New("id [] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, nil, err
@@ -283,6 +298,9 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByIdList(dbName string, point
 }
 
 func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, pointNameList *[]string, MsTimePointList *[]uint64, mode ResampleMode) (*[]PointValue, *[]int32, error) {
+	if pointNameList == nil {
+		return nil, nil, errors.New("name[] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, nil, err
@@ -313,6 +331,9 @@ func (hhdb *HhdbConPool) QueryHisTimePointValueListByNameList(dbName string, poi
 }
 
 func (hhdb *HhdbConPool) InsertHisValueListByIdList(dbName string, pointIdList *[]int32, valueList *[][]PointValue) (*[]int32, error) {
+	if pointIdList == nil || valueList == nil {
+		return nil, errors.New("id or value [] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, err
@@ -342,6 +363,9 @@ func (hhdb *HhdbConPool) InsertHisValueListByIdList(dbName string, pointIdList *
 }
 
 func (hhdb *HhdbConPool) InsertHisValueListByNameList(dbName string, pointNameList *[]string, valueList *[][]PointValue) (*[]int32, error) {
+	if pointNameList == nil || valueList == nil {
+		return nil, errors.New("name or value [] is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, err
