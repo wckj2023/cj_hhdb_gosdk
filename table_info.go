@@ -67,6 +67,9 @@ func (table *TableInfo) grpc2goTableInfo(grpcTableInfo *rpc.TableInfo) {
 // 参数说明：dbName：数据库名，tableInfo：新增点表信息
 // 返回值：成功int32>=0，为新增表的ID,失败<0
 func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo *TableInfo) (int32, error) {
+	if tableInfo == nil {
+		return -1, errors.New("table info is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, err
@@ -95,6 +98,9 @@ func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo *TableInfo) (int32
 // 返回值：成功int32>=0，为删除表的ID,失败<0
 // 备注：通过TableInfo中的tableId删除表,tableId<0时,使用tableName进行匹配删除
 func (hhdb *HhdbConPool) DelTable(dbName string, tableInfo *TableInfo) (int32, error) {
+	if tableInfo == nil {
+		return -1, errors.New("table info is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, err
@@ -118,6 +124,9 @@ func (hhdb *HhdbConPool) DelTable(dbName string, tableInfo *TableInfo) (int32, e
 // 返回值：成功int32>=0，为清空表的ID,失败<0
 // 备注：通过TableInfo中的tableId清空表,tableId<0时,使用tableName进行匹配清空
 func (hhdb *HhdbConPool) ClearTable(dbName string, tableInfo *TableInfo) (int32, error) {
+	if tableInfo == nil {
+		return -1, errors.New("table info is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, err
@@ -141,6 +150,9 @@ func (hhdb *HhdbConPool) ClearTable(dbName string, tableInfo *TableInfo) (int32,
 // 返回值：成功int32>=0，为删除表的ID,失败<0
 // 备注：通过TableInfo中的tableId更新表
 func (hhdb *HhdbConPool) UpdateTable(dbName string, tableInfo *TableInfo) (int32, error) {
+	if tableInfo == nil {
+		return -1, errors.New("table info is empty")
+	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return 0, err
@@ -166,7 +178,7 @@ func (hhdb *HhdbConPool) UpdateTable(dbName string, tableInfo *TableInfo) (int32
 // 参数说明：dbName：数据库名，tableInfo：查询点表信息，queryChildren：是否查询下一级子节点，queryAllChildren：是否查询所有关联层级子节点
 // 返回值：点组列表,查询总数,错误信息
 // group_id>=0时,通过id获取点组信息,当group_id<0时,通过GroupInfo.group_name进行匹配获取数据,group_name为空且group_id<0时返回全部点组
-func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, queryChildren bool, queryAllChildren bool,
+func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, queryChildren bool, queryAllChildren bool, treeEnable bool,
 	enablePage bool, page uint32, limit uint32) (*[]TableInfo, int32, error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
@@ -175,8 +187,19 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClient.QueryTableList(ctx, &hhdbRpc.QueryTableReq{TableId: tableInfo.TableId, TableName: tableInfo.TableName, TableShowName: tableInfo.TableShowName, TableDesc: tableInfo.TableDesc,
-		QueryChildren: queryChildren, QueryAllChildren: queryAllChildren, EnablePage: enablePage, Page: page, Limit: limit})
+	req := hhdbRpc.QueryTableReq{QueryChildren: queryChildren, QueryAllChildren: queryAllChildren,
+		EnablePage: enablePage, Page: page, Limit: limit}
+	if tableInfo == nil {
+		req.TableId = -1
+	} else {
+		req.TableId = tableInfo.TableId
+		req.TableName = tableInfo.TableName
+		req.TableShowName = tableInfo.TableShowName
+		req.TableDesc = tableInfo.TableDesc
+
+	}
+
+	res, err := dbConInfo.dbClient.QueryTableList(ctx, &req)
 	if err != nil {
 		return nil, 0, hhdb.handleGrpcError(&err)
 	}
@@ -189,7 +212,7 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 		tableInfoList[i].grpc2goTableInfo(v)
 	}
 
-	if queryChildren {
+	if treeEnable {
 		dataMap := make(map[int32]*TableInfo)
 		var allData []*TableInfo
 		var rootData []TableInfo
@@ -238,7 +261,14 @@ func (hhdb *HhdbConPool) QueryTablePointCount(dbName string, tableInfo *TableInf
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()
-	res, err := dbConInfo.dbClient.QueryTablePointCount(ctx, &hhdbRpc.QueryPointCountReq{TableId: tableInfo.TableId, TableName: tableInfo.TableName, QueryAllChildren: queryAllChildren})
+	req := hhdbRpc.QueryPointCountReq{QueryAllChildren: queryAllChildren}
+	if tableInfo == nil {
+		req.TableId = -1
+	} else {
+		req.TableId = tableInfo.TableId
+		req.TableName = tableInfo.TableName
+	}
+	res, err := dbConInfo.dbClient.QueryTablePointCount(ctx, &req)
 	if err != nil {
 		return pointCount, hhdb.handleGrpcError(&err)
 	}
