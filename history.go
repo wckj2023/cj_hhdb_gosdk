@@ -45,6 +45,10 @@ func (x ResampleMode) String() string {
 	return ResampleMode_name[int32(x)]
 }
 
+func (x ResampleMode) StrEnum(str string) ResampleMode {
+	return ResampleMode(ResampleMode_value[str])
+}
+
 // 时间段查询模式
 type RangeQueryMode int32
 
@@ -112,6 +116,10 @@ func (x RangeQueryMode) Enum() *RangeQueryMode {
 
 func (x RangeQueryMode) String() string {
 	return RangeQueryMode_name[int32(x)]
+}
+
+func (x RangeQueryMode) StrEnum(str string) RangeQueryMode {
+	return RangeQueryMode(RangeQueryMode_value[str])
 }
 
 func (hhdb *HhdbConPool) QueryHisRangeValueListReqByIdList(dbName string, pointIdList *[]int32, startMs uint64, endMs uint64, mode RangeQueryMode) (*[][]PointValue, *[]int32, error) {
