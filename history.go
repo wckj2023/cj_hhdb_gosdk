@@ -35,18 +35,18 @@ var (
 	}
 )
 
-func (x ResampleMode) Enum() *ResampleMode {
-	p := new(ResampleMode)
-	*p = x
-	return p
+func (m ResampleMode) String() string {
+	if str, ok := ResampleMode_name[int32(m)]; ok {
+		return str
+	}
+	return "kRmSuggest"
 }
 
-func (x ResampleMode) String() string {
-	return ResampleMode_name[int32(x)]
-}
-
-func (x ResampleMode) StrEnum(str string) ResampleMode {
-	return ResampleMode(ResampleMode_value[str])
+func (m ResampleMode) ParseString(s string) ResampleMode {
+	if m, ok := ResampleMode_value[s]; ok {
+		return ResampleMode(m)
+	}
+	return ResampleMode_kRmSuggest
 }
 
 // 时间段查询模式
@@ -108,18 +108,18 @@ var (
 	}
 )
 
-func (x RangeQueryMode) Enum() *RangeQueryMode {
-	p := new(RangeQueryMode)
-	*p = x
-	return p
+func (m RangeQueryMode) String() string {
+	if str, ok := RangeQueryMode_name[int32(m)]; ok {
+		return str
+	}
+	return "kRqmAll"
 }
 
-func (x RangeQueryMode) String() string {
-	return RangeQueryMode_name[int32(x)]
-}
-
-func (x RangeQueryMode) StrEnum(str string) RangeQueryMode {
-	return RangeQueryMode(RangeQueryMode_value[str])
+func (m RangeQueryMode) ParseString(s string) RangeQueryMode {
+	if m, ok := RangeQueryMode_value[s]; ok {
+		return RangeQueryMode(m)
+	}
+	return RangeQueryMode_kRqmAll
 }
 
 func (hhdb *HhdbConPool) QueryHisRangeValueListReqByIdList(dbName string, pointIdList *[]int32, startMs uint64, endMs uint64, mode RangeQueryMode) (*[][]PointValue, *[]int32, error) {

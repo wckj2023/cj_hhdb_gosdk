@@ -31,18 +31,18 @@ var (
 	}
 )
 
-func (x PointType) Enum() *PointType {
-	p := new(PointType)
-	*p = x
-	return p
+func (m PointType) String() string {
+	if str, ok := PointType_name[int32(m)]; ok {
+		return str
+	}
+	return "模拟量"
 }
 
-func (x PointType) String() string {
-	return PointType_name[int32(x)]
-}
-
-func (x PointType) StrEnum(str string) PointType {
-	return PointType(PointType_value[str])
+func (m PointType) ParseString(s string) PointType {
+	if m, ok := PointType_value[s]; ok {
+		return PointType(m)
+	}
+	return PointType_kPtAnalog
 }
 
 // 访问模式
@@ -67,18 +67,18 @@ var (
 	}
 )
 
-func (x AccessMode) StrEnum(str string) AccessMode {
-	return AccessMode(AccessMode_value[str])
+func (m AccessMode) String() string {
+	if str, ok := AccessMode_name[int32(m)]; ok {
+		return str
+	}
+	return "只读"
 }
 
-func (x AccessMode) Enum() *AccessMode {
-	p := new(AccessMode)
-	*p = x
-	return p
-}
-
-func (x AccessMode) String() string {
-	return AccessMode_name[int32(x)]
+func (m AccessMode) ParseString(s string) AccessMode {
+	if m, ok := AccessMode_value[s]; ok {
+		return AccessMode(m)
+	}
+	return AccessMode_kAmRead
 }
 
 // 字节序
@@ -106,18 +106,18 @@ var (
 	}
 )
 
-func (x ByteOrder) StrEnum(str string) ByteOrder {
-	return ByteOrder(ByteOrder_value[str])
+func (m ByteOrder) String() string {
+	if str, ok := ByteOrder_name[int32(m)]; ok {
+		return str
+	}
+	return "ABCD"
 }
 
-func (x ByteOrder) Enum() *ByteOrder {
-	p := new(ByteOrder)
-	*p = x
-	return p
-}
-
-func (x ByteOrder) String() string {
-	return ByteOrder_name[int32(x)]
+func (m ByteOrder) ParseString(s string) ByteOrder {
+	if m, ok := ByteOrder_value[s]; ok {
+		return ByteOrder(m)
+	}
+	return ByteOrder_kBoABCD
 }
 
 // 压缩模式
@@ -149,18 +149,18 @@ var (
 	}
 )
 
-func (x CompressMode) StrEnum(str string) CompressMode {
-	return CompressMode(CompressMode_value[str])
+func (m CompressMode) String() string {
+	if str, ok := CompressMode_name[int32(m)]; ok {
+		return str
+	}
+	return "阈值压缩"
 }
 
-func (x CompressMode) Enum() *CompressMode {
-	p := new(CompressMode)
-	*p = x
-	return p
-}
-
-func (x CompressMode) String() string {
-	return CompressMode_name[int32(x)]
+func (m CompressMode) ParseString(s string) CompressMode {
+	if m, ok := CompressMode_value[s]; ok {
+		return CompressMode(m)
+	}
+	return CompressMode_kCmThreshold
 }
 
 // 数据值类型
@@ -252,18 +252,18 @@ var (
 	}
 )
 
-func (x ValueType) Enum() *ValueType {
-	p := new(ValueType)
-	*p = x
-	return p
+func (m ValueType) String() string {
+	if str, ok := ValueType_name[int32(m)]; ok {
+		return str
+	}
+	return "float"
 }
 
-func (x ValueType) StrEnum(str string) ValueType {
-	return ValueType(ValueType_value[str])
-}
-
-func (x ValueType) String() string {
-	return ValueType_name[int32(x)]
+func (m ValueType) ParseString(s string) ValueType {
+	if m, ok := ValueType_value[s]; ok {
+		return ValueType(m)
+	}
+	return ValueType_kVtFloat
 }
 
 // 测点全量信息

@@ -68,18 +68,18 @@ var (
 	}
 )
 
-func (x PointState) Enum() *PointState {
-	p := new(PointState)
-	*p = x
-	return p
+func (m PointState) String() string {
+	if str, ok := PointState_name[int32(m)]; ok {
+		return str
+	}
+	return "kPsInit"
 }
 
-func (x PointState) StrEnum(str string) PointState {
-	return PointState(PointState_value[str])
-}
-
-func (x PointState) String() string {
-	return PointState_name[int32(x)]
+func (m PointState) ParseString(s string) PointState {
+	if m, ok := PointState_value[s]; ok {
+		return PointState(m)
+	}
+	return PointState_kPsInit
 }
 
 type GeoValue struct {
