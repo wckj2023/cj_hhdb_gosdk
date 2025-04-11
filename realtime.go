@@ -187,7 +187,11 @@ func (pointValue *PointValue) grpc2goPointValue(grpcValue *rpc.PointValue) {
 	pointValue.State = PointState(grpcValue.State)
 	switch grpcValue.GetValue().(type) {
 	case *rpc.PointValue_BoolValue:
-		pointValue.Value = grpcValue.GetBoolValue()
+		if grpcValue.GetBoolValue() {
+			pointValue.Value = 1
+		} else {
+			pointValue.Value = 0
+		}
 	case *rpc.PointValue_FloatValue:
 		pointValue.Value = grpcValue.GetFloatValue()
 	case *rpc.PointValue_DoubleValue:
