@@ -251,7 +251,7 @@ func (pointValue *PointValue) grpc2goPointValue(grpcValue *rpc.PointValue) {
 	case *rpc.PointValue_IntArr:
 		pointValue.Value = grpcValue.GetIntArr().GetArrValue()
 	case *rpc.PointValue_DwordArr:
-		pointValue.Value = grpcValue.GetDoubleArr().GetArrValue()
+		pointValue.Value = grpcValue.GetDwordArr().GetArrValue()
 	case *rpc.PointValue_LongArr:
 		pointValue.Value = grpcValue.GetLongArr().GetArrValue()
 	case *rpc.PointValue_QwordArr:
