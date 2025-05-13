@@ -2,7 +2,9 @@ package cj_hhdb_gosdk
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc"
 	hhdbRpc "github.com/wckj2023/cj_hhdb_gosdk/hhdb/rpc_interface"
 )
@@ -89,6 +91,24 @@ type GeoValue struct {
 }
 
 type BlobData []byte
+type ByteList []byte
+
+// 👇 自定义 JSON 序列化方法
+func (b BlobData) MarshalJSON() ([]byte, error) {
+	hexSlice := make([]string, len(b))
+	for i, v := range b {
+		hexSlice[i] = fmt.Sprintf("0x%02X", v) // 使用大写16进制，可改成 "0x%02x" 小写
+	}
+	return json.Marshal(hexSlice)
+}
+func (b ByteList) MarshalJSON() ([]byte, error) {
+	// 转换为 []int，避免被当作字符串处理
+	intSlice := make([]int, len(b))
+	for i, v := range b {
+		intSlice[i] = int(v)
+	}
+	return json.Marshal(intSlice)
+}
 
 type PointValue struct {
 	Value  interface{} `json:"v" form:"v"` //测点值
@@ -215,7 +235,7 @@ func (pointValue *PointValue) grpc2goPointValue(grpcValue *rpc.PointValue) {
 	case *rpc.PointValue_GeoValue:
 		pointValue.Value = GeoValue{grpcValue.GetGeoValue().GetLongitude(), grpcValue.GetGeoValue().GetLatitude(), grpcValue.GetGeoValue().GetAltitude()}
 	case *rpc.PointValue_StringValue:
-		pointValue.Value = grpcValue.GetStringValue()
+		pointValue.Value = string(grpcValue.GetStringValue())
 	case *rpc.PointValue_BlobValue:
 		pointValue.Value = BlobData(grpcValue.GetBlobValue())
 	case *rpc.PointValue_BoolArr:
