@@ -197,58 +197,56 @@ const (
 // Enum value maps for ValueType.
 var (
 	ValueType_name = map[int32]string{
-		0:  "bool",         // true 或 false 的二进制值
-		1:  "float",        //32 位实数值浮点型 IEEE-754 标准定义
-		2:  "double",       //64 位实数值双精度 IEEE-754 标准定义
-		3:  "char",         // 有符号的 8 位整数数据
-		4:  "byte",         //无符号的 8 位整数数据
-		5:  "short",        //有符号的 16 位整数数据
-		6:  "word",         //无符号的 16 位整数数据
-		7:  "int",          //有符号的 32 位整数数据
-		8:  "dword",        // 无符号的 32 位整数数据
-		9:  "long",         //有符号的 64 位整数数据
-		10: "qword",        //无符号的 64 位整数数据
-		11: "string",       //字符串
-		12: "blob",         //二进制块
-		13: "bool array",   //bool数组
-		14: "float array",  //32 位实数值浮点型数组
-		15: "double array", //64 位实数值浮点型数组
-		16: "char array",   //char数组
-		17: "byte array",   //byte数组
-		18: "short array",  //short数组
-		19: "word array",   //word数组
-		20: "int array",    //有符号的 32 位整数数据数组
-		21: "dword array",  //无符号的 32 位整数数据数组
-		22: "long array",   //有符号的 64 位整数数据数组
-		23: "qword array",  //无符号的 64 位整数数据数组
-		24: "string array", //字符串数组
+		0:  "bool",     // true 或 false 的二进制值
+		1:  "float",    //32 位实数值浮点型 IEEE-754 标准定义
+		2:  "double",   //64 位实数值双精度 IEEE-754 标准定义
+		3:  "char",     // 有符号的 8 位整数数据
+		4:  "byte",     //无符号的 8 位整数数据
+		5:  "short",    //有符号的 16 位整数数据
+		6:  "word",     //无符号的 16 位整数数据
+		7:  "int",      //有符号的 32 位整数数据
+		8:  "dword",    // 无符号的 32 位整数数据
+		9:  "long",     //有符号的 64 位整数数据
+		10: "qword",    //无符号的 64 位整数数据
+		11: "string",   //字符串
+		12: "blob",     //二进制块
+		13: "bool[]",   //bool数组
+		14: "float[]",  //32 位实数值浮点型数组
+		15: "double[]", //64 位实数值浮点型数组
+		16: "char[]",   //char数组
+		17: "byte[]",   //byte数组
+		18: "short[]",  //short数组
+		19: "word[]",   //word数组
+		20: "int[]",    //有符号的 32 位整数数据数组
+		21: "dword[]",  //无符号的 32 位整数数据数组
+		22: "long[]",   //有符号的 64 位整数数据数组
+		23: "qword[]",  //无符号的 64 位整数数据数组
 	}
 	ValueType_value = map[string]int32{
-		"bool":         0,
-		"float":        1,
-		"double":       2,
-		"char":         3,
-		"byte":         4,
-		"short":        5,
-		"word":         6,
-		"int":          7,
-		"dword":        8,
-		"long":         9,
-		"qword":        10,
-		"string":       11,
-		"blob":         12,
-		"bool array":   13,
-		"float array":  14,
-		"double array": 15,
-		"char array":   16,
-		"byte array":   17,
-		"short array":  18,
-		"word array":   19,
-		"int array":    20,
-		"dword array":  21,
-		"long array":   22,
-		"qword array":  23,
-		"string array": 24,
+		"bool":     0,
+		"float":    1,
+		"double":   2,
+		"char":     3,
+		"byte":     4,
+		"short":    5,
+		"word":     6,
+		"int":      7,
+		"dword":    8,
+		"long":     9,
+		"qword":    10,
+		"string":   11,
+		"blob":     12,
+		"bool[]":   13,
+		"float[]":  14,
+		"double[]": 15,
+		"char[]":   16,
+		"byte[]":   17,
+		"short[]":  18,
+		"word[]":   19,
+		"int[]":    20,
+		"dword[]":  21,
+		"long[]":   22,
+		"qword[]":  23,
 	}
 )
 
