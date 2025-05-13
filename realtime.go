@@ -91,7 +91,7 @@ type GeoValue struct {
 }
 
 type BlobData []byte
-type ByteList []byte
+type ByteArray []byte
 
 // 👇 自定义 JSON 序列化方法
 func (b BlobData) MarshalJSON() ([]byte, error) {
@@ -101,7 +101,7 @@ func (b BlobData) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(hexSlice)
 }
-func (b ByteList) MarshalJSON() ([]byte, error) {
+func (b ByteArray) MarshalJSON() ([]byte, error) {
 	// 转换为 []int，避免被当作字符串处理
 	intSlice := make([]int, len(b))
 	for i, v := range b {
@@ -166,10 +166,10 @@ func (pointValue *PointValue) go2grpcPointValue() (grpcValue *rpc.PointValue) {
 			}
 			pv.Value = &rpc.PointValue_CharArr{CharArr: &tempValue}
 		}
-	case []uint8:
+	case ByteArray:
 		{
 			tempValue := rpc.ByteArr{}
-			for _, v := range pointValue.Value.([]uint8) {
+			for _, v := range pointValue.Value.(ByteArray) {
 				tempValue.ArrValue = append(tempValue.ArrValue, uint32(v))
 			}
 			pv.Value = &rpc.PointValue_ByteArr{ByteArr: &tempValue}
@@ -251,7 +251,7 @@ func (pointValue *PointValue) grpc2goPointValue(grpcValue *rpc.PointValue) {
 		}
 		pointValue.Value = charArr
 	case *rpc.PointValue_ByteArr:
-		var byteArr []uint8
+		var byteArr ByteArray
 		for _, v := range grpcValue.GetByteArr().GetArrValue() {
 			byteArr = append(byteArr, uint8(v))
 		}
