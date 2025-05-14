@@ -85,24 +85,27 @@ func (m AccessMode) ParseString(s string) AccessMode {
 type ByteOrder int32
 
 const (
-	ByteOrder_kBoABCD ByteOrder = 0
-	ByteOrder_kBoBADC ByteOrder = 1
-	ByteOrder_kBoCDAB ByteOrder = 2
-	ByteOrder_kBoDCBA ByteOrder = 3
+	ByteOrder_kBoDEFAULT ByteOrder = 0
+	ByteOrder_kBoABCD    ByteOrder = 1
+	ByteOrder_kBoDCBA    ByteOrder = 2
+	ByteOrder_kBoBADC    ByteOrder = 3
+	ByteOrder_kBoCDAB    ByteOrder = 4
 )
 
 var (
 	ByteOrder_name = map[int32]string{
-		0: "ABCD",
-		1: "BADC",
-		2: "CDAB",
-		3: "DCBA",
+		0: "默认字节序",
+		1: "大端序",
+		2: "小端序",
+		3: "大端交换序",
+		4: "小端交换序",
 	}
 	ByteOrder_value = map[string]int32{
-		"ABCD": 0,
-		"BADC": 1,
-		"CDAB": 2,
-		"DCBA": 3,
+		"默认字节序": 0,
+		"大端序":   1,
+		"小端序":   2,
+		"大端交换序": 3,
+		"小端交换序": 4,
 	}
 )
 
@@ -110,14 +113,14 @@ func (m ByteOrder) String() string {
 	if str, ok := ByteOrder_name[int32(m)]; ok {
 		return str
 	}
-	return "ABCD"
+	return "默认字节序"
 }
 
 func (m ByteOrder) ParseString(s string) ByteOrder {
 	if m, ok := ByteOrder_value[s]; ok {
 		return ByteOrder(m)
 	}
-	return ByteOrder_kBoABCD
+	return ByteOrder_kBoDEFAULT
 }
 
 // 压缩模式
