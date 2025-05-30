@@ -52,6 +52,7 @@ const (
 	AccessMode_kAmRead  AccessMode = 0 //只读
 	AccessMode_kAmWrite AccessMode = 1 //只写
 	AccessMode_kAmRW    AccessMode = 2 //读写
+	AccessMode_kAmUnUse AccessMode = 3 //停止使用
 )
 
 var (
@@ -59,11 +60,13 @@ var (
 		0: "只读",
 		1: "只写",
 		2: "读写",
+		3: "停用",
 	}
 	AccessMode_value = map[string]int32{
 		"只读": 0,
 		"只写": 1,
 		"读写": 2,
+		"停用": 3,
 	}
 )
 
@@ -102,8 +105,8 @@ var (
 	}
 	ByteOrder_value = map[string]int32{
 		"默认字节序": 0,
-		"大端序":   1,
-		"小端序":   2,
+		"大端序":     1,
+		"小端序":     2,
 		"大端交换序": 3,
 		"小端交换序": 4,
 	}
