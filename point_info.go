@@ -680,3 +680,33 @@ func (hhdb *HhdbConPool) QueryPointInfoListByName(dbName string, pointNameList *
 	}
 	return &pointList, nil
 }
+
+// 功能：测点操作--使用测点ID批量查询测点信息
+// 参数说明：dbName：数据库名，pointIdList:测点ID列表
+// 返回值：测点信息列表
+func (hhdb *HhdbConPool) QueryPointTypeCountByID(dbName string, pointIdList *[]int32) (pointCount TablePointCount, err error) {
+	if pointIdList == nil {
+		return pointCount, errors.New("id[] is empty")
+	}
+	dbConInfo, err := hhdb.getDbCon(dbName)
+	if err != nil {
+		return pointCount, err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
+	defer cancel()
+	req := hhdbRpc.IdOrNameListReq{}
+	req.IdList = *pointIdList
+	res, err := dbConInfo.dbClient.QueryPointTypeCount(ctx, &req)
+	if err != nil {
+		return pointCount, hhdb.handleGrpcError(&err)
+	}
+
+	if res.GetErrMsg().GetCode() < 0 {
+		return pointCount, errors.New(res.GetErrMsg().GetMsg())
+	}
+	pointCount.Total = res.GetTotal()
+	pointCount.SwitchTotal = res.GetSwitchTotal()
+	pointCount.AnalogTotal = res.GetAnalogTotal()
+	pointCount.PackageTotal = res.GetPackageTotal()
+	return pointCount, nil
+}
