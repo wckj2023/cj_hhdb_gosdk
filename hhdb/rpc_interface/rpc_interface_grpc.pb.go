@@ -35,6 +35,7 @@ const (
 	RpcInterface_UpdatePoint_FullMethodName                = "/hhdb.rpc_interface.RpcInterface/UpdatePoint"
 	RpcInterface_UpdatePoints_FullMethodName               = "/hhdb.rpc_interface.RpcInterface/UpdatePoints"
 	RpcInterface_QueryPoints_FullMethodName                = "/hhdb.rpc_interface.RpcInterface/QueryPoints"
+	RpcInterface_QueryPointsIsInListReq_FullMethodName     = "/hhdb.rpc_interface.RpcInterface/QueryPointsIsInListReq"
 	RpcInterface_QueryPointIdListByNameList_FullMethodName = "/hhdb.rpc_interface.RpcInterface/QueryPointIdListByNameList"
 	RpcInterface_QueryPointInfoList_FullMethodName         = "/hhdb.rpc_interface.RpcInterface/QueryPointInfoList"
 	RpcInterface_UpdateRealtimeValueList_FullMethodName    = "/hhdb.rpc_interface.RpcInterface/UpdateRealtimeValueList"
@@ -118,6 +119,10 @@ type RpcInterfaceClient interface {
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，满足条件的总个数,失败<0
 	QueryPoints(ctx context.Context, in *QueryPointInfoReq, opts ...grpc.CallOption) (*QueryPointInfoReply, error)
+	// 功能：测点操作--查询测点是否在指定id或name范围
+	// 参数说明：入参、出差参考请求、响应体注释
+	// errMsg.code：成功>=0，满足条件的总个数,失败<0
+	QueryPointsIsInListReq(ctx context.Context, in *QueryPointsIsInIdsReq, opts ...grpc.CallOption) (*QueryPointInfoReply, error)
 	// 功能：测点操作--使用测点名查询测点ID
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为查询成功的个数,失败<0
@@ -298,6 +303,15 @@ func (c *rpcInterfaceClient) QueryPoints(ctx context.Context, in *QueryPointInfo
 	return out, nil
 }
 
+func (c *rpcInterfaceClient) QueryPointsIsInListReq(ctx context.Context, in *QueryPointsIsInIdsReq, opts ...grpc.CallOption) (*QueryPointInfoReply, error) {
+	out := new(QueryPointInfoReply)
+	err := c.cc.Invoke(ctx, RpcInterface_QueryPointsIsInListReq_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *rpcInterfaceClient) QueryPointIdListByNameList(ctx context.Context, in *NameListReq, opts ...grpc.CallOption) (*QueryPointIdListByNameListReply, error) {
 	out := new(QueryPointIdListByNameListReply)
 	err := c.cc.Invoke(ctx, RpcInterface_QueryPointIdListByNameList_FullMethodName, in, out, opts...)
@@ -443,6 +457,10 @@ type RpcInterfaceServer interface {
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，满足条件的总个数,失败<0
 	QueryPoints(context.Context, *QueryPointInfoReq) (*QueryPointInfoReply, error)
+	// 功能：测点操作--查询测点是否在指定id或name范围
+	// 参数说明：入参、出差参考请求、响应体注释
+	// errMsg.code：成功>=0，满足条件的总个数,失败<0
+	QueryPointsIsInListReq(context.Context, *QueryPointsIsInIdsReq) (*QueryPointInfoReply, error)
 	// 功能：测点操作--使用测点名查询测点ID
 	// 参数说明：入参、出差参考请求、响应体注释
 	// errMsg.code：成功>=0，为查询成功的个数,失败<0
@@ -529,6 +547,9 @@ func (UnimplementedRpcInterfaceServer) UpdatePoints(context.Context, *PointInfoL
 }
 func (UnimplementedRpcInterfaceServer) QueryPoints(context.Context, *QueryPointInfoReq) (*QueryPointInfoReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryPoints not implemented")
+}
+func (UnimplementedRpcInterfaceServer) QueryPointsIsInListReq(context.Context, *QueryPointsIsInIdsReq) (*QueryPointInfoReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryPointsIsInListReq not implemented")
 }
 func (UnimplementedRpcInterfaceServer) QueryPointIdListByNameList(context.Context, *NameListReq) (*QueryPointIdListByNameListReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryPointIdListByNameList not implemented")
@@ -837,6 +858,24 @@ func _RpcInterface_QueryPoints_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RpcInterface_QueryPointsIsInListReq_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryPointsIsInIdsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RpcInterfaceServer).QueryPointsIsInListReq(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RpcInterface_QueryPointsIsInListReq_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RpcInterfaceServer).QueryPointsIsInListReq(ctx, req.(*QueryPointsIsInIdsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RpcInterface_QueryPointIdListByNameList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NameListReq)
 	if err := dec(in); err != nil {
@@ -1047,6 +1086,10 @@ var RpcInterface_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "QueryPoints",
 			Handler:    _RpcInterface_QueryPoints_Handler,
+		},
+		{
+			MethodName: "QueryPointsIsInListReq",
+			Handler:    _RpcInterface_QueryPointsIsInListReq_Handler,
 		},
 		{
 			MethodName: "QueryPointIdListByNameList",

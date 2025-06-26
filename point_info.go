@@ -621,6 +621,85 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 	return &pointList, total, nil
 }
 
+// 功能：测点操作--查询指定ID范围或非id范围内的测点基础信息
+// 参数说明：dbName：数据库名，tableName：点表名,
+//
+//	pointIdList:测点的id范围
+//	inOrNotInFlag:是否在测点范围内，或不在测点范围内
+//	pointSearchInfo.pointId:>=0时，查询指定测点ID的信息
+//	pointSearchInfo.tableId:<0时，整库查询，>=0时在指定表内检索
+//	pointSearchInfo.nameRegex:不为空时，按正则匹配点名符合的测点
+//	pointSearchInfo.showNameRegex:查询的测点名，为空时使用tableId为准，不为空时，以tableName进行查找
+//	pointSearchInfo.descRegex:不为空时，按正则匹配描述符合的测点，两则都不为空时取交集
+//	pointSearchInfo.unitRegex:不为空时，按正则匹配
+//	pointSearchInfo.pointType:测点类型，>=0时，查询指定测点类型的信息
+//	pointSearchInfo.extraFields:需要检索的字段，key为字段名，value为检索的字段值
+//	enablePage:是否启用分页
+//	page:页数,page从0开始计数
+//	limit:每页的数量
+//
+// 返回值：list：查询结果，total：符合条件的总条数，err:错误信息
+func (hhdb *HhdbConPool) QueryPointsIsInList(dbName string, pointIdList *[]int32, inOrNotInFlag bool, tableName string, pointSearchInfo *PointInfo, enablePage bool,
+	page uint32, limit uint32) (list *[]PointInfo, total int32, err error) {
+	dbConInfo, err := hhdb.getDbCon(dbName)
+	if err != nil {
+		return nil, 0, err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
+	defer cancel()
+	var req hhdbRpc.QueryPointsIsInIdsReq
+	searchMap := make(map[string][]byte)
+	if pointIdList != nil {
+		req.IdList = *pointIdList
+	}
+	req.InOrNotInFlag = inOrNotInFlag
+	if pointSearchInfo == nil {
+		req.QueryInfo = &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: -1, PointId: -1, PointType: -1, EnablePage: enablePage,
+			Page: page, Limit: limit}
+	} else {
+		for k, v := range pointSearchInfo.ExtraField {
+			searchMap[k] = []byte(v)
+		}
+		req.QueryInfo = &hhdbRpc.QueryPointInfoReq{TableName: tableName, TableId: pointSearchInfo.TableId, PointId: pointSearchInfo.PointId, NameRegex: pointSearchInfo.PointName,
+			ShowNameRegex: pointSearchInfo.PointShowName, DescRegex: pointSearchInfo.PointDesc, UnitRegex: pointSearchInfo.PointUnit, PointType: int32(pointSearchInfo.PointType), ExtraFields: searchMap, EnablePage: enablePage,
+			Page: page, Limit: limit}
+	}
+	res, err := dbConInfo.dbClient.QueryPointsIsInListReq(ctx, &req)
+	if err != nil {
+		return nil, 0, hhdb.handleGrpcError(&err)
+	}
+	if res.GetErrMsg().GetCode() < 0 {
+		return nil, 0, errors.New(res.GetErrMsg().GetMsg())
+	}
+
+	pointList := make([]PointInfo, len(res.PointInfoList))
+	for i := 0; i < len(res.PointInfoList); i++ {
+		pointList[i].grpc2goPointInfo(res.PointInfoList[i])
+	}
+	total = res.GetTotal()
+	//测点太多遍历获取完
+	if !enablePage && int32(len(pointList)) < total {
+		pageAdd := 1
+		newLimit := len(pointList)
+		tempInfo := PointInfo{}
+		for int32(len(pointList)) < total {
+			req.QueryInfo.Page = uint32(pageAdd)
+			req.QueryInfo.Limit = uint32(newLimit)
+
+			res, err = dbConInfo.dbClient.QueryPointsIsInListReq(ctx, &req)
+			if res.GetErrMsg().GetCode() < 0 {
+				break
+			}
+			for i := 0; i < len(res.PointInfoList); i++ {
+				tempInfo.grpc2goPointInfo(res.PointInfoList[i])
+				pointList = append(pointList, tempInfo)
+			}
+		}
+	}
+
+	return &pointList, total, nil
+}
+
 // 功能：测点操作--使用测点ID批量查询测点信息
 // 参数说明：dbName：数据库名，pointIdList:测点ID列表
 // 返回值：测点信息列表
