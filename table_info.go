@@ -21,6 +21,7 @@ type TableInfo struct {
 	TableShowName     string            `json:"tableShowName" form:"tableShowName"`         //表展示名
 	TableDesc         string            `json:"tableDesc" form:"tableDesc"`                 //表描述
 	TableParentId     int32             `json:"tableParentId" form:"tableParentId"`         //表父节点ID
+	TableModelId      int32             `json:"tableModelId" form:"tableModelId"`           //物模型ID
 	ExtraFieldAndDesc map[string]string `json:"extraFiledAndDesc" form:"extraFiledAndDesc"` //额外的字段与字段名
 	OperatorInfo      OperatorInfo      `json:"OperatorInfo" form:"OperatorInfo"`           //用户信息
 	Children          *[]TableInfo      `json:"children" form:"children" `                  //子点表
@@ -40,7 +41,7 @@ func (table *TableInfo) go2grpcTableInfo() *rpc.TableInfo {
 		extraFieldAndDesc[k] = []byte(v)
 	}
 	grpcTable := rpc.TableInfo{TableId: table.TableId, TableName: table.TableName, TableShowName: table.TableShowName,
-		TableDesc: table.TableDesc, TableParentId: table.TableParentId, ExtraFieldAndDesc: extraFieldAndDesc,
+		TableDesc: table.TableDesc, TableParentId: table.TableParentId, TableModelId: table.TableModelId, ExtraFieldAndDesc: extraFieldAndDesc,
 		OperatorInfo: &rpc.OperatorInfo{CreateTime: table.OperatorInfo.CreateTime, UpdateTime: table.OperatorInfo.UpdateTime,
 			CreateUserId: uint32(table.OperatorInfo.CreateUserId), UpdateUserId: uint32(table.OperatorInfo.UpdateUserId)}}
 	return &grpcTable
@@ -52,6 +53,7 @@ func (table *TableInfo) grpc2goTableInfo(grpcTableInfo *rpc.TableInfo) {
 	table.TableShowName = grpcTableInfo.TableShowName
 	table.TableDesc = grpcTableInfo.TableDesc
 	table.TableParentId = grpcTableInfo.TableParentId
+	table.TableModelId = grpcTableInfo.TableModelId
 	table.OperatorInfo.CreateTime = grpcTableInfo.OperatorInfo.CreateTime
 	table.OperatorInfo.UpdateTime = grpcTableInfo.OperatorInfo.UpdateTime
 	table.OperatorInfo.CreateUserId = int32(grpcTableInfo.OperatorInfo.CreateUserId)
@@ -77,8 +79,8 @@ func (hhdb *HhdbConPool) InsertTable(dbName string, tableInfo *TableInfo) (int32
 
 	tableInfo.OperatorInfo.CreateTime = uint64(time.Now().UTC().UnixMilli())
 	tableInfo.OperatorInfo.UpdateTime = uint64(time.Now().UTC().UnixMilli())
-	tableInfo.OperatorInfo.CreateUserId = dbConInfo.dbId
-	tableInfo.OperatorInfo.UpdateUserId = dbConInfo.dbId
+	tableInfo.OperatorInfo.CreateUserId = -1
+	tableInfo.OperatorInfo.UpdateUserId = -1
 
 	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
 	defer cancel()

@@ -150,8 +150,6 @@ func (pointValue *PointValue) go2grpcPointValue() (grpcValue *rpc.PointValue) {
 			Altitude:  pointValue.Value.(GeoValue).Altitude}}
 	case string:
 		pv.Value = &rpc.PointValue_StringValue{StringValue: []byte(pointValue.Value.(string))}
-	case BlobData:
-		pv.Value = &rpc.PointValue_BlobValue{BlobValue: pointValue.Value.([]byte)}
 	case []bool:
 		pv.Value = &rpc.PointValue_BoolArr{BoolArr: &rpc.BoolArr{ArrValue: pointValue.Value.([]bool)}}
 	case []float32:
@@ -236,8 +234,6 @@ func (pointValue *PointValue) grpc2goPointValue(grpcValue *rpc.PointValue) {
 		pointValue.Value = GeoValue{grpcValue.GetGeoValue().GetLongitude(), grpcValue.GetGeoValue().GetLatitude(), grpcValue.GetGeoValue().GetAltitude()}
 	case *rpc.PointValue_StringValue:
 		pointValue.Value = string(grpcValue.GetStringValue())
-	case *rpc.PointValue_BlobValue:
-		pointValue.Value = BlobData(grpcValue.GetBlobValue())
 	case *rpc.PointValue_BoolArr:
 		pointValue.Value = grpcValue.GetBoolArr().GetArrValue()
 	case *rpc.PointValue_FloatArr:
