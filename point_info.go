@@ -525,7 +525,7 @@ func (hhdb *HhdbConPool) UpdatePoint(dbName string, point *PointInfo) (int32, er
 // 参数说明：dbName：数据库名，pointList:更新测点列表，通过PointId进行关联更新，如果首个元素PointId为-1，则通过使用PointName进行匹配更新
 // 返回值：int32：成功>0，为更新成功的个数,失败<=0，[]int32：返回更新成功的各个测点ID，返回小于0时代表添加失败的错误码，全成功时为空
 func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (int32, *[]int32, error) {
-	if pointList == nil {
+	if pointList == nil || len(*pointList) == 0 {
 		return -1, nil, errors.New("point[] is empty")
 	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
