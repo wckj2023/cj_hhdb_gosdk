@@ -31,7 +31,7 @@ var file_hhdb_rpc_interface_rpc_interface_proto_rawDesc = []byte{
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2a, 0x68, 0x68, 0x64, 0x62, 0x2f, 0x72, 0x70, 0x63,
 	0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x2f, 0x72, 0x70, 0x63, 0x5f, 0x69,
 	0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x5f, 0x6d, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x32, 0xac, 0x11, 0x0a, 0x0c, 0x52, 0x70, 0x63, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x66,
+	0x74, 0x6f, 0x32, 0x8c, 0x12, 0x0a, 0x0c, 0x52, 0x70, 0x63, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x66,
 	0x61, 0x63, 0x65, 0x12, 0x42, 0x0a, 0x04, 0x41, 0x75, 0x74, 0x68, 0x12, 0x1b, 0x2e, 0x68, 0x68,
 	0x64, 0x62, 0x2e, 0x72, 0x70, 0x63, 0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65,
 	0x2e, 0x41, 0x75, 0x74, 0x68, 0x52, 0x65, 0x71, 0x1a, 0x1d, 0x2e, 0x68, 0x68, 0x64, 0x62, 0x2e,
@@ -63,6 +63,12 @@ var file_hhdb_rpc_interface_rpc_interface_proto_rawDesc = []byte{
 	0x73, 0x74, 0x12, 0x21, 0x2e, 0x68, 0x68, 0x64, 0x62, 0x2e, 0x72, 0x70, 0x63, 0x5f, 0x69, 0x6e,
 	0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x54, 0x61, 0x62,
 	0x6c, 0x65, 0x52, 0x65, 0x71, 0x1a, 0x23, 0x2e, 0x68, 0x68, 0x64, 0x62, 0x2e, 0x72, 0x70, 0x63,
+	0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x5e, 0x0a, 0x12, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x49, 0x6e, 0x66, 0x6f, 0x4c, 0x69, 0x73, 0x74,
+	0x12, 0x23, 0x2e, 0x68, 0x68, 0x64, 0x62, 0x2e, 0x72, 0x70, 0x63, 0x5f, 0x69, 0x6e, 0x74, 0x65,
+	0x72, 0x66, 0x61, 0x63, 0x65, 0x2e, 0x49, 0x64, 0x4f, 0x72, 0x4e, 0x61, 0x6d, 0x65, 0x4c, 0x69,
+	0x73, 0x74, 0x52, 0x65, 0x71, 0x1a, 0x23, 0x2e, 0x68, 0x68, 0x64, 0x62, 0x2e, 0x72, 0x70, 0x63,
 	0x5f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x66, 0x61, 0x63, 0x65, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
 	0x54, 0x61, 0x62, 0x6c, 0x65, 0x52, 0x65, 0x70, 0x6c, 0x79, 0x12, 0x68, 0x0a, 0x14, 0x51, 0x75,
 	0x65, 0x72, 0x79, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x43, 0x6f, 0x75,
@@ -183,8 +189,8 @@ var file_hhdb_rpc_interface_rpc_interface_proto_goTypes = []interface{}{
 	(*QueryErrMsgReq)(nil),                  // 1: hhdb.rpc_interface.QueryErrMsgReq
 	(*rpc.TableInfo)(nil),                   // 2: hhdb.rpc.TableInfo
 	(*QueryTableReq)(nil),                   // 3: hhdb.rpc_interface.QueryTableReq
-	(*QueryPointCountReq)(nil),              // 4: hhdb.rpc_interface.QueryPointCountReq
-	(*IdOrNameListReq)(nil),                 // 5: hhdb.rpc_interface.IdOrNameListReq
+	(*IdOrNameListReq)(nil),                 // 4: hhdb.rpc_interface.IdOrNameListReq
+	(*QueryPointCountReq)(nil),              // 5: hhdb.rpc_interface.QueryPointCountReq
 	(*rpc.PointInfo)(nil),                   // 6: hhdb.rpc.PointInfo
 	(*PointInfoListReq)(nil),                // 7: hhdb.rpc_interface.PointInfoListReq
 	(*QueryPointInfoReq)(nil),               // 8: hhdb.rpc_interface.QueryPointInfoReq
@@ -213,49 +219,51 @@ var file_hhdb_rpc_interface_rpc_interface_proto_depIdxs = []int32{
 	2,  // 4: hhdb.rpc_interface.RpcInterface.ClearTable:input_type -> hhdb.rpc.TableInfo
 	2,  // 5: hhdb.rpc_interface.RpcInterface.UpdateTable:input_type -> hhdb.rpc.TableInfo
 	3,  // 6: hhdb.rpc_interface.RpcInterface.QueryTableList:input_type -> hhdb.rpc_interface.QueryTableReq
-	4,  // 7: hhdb.rpc_interface.RpcInterface.QueryTablePointCount:input_type -> hhdb.rpc_interface.QueryPointCountReq
-	5,  // 8: hhdb.rpc_interface.RpcInterface.QueryPointTypeCount:input_type -> hhdb.rpc_interface.IdOrNameListReq
-	6,  // 9: hhdb.rpc_interface.RpcInterface.InsertPoint:input_type -> hhdb.rpc.PointInfo
-	7,  // 10: hhdb.rpc_interface.RpcInterface.InsertPoints:input_type -> hhdb.rpc_interface.PointInfoListReq
-	5,  // 11: hhdb.rpc_interface.RpcInterface.DelPoints:input_type -> hhdb.rpc_interface.IdOrNameListReq
-	6,  // 12: hhdb.rpc_interface.RpcInterface.UpdatePoint:input_type -> hhdb.rpc.PointInfo
-	7,  // 13: hhdb.rpc_interface.RpcInterface.UpdatePoints:input_type -> hhdb.rpc_interface.PointInfoListReq
-	8,  // 14: hhdb.rpc_interface.RpcInterface.QueryPoints:input_type -> hhdb.rpc_interface.QueryPointInfoReq
-	9,  // 15: hhdb.rpc_interface.RpcInterface.QueryPointsIsInListReq:input_type -> hhdb.rpc_interface.QueryPointsIsInIdsReq
-	10, // 16: hhdb.rpc_interface.RpcInterface.QueryPointIdListByNameList:input_type -> hhdb.rpc_interface.NameListReq
-	5,  // 17: hhdb.rpc_interface.RpcInterface.QueryPointInfoList:input_type -> hhdb.rpc_interface.IdOrNameListReq
-	11, // 18: hhdb.rpc_interface.RpcInterface.UpdateRealtimeValueList:input_type -> hhdb.rpc_interface.UpdateRealtimeValueListReq
-	5,  // 19: hhdb.rpc_interface.RpcInterface.QueryRealtimeValueList:input_type -> hhdb.rpc_interface.IdOrNameListReq
-	12, // 20: hhdb.rpc_interface.RpcInterface.QueryHisRangeValueList:input_type -> hhdb.rpc_interface.QueryHisRangeValueListReq
-	13, // 21: hhdb.rpc_interface.RpcInterface.QueryHisResampleValueList:input_type -> hhdb.rpc_interface.QueryHisResamplesValueListReq
-	14, // 22: hhdb.rpc_interface.RpcInterface.QueryHisTimePointValueList:input_type -> hhdb.rpc_interface.QueryHisTimePointValueListReq
-	15, // 23: hhdb.rpc_interface.RpcInterface.InsertHisValueList:input_type -> hhdb.rpc_interface.InsertHisValueListReq
-	16, // 24: hhdb.rpc_interface.RpcInterface.Auth:output_type -> hhdb.rpc_interface.AuthReply
-	17, // 25: hhdb.rpc_interface.RpcInterface.QueryErrMsg:output_type -> hhdb.rpc_interface.QueryErrMsgReply
-	18, // 26: hhdb.rpc_interface.RpcInterface.InsertTable:output_type -> hhdb.rpc_interface.CommonReply
-	18, // 27: hhdb.rpc_interface.RpcInterface.DelTable:output_type -> hhdb.rpc_interface.CommonReply
-	18, // 28: hhdb.rpc_interface.RpcInterface.ClearTable:output_type -> hhdb.rpc_interface.CommonReply
-	18, // 29: hhdb.rpc_interface.RpcInterface.UpdateTable:output_type -> hhdb.rpc_interface.CommonReply
-	19, // 30: hhdb.rpc_interface.RpcInterface.QueryTableList:output_type -> hhdb.rpc_interface.QueryTableReply
-	20, // 31: hhdb.rpc_interface.RpcInterface.QueryTablePointCount:output_type -> hhdb.rpc_interface.QueryPointCountReply
-	20, // 32: hhdb.rpc_interface.RpcInterface.QueryPointTypeCount:output_type -> hhdb.rpc_interface.QueryPointCountReply
-	18, // 33: hhdb.rpc_interface.RpcInterface.InsertPoint:output_type -> hhdb.rpc_interface.CommonReply
-	18, // 34: hhdb.rpc_interface.RpcInterface.InsertPoints:output_type -> hhdb.rpc_interface.CommonReply
-	18, // 35: hhdb.rpc_interface.RpcInterface.DelPoints:output_type -> hhdb.rpc_interface.CommonReply
-	18, // 36: hhdb.rpc_interface.RpcInterface.UpdatePoint:output_type -> hhdb.rpc_interface.CommonReply
-	18, // 37: hhdb.rpc_interface.RpcInterface.UpdatePoints:output_type -> hhdb.rpc_interface.CommonReply
-	21, // 38: hhdb.rpc_interface.RpcInterface.QueryPoints:output_type -> hhdb.rpc_interface.QueryPointInfoReply
-	21, // 39: hhdb.rpc_interface.RpcInterface.QueryPointsIsInListReq:output_type -> hhdb.rpc_interface.QueryPointInfoReply
-	22, // 40: hhdb.rpc_interface.RpcInterface.QueryPointIdListByNameList:output_type -> hhdb.rpc_interface.QueryPointIdListByNameListReply
-	21, // 41: hhdb.rpc_interface.RpcInterface.QueryPointInfoList:output_type -> hhdb.rpc_interface.QueryPointInfoReply
-	18, // 42: hhdb.rpc_interface.RpcInterface.UpdateRealtimeValueList:output_type -> hhdb.rpc_interface.CommonReply
-	23, // 43: hhdb.rpc_interface.RpcInterface.QueryRealtimeValueList:output_type -> hhdb.rpc_interface.ValueListReply
-	24, // 44: hhdb.rpc_interface.RpcInterface.QueryHisRangeValueList:output_type -> hhdb.rpc_interface.QueryHisValueListReply
-	24, // 45: hhdb.rpc_interface.RpcInterface.QueryHisResampleValueList:output_type -> hhdb.rpc_interface.QueryHisValueListReply
-	23, // 46: hhdb.rpc_interface.RpcInterface.QueryHisTimePointValueList:output_type -> hhdb.rpc_interface.ValueListReply
-	18, // 47: hhdb.rpc_interface.RpcInterface.InsertHisValueList:output_type -> hhdb.rpc_interface.CommonReply
-	24, // [24:48] is the sub-list for method output_type
-	0,  // [0:24] is the sub-list for method input_type
+	4,  // 7: hhdb.rpc_interface.RpcInterface.QueryTableInfoList:input_type -> hhdb.rpc_interface.IdOrNameListReq
+	5,  // 8: hhdb.rpc_interface.RpcInterface.QueryTablePointCount:input_type -> hhdb.rpc_interface.QueryPointCountReq
+	4,  // 9: hhdb.rpc_interface.RpcInterface.QueryPointTypeCount:input_type -> hhdb.rpc_interface.IdOrNameListReq
+	6,  // 10: hhdb.rpc_interface.RpcInterface.InsertPoint:input_type -> hhdb.rpc.PointInfo
+	7,  // 11: hhdb.rpc_interface.RpcInterface.InsertPoints:input_type -> hhdb.rpc_interface.PointInfoListReq
+	4,  // 12: hhdb.rpc_interface.RpcInterface.DelPoints:input_type -> hhdb.rpc_interface.IdOrNameListReq
+	6,  // 13: hhdb.rpc_interface.RpcInterface.UpdatePoint:input_type -> hhdb.rpc.PointInfo
+	7,  // 14: hhdb.rpc_interface.RpcInterface.UpdatePoints:input_type -> hhdb.rpc_interface.PointInfoListReq
+	8,  // 15: hhdb.rpc_interface.RpcInterface.QueryPoints:input_type -> hhdb.rpc_interface.QueryPointInfoReq
+	9,  // 16: hhdb.rpc_interface.RpcInterface.QueryPointsIsInListReq:input_type -> hhdb.rpc_interface.QueryPointsIsInIdsReq
+	10, // 17: hhdb.rpc_interface.RpcInterface.QueryPointIdListByNameList:input_type -> hhdb.rpc_interface.NameListReq
+	4,  // 18: hhdb.rpc_interface.RpcInterface.QueryPointInfoList:input_type -> hhdb.rpc_interface.IdOrNameListReq
+	11, // 19: hhdb.rpc_interface.RpcInterface.UpdateRealtimeValueList:input_type -> hhdb.rpc_interface.UpdateRealtimeValueListReq
+	4,  // 20: hhdb.rpc_interface.RpcInterface.QueryRealtimeValueList:input_type -> hhdb.rpc_interface.IdOrNameListReq
+	12, // 21: hhdb.rpc_interface.RpcInterface.QueryHisRangeValueList:input_type -> hhdb.rpc_interface.QueryHisRangeValueListReq
+	13, // 22: hhdb.rpc_interface.RpcInterface.QueryHisResampleValueList:input_type -> hhdb.rpc_interface.QueryHisResamplesValueListReq
+	14, // 23: hhdb.rpc_interface.RpcInterface.QueryHisTimePointValueList:input_type -> hhdb.rpc_interface.QueryHisTimePointValueListReq
+	15, // 24: hhdb.rpc_interface.RpcInterface.InsertHisValueList:input_type -> hhdb.rpc_interface.InsertHisValueListReq
+	16, // 25: hhdb.rpc_interface.RpcInterface.Auth:output_type -> hhdb.rpc_interface.AuthReply
+	17, // 26: hhdb.rpc_interface.RpcInterface.QueryErrMsg:output_type -> hhdb.rpc_interface.QueryErrMsgReply
+	18, // 27: hhdb.rpc_interface.RpcInterface.InsertTable:output_type -> hhdb.rpc_interface.CommonReply
+	18, // 28: hhdb.rpc_interface.RpcInterface.DelTable:output_type -> hhdb.rpc_interface.CommonReply
+	18, // 29: hhdb.rpc_interface.RpcInterface.ClearTable:output_type -> hhdb.rpc_interface.CommonReply
+	18, // 30: hhdb.rpc_interface.RpcInterface.UpdateTable:output_type -> hhdb.rpc_interface.CommonReply
+	19, // 31: hhdb.rpc_interface.RpcInterface.QueryTableList:output_type -> hhdb.rpc_interface.QueryTableReply
+	19, // 32: hhdb.rpc_interface.RpcInterface.QueryTableInfoList:output_type -> hhdb.rpc_interface.QueryTableReply
+	20, // 33: hhdb.rpc_interface.RpcInterface.QueryTablePointCount:output_type -> hhdb.rpc_interface.QueryPointCountReply
+	20, // 34: hhdb.rpc_interface.RpcInterface.QueryPointTypeCount:output_type -> hhdb.rpc_interface.QueryPointCountReply
+	18, // 35: hhdb.rpc_interface.RpcInterface.InsertPoint:output_type -> hhdb.rpc_interface.CommonReply
+	18, // 36: hhdb.rpc_interface.RpcInterface.InsertPoints:output_type -> hhdb.rpc_interface.CommonReply
+	18, // 37: hhdb.rpc_interface.RpcInterface.DelPoints:output_type -> hhdb.rpc_interface.CommonReply
+	18, // 38: hhdb.rpc_interface.RpcInterface.UpdatePoint:output_type -> hhdb.rpc_interface.CommonReply
+	18, // 39: hhdb.rpc_interface.RpcInterface.UpdatePoints:output_type -> hhdb.rpc_interface.CommonReply
+	21, // 40: hhdb.rpc_interface.RpcInterface.QueryPoints:output_type -> hhdb.rpc_interface.QueryPointInfoReply
+	21, // 41: hhdb.rpc_interface.RpcInterface.QueryPointsIsInListReq:output_type -> hhdb.rpc_interface.QueryPointInfoReply
+	22, // 42: hhdb.rpc_interface.RpcInterface.QueryPointIdListByNameList:output_type -> hhdb.rpc_interface.QueryPointIdListByNameListReply
+	21, // 43: hhdb.rpc_interface.RpcInterface.QueryPointInfoList:output_type -> hhdb.rpc_interface.QueryPointInfoReply
+	18, // 44: hhdb.rpc_interface.RpcInterface.UpdateRealtimeValueList:output_type -> hhdb.rpc_interface.CommonReply
+	23, // 45: hhdb.rpc_interface.RpcInterface.QueryRealtimeValueList:output_type -> hhdb.rpc_interface.ValueListReply
+	24, // 46: hhdb.rpc_interface.RpcInterface.QueryHisRangeValueList:output_type -> hhdb.rpc_interface.QueryHisValueListReply
+	24, // 47: hhdb.rpc_interface.RpcInterface.QueryHisResampleValueList:output_type -> hhdb.rpc_interface.QueryHisValueListReply
+	23, // 48: hhdb.rpc_interface.RpcInterface.QueryHisTimePointValueList:output_type -> hhdb.rpc_interface.ValueListReply
+	18, // 49: hhdb.rpc_interface.RpcInterface.InsertHisValueList:output_type -> hhdb.rpc_interface.CommonReply
+	25, // [25:50] is the sub-list for method output_type
+	0,  // [0:25] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
