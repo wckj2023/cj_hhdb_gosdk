@@ -551,19 +551,21 @@ func (hhdb *HhdbConPool) UpdatePoints(dbName string, pointList *[]PointInfo) (in
 // 功能：测点操作--查询测点基础信息
 // 参数说明：dbName：数据库名，tableName：点表名,
 //
-//	pointSearchInfo.pointId:>=0时，查询指定测点ID的信息
-//	pointSearchInfo.tableId:<0时，整库查询，>=0时在指定表内检索
-//	pointSearchInfo.nameRegex:不为空时，按正则匹配点名符合的测点
-//	pointSearchInfo.showNameRegex:查询的测点名，为空时使用tableId为准，不为空时，以tableName进行查找
-//	pointSearchInfo.descRegex:不为空时，按正则匹配描述符合的测点，两则都不为空时取交集
-//	pointSearchInfo.unitRegex:不为空时，按正则匹配
-//	pointSearchInfo.pointType:测点类型，>=0时，查询指定测点类型的信息
-//	pointSearchInfo.extraFields:需要检索的字段，key为字段名，value为检索的字段值
-//	enablePage:是否启用分页
-//	page:页数,page从0开始计数
-//	limit:每页的数量
+//		pointSearchInfo.pointId:>=0时，查询指定测点ID的信息
+//		pointSearchInfo.tableId:<0时，整库查询，>=0时在指定表内检索
+//		pointSearchInfo.nameRegex:不为空时，按正则匹配点名符合的测点
+//		pointSearchInfo.showNameRegex:查询的测点名，为空时使用tableId为准，不为空时，以tableName进行查找
+//		pointSearchInfo.descRegex:不为空时，按正则匹配描述符合的测点，两则都不为空时取交集
+//		pointSearchInfo.unitRegex:不为空时，按正则匹配
+//		pointSearchInfo.pointType:测点类型，>=0时，查询指定测点类型的信息
+//		pointSearchInfo.extraFields:需要检索的字段，key为字段名，value为检索的字段值
+//		enablePage:是否启用分页
+//		page:页数,page从0开始计数
+//		limit:每页的数量
+//		queryChildren:只查询一个层级的子点组
+//		queryAllChildren:查询所有子层级的点组
 //
-// 返回值：list：查询结果，total：符合条件的总条数，err:错误信息
+//	 返回值：list：查询结果，total：符合条件的总条数，err:错误信息
 func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearchInfo *PointInfo, enablePage bool,
 	page uint32, limit uint32, queryChildren bool, queryAllChildren bool) (list *[]PointInfo, total int32, err error) {
 	dbConInfo, err := hhdb.getDbCon(dbName)
