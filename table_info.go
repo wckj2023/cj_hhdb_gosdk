@@ -285,7 +285,7 @@ func (hhdb *HhdbConPool) QueryTablePointCount(dbName string, tableInfo *TableInf
 	return pointCount, nil
 }
 
-// 功能：测点操作--使用点组ID批量查询点组信息
+// 功能：点组操作--使用点组ID批量查询点组信息
 // 参数说明：dbName：数据库名，tableIdList:测点ID列表
 // 返回值：测点信息列表
 func (hhdb *HhdbConPool) QueryTableInfoListByID(dbName string, tableIdList *[]int32) (*[]TableInfo, error) {
@@ -315,7 +315,7 @@ func (hhdb *HhdbConPool) QueryTableInfoListByID(dbName string, tableIdList *[]in
 	return &tableInfoList, nil
 }
 
-// 功能：测点操作--使用点组名批量查询点组信息
+// 功能：点组操作--使用点组名批量查询点组信息
 // 参数说明：dbName：数据库名，tableNameList:测点名列表
 // 返回值：测点信息列表
 func (hhdb *HhdbConPool) QueryTableInfoListByName(dbName string, tableNameList *[]string) (*[]TableInfo, error) {
