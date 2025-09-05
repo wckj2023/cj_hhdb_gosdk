@@ -217,7 +217,7 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 	if treeEnable {
 		dataMap := make(map[int32]*TableInfo)
 		var allData []*TableInfo
-		var rootData []TableInfo
+		var rootData []*TableInfo
 
 		// 建立所有节点的映射
 		for i := range tableInfoList {
@@ -231,7 +231,7 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 		// 构建层级关系
 		for _, data := range allData {
 			if data.TableParentId < 0 {
-				rootData = append(rootData, *data)
+				rootData = append(rootData, data)
 				continue
 			}
 
@@ -241,12 +241,17 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 				parent.HasChildren = true
 			} else {
 				// 没找到父节点，作为 root
-				rootData = append(rootData, *data)
+				rootData = append(rootData, data)
 			}
 		}
 
+		var resultData []TableInfo
+		for _, v := range rootData {
+			resultData = append(resultData, *v)
+		}
+
 		// 返回根节点数组 + 总数
-		return &rootData, res.GetTotal(), nil
+		return &resultData, res.GetTotal(), nil
 	}
 
 	return &tableInfoList, res.GetTotal(), nil
