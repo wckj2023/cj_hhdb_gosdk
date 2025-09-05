@@ -219,32 +219,33 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 		var allData []*TableInfo
 		var rootData []TableInfo
 
-		for _, data := range tableInfoList {
-			// 创建菜单项的映射
-			dataCopy := data
-			dataCopy.Children = []*TableInfo{}
-			dataCopy.HasChildren = false
-			allData = append(allData, &dataCopy)
-			dataMap[dataCopy.TableId] = &dataCopy
+		// 建立所有节点的映射
+		for i := range tableInfoList {
+			data := &tableInfoList[i] // 直接取地址，避免 dataCopy 问题
+			data.Children = []*TableInfo{}
+			data.HasChildren = false
+			allData = append(allData, data)
+			dataMap[data.TableId] = data
 		}
 
+		// 构建层级关系
 		for _, data := range allData {
 			if data.TableParentId < 0 {
 				rootData = append(rootData, *data)
 				continue
 			}
 
-			// 有父菜单项，将其添加到父菜单的 Children 中
-			dataParentId := data.TableParentId
-			parentTable, exists := dataMap[dataParentId]
+			parent, exists := dataMap[data.TableParentId]
 			if exists {
-				parentTable.Children = append(parentTable.Children, data)
-				parentTable.HasChildren = true
+				parent.Children = append(parent.Children, data)
+				parent.HasChildren = true
 			} else {
+				// 没找到父节点，作为 root
 				rootData = append(rootData, *data)
 			}
 		}
 
+		// 返回根节点数组 + 总数
 		return &rootData, res.GetTotal(), nil
 	}
 
