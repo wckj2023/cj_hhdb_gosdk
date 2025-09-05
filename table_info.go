@@ -24,7 +24,7 @@ type TableInfo struct {
 	TableModelId      int32             `json:"tableModelId" form:"tableModelId"`           //物模型ID
 	ExtraFieldAndDesc map[string]string `json:"extraFiledAndDesc" form:"extraFiledAndDesc"` //额外的字段与字段名
 	OperatorInfo      OperatorInfo      `json:"OperatorInfo" form:"OperatorInfo"`           //用户信息
-	Children          *[]TableInfo      `json:"children" form:"children" `                  //子点表
+	Children          []*TableInfo      `json:"children" form:"children" `                  //子点表
 	HasChildren       bool              `json:"hasChildren" form:"hasChildren" `            //是否有子点表
 }
 
@@ -222,7 +222,7 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 		for _, data := range tableInfoList {
 			// 创建菜单项的映射
 			dataCopy := data
-			dataCopy.Children = &[]TableInfo{}
+			dataCopy.Children = []*TableInfo{}
 			dataCopy.HasChildren = false
 			allData = append(allData, &dataCopy)
 			dataMap[dataCopy.TableId] = &dataCopy
@@ -238,7 +238,7 @@ func (hhdb *HhdbConPool) QueryTableList(dbName string, tableInfo *TableInfo, que
 			dataParentId := data.TableParentId
 			parentTable, exists := dataMap[dataParentId]
 			if exists {
-				*parentTable.Children = append(*parentTable.Children, *data)
+				parentTable.Children = append(parentTable.Children, data)
 				parentTable.HasChildren = true
 			} else {
 				rootData = append(rootData, *data)
