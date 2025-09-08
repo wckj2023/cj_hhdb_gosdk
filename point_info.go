@@ -643,9 +643,6 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 // 返回值：list：查询结果，total：符合条件的总条数，err:错误信息
 func (hhdb *HhdbConPool) QueryPointsIsInList(dbName string, pointIdList *[]int32, inOrNotInFlag bool, tableName string, pointSearchInfo *PointInfo, enablePage bool,
 	page uint32, limit uint32) (list *[]PointInfo, total int32, err error) {
-	if pointIdList == nil || len(*pointIdList) == 0 {
-		return nil, 0, errors.New("id[] is empty")
-	}
 	dbConInfo, err := hhdb.getDbCon(dbName)
 	if err != nil {
 		return nil, 0, err
