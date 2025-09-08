@@ -791,3 +791,26 @@ func (hhdb *HhdbConPool) QueryPointTypeCountByID(dbName string, pointIdList *[]i
 	pointCount.PackageTotal = res.GetPackageTotal()
 	return pointCount, nil
 }
+
+func (hhdb *HhdbConPool) QueryPointIdListByName(dbName string, pointNameList *[]string) (*[]int32, error) {
+	if pointNameList == nil || len(*pointNameList) == 0 {
+		return nil, errors.New("name[] is empty")
+	}
+	dbConInfo, err := hhdb.getDbCon(dbName)
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
+	defer cancel()
+	req := hhdbRpc.NameListReq{}
+	req.NameList = *pointNameList
+	res, err := dbConInfo.dbClient.QueryPointIdListByNameList(ctx, &req)
+	if err != nil {
+		return nil, hhdb.handleGrpcError(&err)
+	}
+	if res.GetErrMsg().GetCode() < 0 {
+		return nil, errors.New(res.GetErrMsg().GetMsg())
+	}
+
+	return &res.IdList, nil
+}
