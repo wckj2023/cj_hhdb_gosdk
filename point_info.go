@@ -736,23 +736,43 @@ func (hhdb *HhdbConPool) QueryPointInfoListByID(dbName string, pointIdList *[]in
 	if err != nil {
 		return nil, err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
-	defer cancel()
-	req := hhdbRpc.IdOrNameListReq{}
-	req.IdList = *pointIdList
-	res, err := dbConInfo.dbClient.QueryPointInfoList(ctx, &req)
-	if err != nil {
-		return nil, hhdb.handleGrpcError(&err)
+	const batchSize = 20000
+	totalIDs := len(*pointIdList)
+	pointList := make([]PointInfo, 0, totalIDs) // 预分配容量
+
+	for start := 0; start < totalIDs; start += batchSize {
+		end := start + batchSize
+		if end > totalIDs {
+			end = totalIDs
+		}
+
+		// 分片 ID
+		batchIDs := (*pointIdList)[start:end]
+
+		// 构造请求
+		req := hhdbRpc.IdOrNameListReq{
+			IdList: batchIDs,
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
+		res, err := dbConInfo.dbClient.QueryPointInfoList(ctx, &req)
+		defer cancel() // 及时释放 context
+
+		if err != nil {
+			return nil, hhdb.handleGrpcError(&err)
+		}
+		if res.GetErrMsg().GetCode() < 0 {
+			return nil, errors.New(res.GetErrMsg().GetMsg())
+		}
+
+		// 转换 gRPC 数据到 Go 结构体
+		for i := 0; i < len(res.PointInfoList); i++ {
+			var info PointInfo
+			info.grpc2goPointInfo(res.PointInfoList[i])
+			pointList = append(pointList, info)
+		}
 	}
 
-	if res.GetErrMsg().GetCode() < 0 {
-		return nil, errors.New(res.GetErrMsg().GetMsg())
-	}
-
-	pointList := make([]PointInfo, len(res.PointInfoList))
-	for i := 0; i < len(res.PointInfoList); i++ {
-		pointList[i].grpc2goPointInfo(res.PointInfoList[i])
-	}
 	return &pointList, nil
 }
 
@@ -767,21 +787,44 @@ func (hhdb *HhdbConPool) QueryPointInfoListByName(dbName string, pointNameList *
 	if err != nil {
 		return nil, err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
-	defer cancel()
-	req := hhdbRpc.IdOrNameListReq{}
-	req.NameList = *pointNameList
-	res, err := dbConInfo.dbClient.QueryPointInfoList(ctx, &req)
-	if err != nil {
-		return nil, hhdb.handleGrpcError(&err)
+
+	const batchSize = 20000
+	totalIDs := len(*pointNameList)
+	pointList := make([]PointInfo, 0, totalIDs) // 预分配容量
+
+	for start := 0; start < totalIDs; start += batchSize {
+		end := start + batchSize
+		if end > totalIDs {
+			end = totalIDs
+		}
+
+		// 分片 ID
+		batchNames := (*pointNameList)[start:end]
+
+		// 构造请求
+		req := hhdbRpc.IdOrNameListReq{
+			NameList: batchNames,
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
+		res, err := dbConInfo.dbClient.QueryPointInfoList(ctx, &req)
+		defer cancel() // 及时释放 context
+
+		if err != nil {
+			return nil, hhdb.handleGrpcError(&err)
+		}
+		if res.GetErrMsg().GetCode() < 0 {
+			return nil, errors.New(res.GetErrMsg().GetMsg())
+		}
+
+		// 转换 gRPC 数据到 Go 结构体
+		for i := 0; i < len(res.PointInfoList); i++ {
+			var info PointInfo
+			info.grpc2goPointInfo(res.PointInfoList[i])
+			pointList = append(pointList, info)
+		}
 	}
-	if res.GetErrMsg().GetCode() < 0 {
-		return nil, errors.New(res.GetErrMsg().GetMsg())
-	}
-	pointList := make([]PointInfo, len(res.PointInfoList))
-	for i := 0; i < len(res.PointInfoList); i++ {
-		pointList[i].grpc2goPointInfo(res.PointInfoList[i])
-	}
+
 	return &pointList, nil
 }
 
