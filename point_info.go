@@ -608,7 +608,9 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 		for int32(len(pointList)) < total {
 			req.Page = uint32(pageAdd)
 			req.Limit = uint32(newLimit)
-
+			req.EnablePage = true
+			ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
+			defer cancel()
 			res, err = dbConInfo.dbClient.QueryPoints(ctx, req)
 			if res.GetErrMsg().GetCode() < 0 {
 				break
