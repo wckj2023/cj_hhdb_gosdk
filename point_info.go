@@ -428,21 +428,41 @@ func (hhdb *HhdbConPool) InsertPoints(dbName string, pointList *[]PointInfo) (in
 	if err != nil {
 		return 0, nil, err
 	}
-	req := hhdbRpc.PointInfoListReq{}
-	for i := 0; i < len(*pointList); i++ {
-		req.PointInfoList = append(req.PointInfoList, (*pointList)[i].go2grpcPointInfo())
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
-	defer cancel()
-	res, err := dbConInfo.dbClient.InsertPoints(ctx, &req)
-	if err != nil {
-		return 0, nil, hhdb.handleGrpcError(&err)
+	const batchSize = 20000
+	totalList := *pointList
+	var allIds []int32
+	code := 0
+	for i := 0; i < len(totalList); i += batchSize {
+		end := i + batchSize
+		if end > len(totalList) {
+			end = len(totalList)
+		}
+
+		// 构建当前批次请求
+		req := hhdbRpc.PointInfoListReq{}
+		for _, point := range totalList[i:end] {
+			req.PointInfoList = append(req.PointInfoList, point.go2grpcPointInfo())
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), hhdb.outtime)
+		res, err := dbConInfo.dbClient.InsertPoints(ctx, &req)
+		defer cancel() // 防止泄露
+
+		if err != nil {
+			return 0, nil, hhdb.handleGrpcError(&err)
+		}
+
+		if res.GetErrMsg().GetCode() < 0 {
+			return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
+		}
+
+		// 累加所有返回的 ID / 状态码
+		allIds = append(allIds, res.IdOrErrCodeList...)
+		code += int(res.GetErrMsg().Code)
 	}
 
-	if res.GetErrMsg().GetCode() < 0 {
-		return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, errors.New(res.GetErrMsg().GetMsg())
-	}
-	return res.GetErrMsg().GetCode(), &res.IdOrErrCodeList, nil
+	// 所有批次成功
+	return int32(code), &allIds, nil
 }
 
 // 功能：测点操作--删除测点
