@@ -602,7 +602,7 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 	total = res.GetTotal()
 	//测点太多遍历获取完
 	if !enablePage && int32(len(pointList)) < total {
-		pageAdd := 1
+		pageAdd := 2
 		newLimit := len(pointList)
 		tempInfo := PointInfo{}
 		for int32(len(pointList)) < total {
@@ -619,6 +619,7 @@ func (hhdb *HhdbConPool) QueryPoints(dbName string, tableName string, pointSearc
 				tempInfo.grpc2goPointInfo(res.PointInfoList[i])
 				pointList = append(pointList, tempInfo)
 			}
+			pageAdd++
 		}
 	}
 
